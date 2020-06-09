@@ -1,0 +1,127 @@
+{
+  "project_info": {
+    "project_number": "652196360482",
+    "firebase_url": "https://tictactoe-c6001.firebaseio.com",
+    "project_id": "tictactoe-c6001",
+    "storage_bucket": "tictactoe-c6001.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:652196360482:android:74e10b6a6ddc1de415357b",
+        "android_client_info": {
+          "package_name": "com.example.coffeeshop"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "652196360482-si49tkseca82sbt2h0le2v6b639snfrq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMeaxPNyuQUwJsTQyahJCG_a1ev_Y2ltM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "652196360482-si49tkseca82sbt2h0le2v6b639snfrq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:652196360482:android:b849aa99f2f543d215357b",
+        "android_client_info": {
+          "package_name": "com.example.contraintslayout"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "652196360482-si49tkseca82sbt2h0le2v6b639snfrq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMeaxPNyuQUwJsTQyahJCG_a1ev_Y2ltM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "652196360482-si49tkseca82sbt2h0le2v6b639snfrq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:652196360482:android:8667d9665e016efb15357b",
+        "android_client_info": {
+          "package_name": "com.example.cosplaythecoffeehouse"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "652196360482-si49tkseca82sbt2h0le2v6b639snfrq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMeaxPNyuQUwJsTQyahJCG_a1ev_Y2ltM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "652196360482-si49tkseca82sbt2h0le2v6b639snfrq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:652196360482:android:a723d68797988cea15357b",
+        "android_client_info": {
+          "package_name": "com.example.testlogin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "652196360482-si49tkseca82sbt2h0le2v6b639snfrq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAMeaxPNyuQUwJsTQyahJCG_a1ev_Y2ltM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "652196360482-si49tkseca82sbt2h0le2v6b639snfrq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
