@@ -39,17 +39,17 @@ public class MainActivity extends AppCompatActivity{
         });
         */
         User userTest = new User("tho", "1234", "admin", "1");
-        updateUser(userTest, new MyCallBack() {
-            @Override
-            public void onCallBack(User user) {
-
-            }
-            @Override
-            public boolean isSuccess(boolean isSuccess) {
-                Log.e("updateUser", "onCallBack(): " +isSuccess);
-                return isSuccess;
-            }
-        });
+//        updateUser(userTest, new MyCallBack() {
+//            @Override
+//            public void onCallBack(User user) {
+//
+//            }
+//            @Override
+//            public boolean isSuccess(boolean isSuccess) {
+//                Log.e("updateUser", "onCallBack(): " +isSuccess);
+//                return isSuccess;
+//            }
+//        });
 
         /*
         deleteUser(user, new MyCallBack() {
@@ -65,32 +65,31 @@ public class MainActivity extends AppCompatActivity{
         });
          */
         Item item = new Item("Bánh Phồng Tôm","Cùng với hương vị BBQ tôm hùm nướng, buổi tiệc trà của bạn sẽ thêm đậm hương vị","15000","hinhanh","food");
-//        createNewItem(item);
-//        updateItem(item, new MyCallBack() {
+        createNewItem(item);
+        Item itemTest = new Item("Bánh Phồng Cua","Cùng với hương vị BBQ tôm hùm nướng, buổi tiệc trà của bạn sẽ thêm đậm hương vị","30000","cua","food", "0");
+//        updateItem(itemTest, new MyCallBack() {
 //            @Override
 //            public void onCallBack(User user) {
 //
 //            }
-//
 //            @Override
 //            public boolean isSuccess(boolean isSuccess) {
-//
 //                Log.e("update item", "update item: "+isSuccess);
 //                return isSuccess;
 //            }
 //        });
-//        deleteItem(item2, new MyCallBack() {
-//            @Override
-//            public void onCallBack(User user) {
-//
-//            }
-//
-//            @Override
-//            public boolean isSuccess(boolean isSuccess) {
-//                Log.e("Delete item", "Delete item: "+isSuccess);
-//                return isSuccess;
-//            }
-//        });
+        deleteItem(itemTest, new MyCallBack() {
+            @Override
+            public void onCallBack(User user) {
+
+            }
+
+            @Override
+            public boolean isSuccess(boolean isSuccess) {
+                Log.e("Delete item", "Delete item: "+isSuccess);
+                return isSuccess;
+            }
+        });
     }
     private String hash(String s)
     {
@@ -243,6 +242,7 @@ public class MainActivity extends AppCompatActivity{
                     mDatabase.child("" + lastID).child("price").setValue(item.getPrice());
                     mDatabase.child("" + lastID).child("img").setValue(item.getImg());
                     mDatabase.child("" + lastID).child("category").setValue(item.getCategory());
+                    mDatabase.child("" + lastID).child("id").setValue("" + lastID);
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -261,14 +261,16 @@ public class MainActivity extends AppCompatActivity{
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     boolean isSuccess = false;
                     for (DataSnapshot id : dataSnapshot.getChildren()) {
-                        if (id.child("name").getValue().equals(item.getName()))
+                        if(!item.getId().equals(""))
+                        if (id.child("id").getValue().equals(item.getId()))
                         {
                             Log.e("UPDATE inner class", "found ID: " + id.getKey());
                             mDatabase.child(id.getKey()).child("name").setValue(item.getName());
                             mDatabase.child(id.getKey()).child("desc").setValue(item.getDesc());
-                            mDatabase.child(id.getKey()).child("img").setValue(item.getPrice());
-                            mDatabase.child(id.getKey()).child("price").setValue(item.getImg());
+                            mDatabase.child(id.getKey()).child("img").setValue(item.getImg());
+                            mDatabase.child(id.getKey()).child("price").setValue(item.getPrice());
                             mDatabase.child(id.getKey()).child("category").setValue(item.getCategory());
+                            mDatabase.child(id.getKey()).child("id").setValue(item.getId());
                             Log.e("UPDATE item", "inner class: " +item.getName());
                             isSuccess = true;
                             break;
@@ -294,7 +296,8 @@ public class MainActivity extends AppCompatActivity{
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     boolean isSuccess = false;
                     for (DataSnapshot id : dataSnapshot.getChildren()) {
-                        if (id.child("name").getValue().equals(item.getName()))
+                        if(!item.getId().equals(""))
+                        if (id.child("id").getValue().equals(item.getId()))
                         {
                             Log.e("DELETE inner class", "found ID: " + id.getKey());
                             mDatabase.child(id.getKey()).setValue(null);
