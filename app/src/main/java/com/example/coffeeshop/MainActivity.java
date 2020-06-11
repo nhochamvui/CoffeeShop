@@ -2,12 +2,17 @@ package com.example.coffeeshop;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Debug;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.*;
 
 import java.security.MessageDigest;
@@ -15,82 +20,90 @@ import java.security.NoSuchAlgorithmException;
 
 public class MainActivity extends AppCompatActivity{
     private DatabaseReference mDatabase;
+    private Intent intent;
+    private boolean isAdmin = false;
+    private Menu menu;
+    private BottomNavigationView bottomNavigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
+        initialComponent();
+        doAuth();
+        createFragments(savedInstanceState);
+
+        /* //for testing methods
         User user = new User("thao", "1234", "admin");
-//        createNewUser(user);
-
-        /*retrieveUser(user, new MyCallBack()
-        {
-            @Override
-            public void onCallBack(User user1) {
-                if(!user1.isNull())
-                    Log.e("RETRIEVE USER", "onCallBack(): " +user1.getUsername());
-                else Log.e("RETRIEVE USER", "Sai tên tài khoản hoặc mật khẩu");
-            }
-
-            @Override
-            public boolean isSuccess(boolean isSuccess) {
-                return false;
-            }
-        });
-        */
         User userTest = new User("tho", "1234", "admin", "1");
-        updateUser(userTest, new MyCallBack() {
-            @Override
-            public void onCallBack(User user) {
-
-            }
-            @Override
-            public boolean isSuccess(boolean isSuccess) {
-                Log.e("updateUser", "onCallBack(): " +isSuccess);
-                return isSuccess;
-            }
-        });
-
-        /*
-        deleteUser(user, new MyCallBack() {
-            @Override
-            public void onCallBack(User user) {
-
-            }
-            @Override
-            public boolean isSuccess(boolean isSuccess) {
-                Log.e("DeleteUser", "Delete user: "+isSuccess);
-                return isSuccess;
-            }
-        });
-         */
         Item item = new Item("Bánh Phồng Tôm","Cùng với hương vị BBQ tôm hùm nướng, buổi tiệc trà của bạn sẽ thêm đậm hương vị","15000","hinhanh","food");
-//        createNewItem(item);
-//        updateItem(item, new MyCallBack() {
-//            @Override
-//            public void onCallBack(User user) {
-//
-//            }
-//
-//            @Override
-//            public boolean isSuccess(boolean isSuccess) {
-//
-//                Log.e("update item", "update item: "+isSuccess);
-//                return isSuccess;
-//            }
-//        });
-//        deleteItem(item2, new MyCallBack() {
-//            @Override
-//            public void onCallBack(User user) {
-//
-//            }
-//
-//            @Override
-//            public boolean isSuccess(boolean isSuccess) {
-//                Log.e("Delete item", "Delete item: "+isSuccess);
-//                return isSuccess;
-//            }
-//        });
+        Item itemTest = new Item("Bánh Phồng Cua","Cùng với hương vị BBQ tôm hùm nướng, buổi tiệc trà của bạn sẽ thêm đậm hương vị","30000","cua","food", "0");
+        */
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.menu,menu);
+        this.menu = menu;
+        Log.e("onCreateOptionsMenu", "working");
+        return true;
+    }
+    private void initialComponent(){
+        mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
+        intent = getIntent();
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                return true;
+            }
+        });
+    }
+    private void doAuth()
+    {
+        User user = (User)intent.getSerializableExtra("user");
+        if(user.getRole().equals("admin")){
+
+            isAdmin = true;
+        }
+
+        else{
+            bottomNavigationView.getMenu().removeItem(R.id.menuAdminPanel);
+            isAdmin = false;
+        }
+    }
+    private void createFragments(Bundle savedInstanceState)
+    {
+        // Set default fragment for specific role
+        if(savedInstanceState == null)
+        {
+            if(isAdmin)
+            {
+                bottomNavigationView.setSelectedItemId(R.id.menuAdminPanel);
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new AdminPanelFragment()).commit();
+            }
+            else{
+                bottomNavigationView.setSelectedItemId(R.id.menuStore);
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new StoreFragment()).commit();
+            }
+        }
+        // Listen to fragment selection
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                Fragment fragment = null;
+                switch (menuItem.getItemId())
+                {
+                    case R.id.menuAdminPanel:
+                        fragment = new AdminPanelFragment();
+                        break;
+                    case R.id.menuStore:
+                        fragment = new StoreFragment();
+                        break;
+                }
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
+                return true;
+            }
+        });
     }
     private String hash(String s)
     {
@@ -243,6 +256,7 @@ public class MainActivity extends AppCompatActivity{
                     mDatabase.child("" + lastID).child("price").setValue(item.getPrice());
                     mDatabase.child("" + lastID).child("img").setValue(item.getImg());
                     mDatabase.child("" + lastID).child("category").setValue(item.getCategory());
+                    mDatabase.child("" + lastID).child("id").setValue("" + lastID);
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -261,14 +275,16 @@ public class MainActivity extends AppCompatActivity{
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     boolean isSuccess = false;
                     for (DataSnapshot id : dataSnapshot.getChildren()) {
-                        if (id.child("name").getValue().equals(item.getName()))
+                        if(!item.getId().equals(""))
+                        if (id.child("id").getValue().equals(item.getId()))
                         {
                             Log.e("UPDATE inner class", "found ID: " + id.getKey());
                             mDatabase.child(id.getKey()).child("name").setValue(item.getName());
                             mDatabase.child(id.getKey()).child("desc").setValue(item.getDesc());
-                            mDatabase.child(id.getKey()).child("img").setValue(item.getPrice());
-                            mDatabase.child(id.getKey()).child("price").setValue(item.getImg());
+                            mDatabase.child(id.getKey()).child("img").setValue(item.getImg());
+                            mDatabase.child(id.getKey()).child("price").setValue(item.getPrice());
                             mDatabase.child(id.getKey()).child("category").setValue(item.getCategory());
+                            mDatabase.child(id.getKey()).child("id").setValue(item.getId());
                             Log.e("UPDATE item", "inner class: " +item.getName());
                             isSuccess = true;
                             break;
@@ -294,7 +310,8 @@ public class MainActivity extends AppCompatActivity{
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     boolean isSuccess = false;
                     for (DataSnapshot id : dataSnapshot.getChildren()) {
-                        if (id.child("name").getValue().equals(item.getName()))
+                        if(!item.getId().equals(""))
+                        if (id.child("id").getValue().equals(item.getId()))
                         {
                             Log.e("DELETE inner class", "found ID: " + id.getKey());
                             mDatabase.child(id.getKey()).setValue(null);
