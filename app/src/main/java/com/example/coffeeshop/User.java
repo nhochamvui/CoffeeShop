@@ -1,6 +1,8 @@
 package com.example.coffeeshop;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private String username;
     private String pwd;
     private String id;
