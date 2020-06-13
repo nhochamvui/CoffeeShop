@@ -8,15 +8,17 @@ public class User implements Serializable {
     private String Username;
     private String Role;
     private String Password;
+    private String Avatar;
     public User()
     {
 
     }
 
-    public User(String username, String role, String password) {
+    public User(String username, String role, String password, String avatar) {
         Username = username;
         Role = role;
         Password = password;
+        Avatar = avatar;
     }
 
     public String getUsername() {
@@ -41,5 +43,13 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         Password = password;
+    }
+
+    public String getAvatar() {
+        return Avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        Avatar = avatar;
     }
 }

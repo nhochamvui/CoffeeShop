@@ -222,7 +222,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 boolean flag = false;
-                User user1 = new User("", "", "");
+                User user1 = new User("", "", "","");
                 String pwd = hash(user.getPassword());
                 Log.e("RETRIEVE USER", "HASH: " +pwd);
                 for (DataSnapshot id : dataSnapshot.getChildren()) {

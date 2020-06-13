@@ -13,6 +13,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import java.util.ArrayList;
 
@@ -40,11 +42,13 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         User user = userArrayList.get(position);
         holder.textViewUserName.setText(user.getUsername());
-        holder.textViewID.setText("Index: "+position);
+        holder.textViewID.setText(" Index: "+position);
         Glide.with(holder.imageViewAvatar.getContext())
-                .load("https://i.stack.imgur.com/GShqJ.jpg?s=32")
+                .load(user.getAvatar())
                 .centerCrop()
+                .error(R.drawable.ic_round_broken_image_24)
                 .placeholder(R.drawable.ic_baseline_image_24)
+                .transform(new RoundedCorners(10))
                 .into(holder.imageViewAvatar);
     }
 

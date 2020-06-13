@@ -3,12 +3,17 @@ package com.example.coffeeshop;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -25,6 +30,9 @@ public class LoginActivity extends AppCompatActivity {
     private EditText editTextPassword;
     private Button buttonLogin;
     private DatabaseReference mDatabase;
+    private String userName, password;
+    private CheckBox checkBoxRememberme;
+    private ProgressDialog loadingBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,21 +40,55 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         initialComponent();
 
-        buttonLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String userName = editTextUserName.getText().toString();
-                String password = editTextPassword.getText().toString();
-                Log.e("input pasword",""+password);
-                doLogin(userName, password);
-            }
-        });
+        loadUserLogin();
+    }
+    public void loadUserLogin()
+    {
+        SharedPreferences sharedPreferences = this.getSharedPreferences("remember login", Context.MODE_PRIVATE);
+        if(!sharedPreferences.getString("username","").equals(""))
+        {
+            loadingBar = new ProgressDialog(this);
+            loadingBar.setTitle("Logging in");
+            loadingBar.setMessage("Please wait...");
+            loadingBar.setCanceledOnTouchOutside(false);
+            loadingBar.show();
+            Toast.makeText(this, "đã có "+sharedPreferences.getString("username",""), Toast.LENGTH_SHORT).show();
+            userName = sharedPreferences.getString("username","");
+            password = sharedPreferences.getString("password","");
+            doLogin(userName, password);
+        }
+        else{
+            buttonLogin.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    loadingBar = new ProgressDialog(v.getContext());
+                    loadingBar.setTitle("Logging in");
+                    loadingBar.setMessage("Please wait...");
+                    loadingBar.setCanceledOnTouchOutside(false);
+                    loadingBar.show();
+                    if(checkBoxRememberme.isChecked())
+                        saveUserLogin();
+                    userName = editTextUserName.getText().toString();
+                    password = editTextPassword.getText().toString();
+                    doLogin(userName, hash(password));
+                }
+            });
+        }
+    }
+    public void saveUserLogin()
+    {
+        SharedPreferences sharedPreferences = this.getSharedPreferences("remember login", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("username", this.editTextUserName.getText().toString());
+        editor.putString("password", hash(this.editTextPassword.getText().toString()));
+        editor.apply();
     }
     private void initialComponent()
     {
         editTextPassword = findViewById(R.id.editTextPassword);
         editTextUserName = findViewById(R.id.editTextUserName_Add);
         buttonLogin = findViewById(R.id.buttonLogin);
+        checkBoxRememberme = findViewById(R.id.checkBoxRememberMe);
     }
     private void doLogin(final String userName, final String password) {
         String pwd = new String("");
@@ -55,11 +97,11 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 boolean flag = false;
-                User user = new User("","", "");
-                Log.e("check login","username "+userName + " hash pwd: "+hash(password));
+                User user = new User("","", "","");
+                Log.e("check login","username "+userName + " hash pwd: "+(password));
 
                 for (DataSnapshot id : dataSnapshot.getChildren()) {
-                    if (id.child("username").getValue().equals(userName) && id.child("pwd").getValue().equals(hash(password)))
+                    if (id.child("username").getValue().equals(userName) && id.child("password").getValue().equals((password)))
                     {
                         user = id.getValue(User.class);
                         flag = true;
@@ -70,6 +112,8 @@ public class LoginActivity extends AppCompatActivity {
                 {
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.putExtra("user", user);
+                    loadingBar.dismiss();
+                    finish();
                     LoginActivity.this.startActivity(intent);
                 }
                 else{
