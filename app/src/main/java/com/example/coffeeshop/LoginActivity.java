@@ -7,10 +7,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -21,8 +19,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
     private EditText editTextUserName;
@@ -49,17 +45,17 @@ public class LoginActivity extends AppCompatActivity {
     private void initialComponent()
     {
         editTextPassword = findViewById(R.id.editTextPassword);
-        editTextUserName = findViewById(R.id.editTextUserName);
+        editTextUserName = findViewById(R.id.editTextUserName_Add);
         buttonLogin = findViewById(R.id.buttonLogin);
     }
     private void doLogin(final String userName, final String password) {
         String pwd = new String("");
         mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
-        mDatabase.addValueEventListener(new ValueEventListener() {
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 boolean flag = false;
-                User user = new User("", "", "","");
+                User user = new User("","", "");
                 Log.e("check login","username "+userName + " hash pwd: "+hash(password));
 
                 for (DataSnapshot id : dataSnapshot.getChildren()) {
@@ -67,7 +63,6 @@ public class LoginActivity extends AppCompatActivity {
                     {
                         user = id.getValue(User.class);
                         flag = true;
-                        Log.e("RETRIEVE USER", "inner class: " +user.getUsername());
                         break;
                     }
                 }

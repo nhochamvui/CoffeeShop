@@ -33,7 +33,7 @@ public class CustomUserListAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return Integer.parseInt(userList.get(position).getId());
+        return position;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class CustomUserListAdapter extends BaseAdapter {
         }
         Log.e("getView", "we are here");
         User user = this.userList.get(position);
-        holder.textViewID.setText(user.getId());
+        holder.textViewID.setText("Index: "+position);
         holder.textViewUserName.setText(user.getUsername());
         return convertView;
     }

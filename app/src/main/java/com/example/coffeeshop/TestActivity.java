@@ -23,9 +23,9 @@ public class TestActivity extends AppCompatActivity implements UserAdapter.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
         final RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        User user = new User("tho","1234","admin", "1");
-        User user1 = new User("tai","1234","user", "0");
-        User user2 = new User("thao","1234","admin", "2");
+        User user = new User("tho","1234","admin");
+        User user1 = new User("tai","1234","user");
+        User user2 = new User("thao","1234","admin");
         userList = new ArrayList<User>();
         userList.add(user);
         userList.add(user1);
@@ -42,4 +42,16 @@ public class TestActivity extends AppCompatActivity implements UserAdapter.OnCli
     public void OnItemClick(int position) {
         Toast.makeText(this, ""+userList.get(position).getUsername(), Toast.LENGTH_LONG).show();
     }
+
+    @Override
+    public void OnSettingClick(int position) {
+
+    }
+
+    @Override
+    public void OnDeleteClick(int position) {
+
+    }
+
+
 }

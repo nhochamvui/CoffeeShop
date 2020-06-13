@@ -1,61 +1,45 @@
 package com.example.coffeeshop;
 
+import android.util.Log;
+
 import java.io.Serializable;
 
 public class User implements Serializable {
-    private String username;
-    private String pwd;
-    private String id;
-    private String role;
+    private String Username;
+    private String Role;
+    private String Password;
     public User()
     {
-        //for returning object from firebase
+
     }
-    public User(String username, String pwd, String role) {
-        this.username = username;
-        this.pwd = pwd;
-        this.role = role;
-    }
-    public User(String username, String pwd, String role, String id) {
-        this.username = username;
-        this.pwd = pwd;
-        this.role = role;
-        this.id = id;
+
+    public User(String username, String role, String password) {
+        Username = username;
+        Role = role;
+        Password = password;
     }
 
     public String getUsername() {
-        return username;
+        return Username;
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        Username = username;
     }
-
-    public String getPwd() {
-        return pwd;
-    }
-
-    public void setPwd(String pwd) {
-        this.pwd = pwd;
-    }
-
-
 
     public String getRole() {
-        return role;
+        return Role;
     }
 
     public void setRole(String role) {
-        this.role = role;
+        Role = role;
     }
-    public boolean isNull()
-    {
-        return (this.username.equals("") && this.pwd.equals("") && this.role.equals(""));
+
+    public String getPassword() {
+        return Password;
     }
-    public void setId(String id) {
-        this.id = id;
-    }
-    public String getId() {
-        return id;
+
+    public void setPassword(String password) {
+        Password = password;
     }
 }
