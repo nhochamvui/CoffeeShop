@@ -44,7 +44,7 @@ public class CustomUserListAdapter extends BaseAdapter {
             convertView = layoutInflater.inflate(R.layout.user_container_layout, null);
             holder = new ViewHolder();
             holder.textViewID = (TextView) convertView.findViewById(R.id.textViewID);
-            holder.textViewUserName = (TextView) convertView.findViewById(R.id.textViewUserName);
+            holder.textViewUserName = (TextView) convertView.findViewById(R.id.textViewDrinkName);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();

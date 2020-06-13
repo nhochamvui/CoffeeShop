@@ -1,83 +1,72 @@
 package com.example.coffeeshop;
 
-public class Item {
-    String name;
-    String desc;
-    String price;
-    String img;
-    String category;
-    String id;
+import java.io.Serializable;
+
+public class Item implements Serializable {
+    String Name;
+    String Desc;
+    String Price;
+    String Img;
+    String Category;
+    String Id;
     public Item() {
         //for returning object from firebase
     }
 
-    public Item(String name, String desc, String price, String img, String category) {
-        this.name = name;
-        this.desc = desc;
-        this.price = price;
-        this.img = img;
-        this.category = category;
-    }
     public Item(String name, String desc, String price, String img, String category, String id) {
-        this.name = name;
-        this.desc = desc;
-        this.price = price;
-        this.img = img;
-        this.category = category;
-        this.id = id;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-
-    public Item(String name, String desc, String price) {
-        this.name = name;
-        this.desc = desc;
-        this.price = price;
+        Name = name;
+        Desc = desc;
+        Price = price;
+        Img = img;
+        Category = category;
+        Id = id;
     }
 
     public String getName() {
-        return name;
+        return Name;
     }
 
     public void setName(String name) {
-        this.name = name;
+        Name = name;
     }
 
     public String getDesc() {
-        return desc;
+        return Desc;
     }
 
     public void setDesc(String desc) {
-        this.desc = desc;
+        Desc = desc;
     }
 
     public String getPrice() {
-        return price;
+        return Price;
     }
 
     public void setPrice(String price) {
-        this.price = price;
+        Price = price;
     }
+
     public String getImg() {
-        return img;
+        return Img;
     }
 
     public void setImg(String img) {
-        this.img = img;
+        Img = img;
+    }
+
+    public String getCategory() {
+        return Category;
+    }
+
+    public void setCategory(String category) {
+        Category = category;
     }
 
     public String getId() {
-        return id;
+        return Id;
     }
 
     public void setId(String id) {
-        this.id = id;
+        Id = id;
     }
 }

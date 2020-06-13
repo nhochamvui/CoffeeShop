@@ -28,8 +28,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -73,6 +78,10 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
     private ValueEventListener valueEventListenerFetchUser;
     private final int PICK_IMAGE_REQUEST = 322;
     private Uri imgUri;
+    private String downloadImageUrl = new String("");
+    private EditText editTextUserName;
+    private EditText editTextPassword;
+    private EditText editTextRole;
     public UserManagementFragment() {
         // Required empty public constructor
     }
@@ -126,7 +135,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 userList.clear();
-                User user = new User("", "", "");
+                User user = new User("", "", "","");
                 Log.e("fetch Data User","userlist size: "+userList.size());
                 for (DataSnapshot id : dataSnapshot.getChildren()) {
                     user = id.getValue(User.class);
@@ -157,9 +166,9 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         final Dialog dialog = new Dialog(this.getContext());
         dialog.setContentView(R.layout.dialog_add_user);
         dialog.show();
-        final EditText editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
-        final EditText editTextPassword = dialog.findViewById(R.id.editTextPassword_Add);
-        final EditText editTextRole = dialog.findViewById(R.id.editTextRole_Add);
+        editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
+        editTextPassword = dialog.findViewById(R.id.editTextPassword_Add);
+        editTextRole = dialog.findViewById(R.id.editTextRole_Add);
         imageViewChooseAvatar = dialog.findViewById(R.id.imageViewChooseAvatar);
         Button buttonConfirm = dialog.findViewById(R.id.buttonConfirm_Add);
         imageViewChooseAvatar.setOnClickListener(new View.OnClickListener() {
@@ -172,38 +181,113 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         buttonConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String username = editTextUserName.getText().toString();
-                final String password = hash(editTextPassword.getText().toString());
-                final String role = editTextRole.getText().toString();
-
-                final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
-                DatabaseReference newUserRef = mDatabase.push();
-                User user = new User(username, password, role);
-                uploadPicture();
-                newUserRef.setValue(user);
-//                mDatabase.child("" + id).setValue(user);
-                dialog.dismiss();
+                if(editTextPassword.getText().toString().equals("")
+                        || editTextRole.getText().toString().equals("")
+                        || editTextUserName.getText().toString().equals("")) {
+                    Toast.makeText(getContext(), "Please fill out the form!", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    uploadPicture();
+                    dialog.dismiss();
+                }
             }
         });
     }
     public void uploadPicture()
     {
+        final User user = new User("", "", "", "");
+        user.setUsername(editTextUserName.getText().toString());
+        user.setRole(editTextRole.getText().toString());
+        user.setPassword(hash(editTextPassword.getText().toString()));
+
         if(imgUri!=null)
         {
             final ProgressDialog progressDialog= new ProgressDialog(getContext());
             progressDialog.show();
+            progressDialog.setTitle("Creating new user");
+
             final FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageReference = storage.getReference().child("avatars/"+ UUID.randomUUID().toString());
-            storageReference.putFile(imgUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            final StorageReference storageReference = storage.getReference().child("avatars/"+ UUID.randomUUID().toString());
+            final UploadTask uploadTask = storageReference.putFile(imgUri);
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
                     progressDialog.dismiss();
-                    storage.getInstance().getReference().child("avatars").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-
+                            Log.e("download url","got: "+uri.toString());
+                            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
+                            DatabaseReference newUserRef = mDatabase.push();
+                            user.setAvatar(uri.toString());
+                            newUserRef.setValue(user);
+                            Toast.makeText(getContext(),"Insert new user successfully!",Toast.LENGTH_LONG).show();
                         }
                     });
+
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    progressDialog.dismiss();
+                    Toast.makeText(getContext(), "Insert new user fail!", Toast.LENGTH_LONG).show();
+                }
+            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+
+                }
+            });
+        }
+    }
+    public void uploadPicture(final User userOriginal)
+    {
+        final User user = new User("", "", "", "");
+        user.setUsername(editTextUserName.getText().toString());
+        user.setRole(editTextRole.getText().toString());
+        if(editTextPassword.getText().toString().equals(""))// password field is blank
+            user.setPassword(userOriginal.getPassword());
+        else
+            user.setPassword(hash(editTextPassword.getText().toString()));
+        user.setAvatar(userOriginal.getAvatar());
+
+        if(imgUri!=null)//save user when uploading new avatar
+        {
+            final ProgressDialog progressDialog= new ProgressDialog(getContext());
+            progressDialog.show();
+            final FirebaseStorage storage = FirebaseStorage.getInstance();
+            final StorageReference storageReference = storage.getReference().child("avatars/"+ UUID.randomUUID().toString());
+            final UploadTask uploadTask = storageReference.putFile(imgUri);
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
+                    progressDialog.dismiss();
+                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(final Uri uri) {
+                            Log.e("download url","got: "+uri.toString());
+                            final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
+                            mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    for (DataSnapshot id : dataSnapshot.getChildren()) {
+                                        if (id.child("username").getValue().equals(userOriginal.getUsername()))
+                                        {
+                                            user.setAvatar(uri.toString());
+                                            Log.e("edit user when uri", "userOriginal: "+userOriginal.getUsername()+" -> "+editTextUserName.getText().toString());
+                                            mDatabase.child(id.getKey()).setValue(user);
+                                            break;
+                                        }
+                                    }
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                }
+                            });
+                        }
+                    });
+
                     Toast.makeText(getContext(),"Uploaded",Toast.LENGTH_LONG).show();
                 }
             }).addOnFailureListener(new OnFailureListener() {
@@ -216,6 +300,26 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                 @Override
                 public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
 
+                }
+            });
+        }
+        else// save user when no uploading avatar
+        {
+            final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
+            mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot id : dataSnapshot.getChildren()) {
+                        if (id.child("username").getValue().equals(userOriginal.getUsername()))
+                        {
+                            Log.e("edit user when uri null", "userOriginal: "+userOriginal.getUsername()+" -> "+editTextUserName.getText().toString() +" | "+user.getAvatar());
+                            mDatabase.child(id.getKey()).setValue(user);
+                            break;
+                        }
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
                 }
             });
         }
@@ -269,7 +373,49 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
 
     @Override
     public void OnSettingClick(int position) {
-//        Toast.makeText(this.getContext(), "setting", Toast.LENGTH_LONG).show();
+        final Dialog dialog = new Dialog(this.getContext());
+        dialog.setContentView(R.layout.dialog_add_user);
+        dialog.show();
+        editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
+        editTextPassword = dialog.findViewById(R.id.editTextPassword_Add);
+        editTextRole = dialog.findViewById(R.id.editTextRole_Add);
+        editTextUserName.setText(userList.get(position).getUsername());
+        editTextPassword.setText("");
+        editTextRole.setText(userList.get(position).getRole());
+
+        imageViewChooseAvatar = dialog.findViewById(R.id.imageViewChooseAvatar);
+        Glide.with(imageViewChooseAvatar.getContext())
+                .load(userList.get(position).getAvatar())
+                .centerCrop()
+                .error(R.drawable.ic_round_broken_image_24)
+                .placeholder(R.drawable.ic_baseline_image_24)
+                .transform(new RoundedCorners(10))
+                .into(imageViewChooseAvatar);
+        final User userOriginal = new User(userList.get(position).getUsername()
+                                    ,userList.get(position).getRole()
+                                    ,userList.get(position).getPassword()
+                                    ,userList.get(position).getAvatar()
+                                    );
+        Button buttonConfirm = dialog.findViewById(R.id.buttonConfirm_Add);
+        buttonConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(editTextUserName.getText().equals("") || editTextRole.getText().equals(""))
+                {
+                    Toast.makeText(getContext(), "User Name and Role are required!", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    uploadPicture(userOriginal);
+                    dialog.dismiss();
+                }
+            }
+        });
+        imageViewChooseAvatar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                choosePicture();
+            }
+        });
     }
 
     @Override
@@ -283,7 +429,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = new User("", "", "");
+                User user = new User("", "", "","");
                 for (DataSnapshot id : dataSnapshot.getChildren()) {
                     user = id.getValue(User.class);
                     if(user.getUsername().equals(userNameCompare)) {

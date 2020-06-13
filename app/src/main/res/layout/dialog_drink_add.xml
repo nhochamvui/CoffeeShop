@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:adnroid="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="300dp"
+    android:layout_height="450dp"
+    adnroid:cardCornerRadius="10dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="81dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="2dp"
+            android:text="Choose"
+            android:textSize="5sp"
+            adnroid:icon="@drawable/ic_baseline_photo_library_24"
+            adnroid:iconPadding="1dp"
+            adnroid:iconSize="20dp"
+            adnroid:iconTintMode="src_in"
+            adnroid:layout_constraintEnd_toEndOf="parent"
+            adnroid:layout_constraintHorizontal_bias="0.127"
+            adnroid:layout_constraintStart_toStartOf="parent"
+            adnroid:layout_constraintTop_toBottomOf="@+id/imageViewDrinkThumbnail" />
+
+        <ImageView
+            android:id="@+id/imageViewDrinkThumbnail"
+            android:layout_width="79dp"
+            android:layout_height="86dp"
+            android:layout_marginTop="32dp"
+            adnroid:layout_constraintEnd_toEndOf="parent"
+            adnroid:layout_constraintHorizontal_bias="0.126"
+            adnroid:layout_constraintStart_toStartOf="parent"
+            adnroid:layout_constraintTop_toTopOf="parent"
+            adnroid:srcCompat="@drawable/ic_baseline_local_bar_24"
+            tools:ignore="VectorDrawableCompat" />
+
+        <EditText
+            android:id="@+id/editTextTextPersonName5"
+            android:layout_width="152dp"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_outline_monetization_on_24"
+            android:ems="10"
+            android:hint="Price"
+            android:inputType="textPersonName"
+            android:textSize="14sp"
+            adnroid:layout_constraintBottom_toBottomOf="parent"
+            adnroid:layout_constraintEnd_toEndOf="parent"
+            adnroid:layout_constraintHorizontal_bias="0.207"
+            adnroid:layout_constraintStart_toEndOf="@+id/imageViewDrinkThumbnail"
+            adnroid:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName6"
+            adnroid:layout_constraintVertical_bias="0.017" />
+
+        <EditText
+            android:id="@+id/editTextTextPersonName6"
+            android:layout_width="152dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:drawableLeft="@drawable/ic_baseline_local_bar_24"
+            android:ems="10"
+            android:hint="Name"
+            android:inputType="textPersonName"
+            android:textSize="14sp"
+            adnroid:layout_constraintEnd_toEndOf="parent"
+            adnroid:layout_constraintHorizontal_bias="0.217"
+            adnroid:layout_constraintStart_toEndOf="@+id/imageViewDrinkThumbnail"
+            adnroid:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/editTextTextPersonName7"
+            android:layout_width="152dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
+            android:ems="5"
+            android:hint="Category"
+            android:inputType="textPersonName"
+            android:textSize="14sp"
+            adnroid:layout_constraintEnd_toEndOf="parent"
+            adnroid:layout_constraintHorizontal_bias="0.195"
+            adnroid:layout_constraintStart_toEndOf="@+id/imageViewDrinkThumbnail"
+            adnroid:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName5"
+            android:drawableLeft="@drawable/ic_outline_category_24" />
+
+        <EditText
+            android:id="@+id/editTextTextPersonName8"
+            android:layout_width="243dp"
+            android:layout_height="163dp"
+            android:layout_marginTop="12dp"
+            android:ems="10"
+            android:hint="Description"
+            android:inputType="textMultiLine"
+            android:lines="5"
+            android:maxLines="8"
+            android:scrollbars="vertical"
+            android:singleLine="false"
+            android:textSize="14sp"
+            adnroid:layout_constraintEnd_toEndOf="parent"
+            adnroid:layout_constraintHorizontal_bias="0.491"
+            adnroid:layout_constraintStart_toStartOf="parent"
+            adnroid:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName7" />
+
+        <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Confirm"
+            adnroid:layout_constraintBottom_toBottomOf="parent"
+            adnroid:layout_constraintEnd_toEndOf="parent"
+            adnroid:layout_constraintStart_toStartOf="parent"
+            adnroid:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName8" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

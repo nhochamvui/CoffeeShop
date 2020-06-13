@@ -23,9 +23,9 @@ public class TestActivity extends AppCompatActivity implements UserAdapter.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
         final RecyclerView recyclerView = findViewById(R.id.recyclerView);
-        User user = new User("tho","1234","admin");
-        User user1 = new User("tai","1234","user");
-        User user2 = new User("thao","1234","admin");
+        User user = new User("tho","1234","admin","");
+        User user1 = new User("tai","1234","user","");
+        User user2 = new User("thao","1234","admin","");
         userList = new ArrayList<User>();
         userList.add(user);
         userList.add(user1);

@@ -16,12 +16,12 @@
 
         <TextView
             android:id="@+id/textViewID"
-            android:layout_width="45dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="id"
+            android:text="  id"
             android:textColor="#090909"
             android:textSize="16sp"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -30,9 +30,9 @@
             app:layout_constraintVertical_bias="0.0" />
 
         <TextView
-            android:id="@+id/textViewUserName"
+            android:id="@+id/textViewDrinkName"
             android:layout_width="115dp"
-            android:layout_height="19dp"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:text="user name"
             android:textColor="#000000"
@@ -41,14 +41,14 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.514"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageViewAvatar"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toBottomOf="@+id/imageViewDrinkImg"
+            app:layout_constraintVertical_bias="0.13999999" />
 
         <ImageView
-            android:id="@+id/imageViewAvatar"
+            android:id="@+id/imageViewDrinkImg"
             android:layout_width="90dp"
             android:layout_height="86dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -56,27 +56,38 @@
             tools:ignore="VectorDrawableCompat" />
 
         <ImageView
-            android:id="@+id/imageViewSettingUser"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:id="@+id/imageViewSettingDrink"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="3dp"
+            android:layout_marginRight="3dp"
+            android:layout_marginBottom="136dp"
             android:contentDescription="TODO"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewUserName"
-            app:layout_constraintVertical_bias="0.0"
-            app:srcCompat="@drawable/ic_baseline_settings_24"
-            tools:ignore="VectorDrawableCompat" />
-
-        <ImageView
-            android:id="@+id/imageViewDeleteUser"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            app:layout_constraintBottom_toTopOf="@+id/imageViewAvatar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/textViewID"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
+            app:srcCompat="@drawable/ic_baseline_settings_24"
+            tools:ignore="VectorDrawableCompat" />
+
+        <ImageView
+            android:id="@+id/imageViewDeleteDrink"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_marginStart="64dp"
+            android:layout_marginLeft="64dp"
+            android:layout_marginTop="132dp"
+            android:layout_marginEnd="64dp"
+            android:layout_marginRight="64dp"
+            android:layout_marginBottom="2dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0"
             app:srcCompat="@drawable/ic_baseline_delete_forever_24"
             tools:ignore="VectorDrawableCompat" />
 
