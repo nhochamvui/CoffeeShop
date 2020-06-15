@@ -13,7 +13,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Currency;
+import java.util.Locale;
 
 public class DrinkAdapter extends RecyclerView.Adapter<DrinkAdapter.ViewHolder>{
     private Context mContext;
@@ -37,12 +40,15 @@ public class DrinkAdapter extends RecyclerView.Adapter<DrinkAdapter.ViewHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull DrinkAdapter.ViewHolder holder, final int position) {
+        Locale locale = new Locale("vi", "VN");
+        NumberFormat numberFormat = NumberFormat.getCurrencyInstance(locale);
+
         Drink drink = drinkArrayList.get(position);
         holder.textViewDrinkName.setText(drink.getName());
-        holder.textViewDrinkPrice.setText(drink.getPrice());
+        holder.textViewDrinkPrice.setText(numberFormat.format(Integer.parseInt(drink.getPrice())));
         Glide.with(holder.imageViewDrinkImg.getContext())
                 .load(drink.getImg())
-//                .centerCrop()
+                .centerCrop()
                 .error(R.drawable.ic_round_broken_image_24)
                 .placeholder(R.drawable.ic_baseline_image_24)
                 .transform(new RoundedCorners(10))

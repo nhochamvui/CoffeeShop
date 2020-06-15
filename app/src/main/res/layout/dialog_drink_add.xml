@@ -11,7 +11,7 @@
         android:layout_height="match_parent">
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/buttonDrinkChooseImg"
             android:layout_width="81dp"
             android:layout_height="40dp"
             android:layout_marginTop="2dp"
@@ -36,10 +36,11 @@
             adnroid:layout_constraintStart_toStartOf="parent"
             adnroid:layout_constraintTop_toTopOf="parent"
             adnroid:srcCompat="@drawable/ic_baseline_local_bar_24"
-            tools:ignore="VectorDrawableCompat" />
+            tools:ignore="VectorDrawableCompat"
+            tools:srcCompat="@drawable/ic_baseline_local_bar_24" />
 
         <EditText
-            android:id="@+id/editTextTextPersonName5"
+            android:id="@+id/editTextDrinkPrice"
             android:layout_width="152dp"
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/ic_outline_monetization_on_24"
@@ -51,11 +52,11 @@
             adnroid:layout_constraintEnd_toEndOf="parent"
             adnroid:layout_constraintHorizontal_bias="0.207"
             adnroid:layout_constraintStart_toEndOf="@+id/imageViewDrinkThumbnail"
-            adnroid:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName6"
+            adnroid:layout_constraintTop_toBottomOf="@+id/editTextDrinkName"
             adnroid:layout_constraintVertical_bias="0.017" />
 
         <EditText
-            android:id="@+id/editTextTextPersonName6"
+            android:id="@+id/editTextDrinkName"
             android:layout_width="152dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -70,10 +71,11 @@
             adnroid:layout_constraintTop_toTopOf="parent" />
 
         <EditText
-            android:id="@+id/editTextTextPersonName7"
+            android:id="@+id/editTextDrinkCategory"
             android:layout_width="152dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="7dp"
+            android:drawableLeft="@drawable/ic_outline_category_24"
             android:ems="5"
             android:hint="Category"
             android:inputType="textPersonName"
@@ -81,16 +83,14 @@
             adnroid:layout_constraintEnd_toEndOf="parent"
             adnroid:layout_constraintHorizontal_bias="0.195"
             adnroid:layout_constraintStart_toEndOf="@+id/imageViewDrinkThumbnail"
-            adnroid:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName5"
-            android:drawableLeft="@drawable/ic_outline_category_24" />
+            adnroid:layout_constraintTop_toBottomOf="@+id/editTextDrinkPrice" />
 
         <EditText
-            android:id="@+id/editTextTextPersonName8"
+            android:id="@+id/editTextDrinkDescription"
             android:layout_width="243dp"
             android:layout_height="163dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="40dp"
             android:ems="10"
-            android:hint="Description"
             android:inputType="textMultiLine"
             android:lines="5"
             android:maxLines="8"
@@ -98,19 +98,32 @@
             android:singleLine="false"
             android:textSize="14sp"
             adnroid:layout_constraintEnd_toEndOf="parent"
-            adnroid:layout_constraintHorizontal_bias="0.491"
+            adnroid:layout_constraintHorizontal_bias="0.508"
             adnroid:layout_constraintStart_toStartOf="parent"
-            adnroid:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName7" />
+            adnroid:layout_constraintTop_toBottomOf="@+id/editTextDrinkCategory" />
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/buttonDrinkConfirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Confirm"
             adnroid:layout_constraintBottom_toBottomOf="parent"
             adnroid:layout_constraintEnd_toEndOf="parent"
             adnroid:layout_constraintStart_toStartOf="parent"
-            adnroid:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName8" />
+            adnroid:layout_constraintTop_toBottomOf="@+id/editTextDrinkDescription" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:textStyle="bold"
+            adnroid:layout_constraintBottom_toTopOf="@+id/editTextDrinkDescription"
+            adnroid:layout_constraintEnd_toEndOf="parent"
+            adnroid:layout_constraintHorizontal_bias="0.127"
+            adnroid:layout_constraintStart_toStartOf="parent"
+            adnroid:layout_constraintTop_toBottomOf="@+id/buttonDrinkChooseImg"
+            adnroid:layout_constraintVertical_bias="0.718" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

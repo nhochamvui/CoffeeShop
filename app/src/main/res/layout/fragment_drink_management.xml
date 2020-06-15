@@ -4,39 +4,51 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DrinkManagementFragment"
-    >
+    tools:context=".DrinkManagementFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewDrinkManagement"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="5dp"
-        android:layout_marginLeft="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginRight="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.59000003" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floatingActionButtonAddDrink"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="true"
-        android:foregroundGravity="bottom"
-        android:src="@drawable/ic_round_add_24"
-        app:backgroundTint="#FFFFFF"
-        app:backgroundTintMode="src_over"
-        app:elevation="6dp"
-        app:layout_constraintBottom_toBottomOf="@+id/recyclerViewDrinkManagement"
-        app:layout_constraintEnd_toEndOf="@+id/recyclerViewDrinkManagement"
-        app:layout_constraintHorizontal_bias="0.965"
-        app:layout_constraintStart_toStartOf="@+id/recyclerViewDrinkManagement"
-        app:layout_constraintTop_toTopOf="@+id/recyclerViewDrinkManagement"
-        app:layout_constraintVertical_bias="0.976" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewDrinkManagement"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_marginRight="5dp"></androidx.recyclerview.widget.RecyclerView>
+<!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintHorizontal_bias="0.0"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent"></androidx.recyclerview.widget.RecyclerView>-->
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingActionButtonAddDrink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:layout_marginBottom="30dp"
+            android:clickable="true"
+            android:src="@drawable/ic_round_add_2_24"
+            app:backgroundTint="#92FF8A65"
+            app:elevation="0dp"
+            app:fabSize="mini"
+            app:layout_anchor="@id/recyclerViewDrinkManagement"
+            app:layout_anchorGravity="bottom"
+            app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"></com.google.android.material.floatingactionbutton.FloatingActionButton>
+        <!--            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--            app:layout_constraintEnd_toEndOf="parent"-->
+<!--            app:layout_constraintHorizontal_bias="0.044"-->
+<!--            app:layout_constraintStart_toStartOf="parent"-->
+<!--            app:layout_constraintTop_toTopOf="parent"-->
+<!--            app:layout_constraintVertical_bias="0.938" -->
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

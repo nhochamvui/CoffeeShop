@@ -52,7 +52,6 @@ public class LoginActivity extends AppCompatActivity {
             loadingBar.setMessage("Please wait...");
             loadingBar.setCanceledOnTouchOutside(false);
             loadingBar.show();
-            Toast.makeText(this, "đã có "+sharedPreferences.getString("username",""), Toast.LENGTH_SHORT).show();
             userName = sharedPreferences.getString("username","");
             password = sharedPreferences.getString("password","");
             doLogin(userName, password);

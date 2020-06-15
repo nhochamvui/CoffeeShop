@@ -136,7 +136,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 userList.clear();
                 User user = new User("", "", "","");
-                Log.e("fetch Data User","userlist size: "+userList.size());
+                Log.e("on DataChange","userlist size: "+userList.size());
                 for (DataSnapshot id : dataSnapshot.getChildren()) {
                     user = id.getValue(User.class);
                     userList.add(user);
@@ -337,6 +337,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data!=null && data.getData() != null)
         {
             imgUri = data.getData();
+            Log.e("onactivity",""+imgUri.toString());
             imageViewChooseAvatar.setImageURI(imgUri);
         }
     }
