@@ -1,6 +1,8 @@
 package com.example.coffeeshop;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatDialog;
+
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -18,9 +20,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.provider.ContactsContract;
 import android.support.v4.media.MediaMetadataCompat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -133,17 +138,33 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
         });
     }
     private void addNewDrink(){
-        final Dialog dialog = new Dialog(this.getContext());
+        final AppCompatDialog dialog = new AppCompatDialog(this.getContext());
         dialog.setContentView(R.layout.dialog_drink_add);
         dialog.show();
+        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_BACK) {
+                    removeTheLastestImgURI();
+                    dialog.dismiss();
+                }
+                return true;
+            }
+        });
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        layoutParams.copyFrom(dialog.getWindow().getAttributes());
+        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
+//        dialog.getWindow().setAttributes(layoutParams);
         editTextDrinkName = dialog.findViewById(R.id.editTextDrinkName);
         editTextDrinkPrice = dialog.findViewById(R.id.editTextDrinkPrice);
         editTextDrinkDescription = dialog.findViewById(R.id.editTextDrinkDescription);
         editTextDrinkCategory = dialog.findViewById(R.id.editTextDrinkCategory);
-        buttonDrinkChooseImg = dialog.findViewById(R.id.buttonDrinkChooseImg);
+//        buttonDrinkChooseImg = dialog.findViewById(R.id.buttonDrinkChooseImg);
         Button buttonConfirm = dialog.findViewById(R.id.buttonDrinkConfirm);
+        buttonConfirm.setText("Create");
         imageViewDrinkThumbnail = dialog.findViewById(R.id.imageViewDrinkThumbnail);
-        buttonDrinkChooseImg.setOnClickListener(new View.OnClickListener() {
+        imageViewDrinkThumbnail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 choosePicture();
@@ -210,6 +231,7 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
                             drink.setId(newDrinkRef.getKey());
                             drink.setImg(uri.toString());
                             newDrinkRef.setValue(drink);
+                            removeTheLastestImgURI();
                             Toast.makeText(getContext(), "Insert new product successfully!", Toast.LENGTH_LONG).show();
                         }
                     });
@@ -220,6 +242,7 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     progressDialog.dismiss();
+                    removeTheLastestImgURI();
                     Toast.makeText(getContext(), "Insert new product fail!", Toast.LENGTH_LONG).show();
                 }
             }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
@@ -280,22 +303,35 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
 
     @Override
     public void OnSettingClick(final int position) {
-        final Dialog dialog = new Dialog(this.getContext());
+        final AppCompatDialog dialog = new AppCompatDialog(this.getContext());
         dialog.setContentView(R.layout.dialog_drink_add);
-        dialog.setTitle("Edit Product");
         dialog.show();
+        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                    removeTheLastestImgURI();
+                    dialog.dismiss();
+                    return true;
+                }
+
+                Log.e("bug","here");
+                return false;
+            }
+        });
         Drink drink = drinkArrayList.get(position);
         editTextDrinkName = dialog.findViewById(R.id.editTextDrinkName);
         editTextDrinkPrice = dialog.findViewById(R.id.editTextDrinkPrice);
         editTextDrinkDescription = dialog.findViewById(R.id.editTextDrinkDescription);
         editTextDrinkCategory = dialog.findViewById(R.id.editTextDrinkCategory);
-        buttonDrinkChooseImg = dialog.findViewById(R.id.buttonDrinkChooseImg);
+//        buttonDrinkChooseImg = dialog.findViewById(R.id.buttonDrinkChooseImg);
         editTextDrinkName.setText(drink.getName());
         editTextDrinkPrice.setText(drink.getPrice());
         editTextDrinkDescription.setText(drink.getDesc());
         editTextDrinkCategory.setText(drink.getCategory());
 
         Button buttonConfirm = dialog.findViewById(R.id.buttonDrinkConfirm);
+        buttonConfirm.setText("Update");
         imageViewDrinkThumbnail = dialog.findViewById(R.id.imageViewDrinkThumbnail);
         Glide.with(imageViewDrinkThumbnail.getContext())
                 .load(drinkArrayList.get(position).getImg())
@@ -305,7 +341,7 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
                 .transform(new RoundedCorners(10))
                 .into(imageViewDrinkThumbnail);
 
-        buttonDrinkChooseImg.setOnClickListener(new View.OnClickListener() {
+        imageViewDrinkThumbnail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 choosePicture();
@@ -327,6 +363,9 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
                 }
             }
         });
+    }
+    private void removeTheLastestImgURI(){
+        imgUri = null;
     }
     private void uploadPicture(final Drink drink) {
         final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("items");
@@ -364,6 +403,7 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
                                             drink.setImg(uri.toString());
 //                                            Toast.makeText(getContext(), "Upload product image successfully!", Toast.LENGTH_LONG).show();
                                             mDatabase.child(id.getKey()).setValue(drink);
+                                            removeTheLastestImgURI();
                                         }
                                     });
                                 }
@@ -373,6 +413,7 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
                                     progressDialog.dismiss();
                                     Toast.makeText(getContext(), "Upload product image fail!", Toast.LENGTH_LONG).show();
                                     mDatabase.child(id.getKey()).setValue(drink);
+                                    removeTheLastestImgURI();
                                 }
                             }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                                 @Override
@@ -380,6 +421,10 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
 
                                 }
                             });
+                        }
+                        else{
+                            progressDialog.dismiss();
+                            mDatabase.child(id.getKey()).setValue(drink);
                         }
                         Log.e("item is exist","1. item is exist in database");
                         isExist = true;
@@ -396,43 +441,7 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
     }
     @Override
     public void OnDeleteClick(int position) {
-//        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
         final Drink drink = drinkArrayList.get(position);
-
-//        builder.setTitle("Are you sure?").setMessage("This product will be deleted!")
-//                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("items");
-//                mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                        for(DataSnapshot id : dataSnapshot.getChildren())
-//                        {
-//                            if(id.child("id").equals(drink.getId())) {
-//                                mDatabase.child(id.getKey()).setValue(null);
-//                                Log.e("ok", "ok");
-//                                Toast.makeText(getContext(), "Deleted!",Toast.LENGTH_SHORT);
-//                                break;
-//                            }
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                    }
-//                });
-//            }
-//        })
-//        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialog, int which) {
-//                Toast.makeText(getContext(), "Canceled!",Toast.LENGTH_SHORT);
-//                Log.e("cancel", "cancel");
-//            }
-//        });
         new AlertDialog.Builder(getContext()).setTitle("Are you sure?").setMessage("This product will be deleted!")
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override

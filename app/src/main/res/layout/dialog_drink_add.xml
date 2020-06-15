@@ -1,129 +1,197 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:adnroid="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="300dp"
-    android:layout_height="450dp"
+    android:layout_width="match_parent"
+    android:layout_height="700dp"
     adnroid:cardCornerRadius="10dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
+        android:layout_width="414dp"
+        android:layout_height="110dp"
+        adnroid:layout_constraintEnd_toEndOf="parent"
+        adnroid:layout_constraintHeight_percent="0.26"
+        adnroid:layout_constraintStart_toStartOf="parent"
+        adnroid:layout_constraintTop_toTopOf="parent">
 
-        <Button
-            android:id="@+id/buttonDrinkChooseImg"
-            android:layout_width="81dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="2dp"
-            android:text="Choose"
-            android:textSize="5sp"
-            adnroid:icon="@drawable/ic_baseline_photo_library_24"
-            adnroid:iconPadding="1dp"
-            adnroid:iconSize="20dp"
-            adnroid:iconTintMode="src_in"
-            adnroid:layout_constraintEnd_toEndOf="parent"
-            adnroid:layout_constraintHorizontal_bias="0.127"
-            adnroid:layout_constraintStart_toStartOf="parent"
-            adnroid:layout_constraintTop_toBottomOf="@+id/imageViewDrinkThumbnail" />
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:background="#FFCC80"
+            android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/imageViewDrinkThumbnail"
-            android:layout_width="79dp"
-            android:layout_height="86dp"
-            android:layout_marginTop="32dp"
-            adnroid:layout_constraintEnd_toEndOf="parent"
-            adnroid:layout_constraintHorizontal_bias="0.126"
-            adnroid:layout_constraintStart_toStartOf="parent"
-            adnroid:layout_constraintTop_toTopOf="parent"
-            adnroid:srcCompat="@drawable/ic_baseline_local_bar_24"
-            tools:ignore="VectorDrawableCompat"
-            tools:srcCompat="@drawable/ic_baseline_local_bar_24" />
+        </LinearLayout>
 
-        <EditText
-            android:id="@+id/editTextDrinkPrice"
-            android:layout_width="152dp"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardView2"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:elevation="10dp"
+            android:orientation="vertical"
+            adnroid:cardBackgroundColor="#FFCC80"
+            adnroid:cardElevation="10dp"
+            adnroid:layout_anchor="@+id/linearLayout"
+            adnroid:layout_anchorGravity="bottom|center">
+
+            <ImageView
+                android:id="@+id/imageViewDrinkThumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:cropToPadding="false"
+                adnroid:layout_constraintHeight_percent="0.3"
+                adnroid:layout_constraintWidth_percent="0.3"
+                adnroid:srcCompat="@drawable/ic_baseline_add_photo_alternate_24"
+                tools:ignore="VectorDrawableCompat"
+                tools:srcCompat="@drawable/ic_baseline_add_photo_alternate_24" />
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="414dp"
+        android:layout_height="452dp"
+        android:layout_marginTop="20dp"
+        android:fillViewport="true"
+        adnroid:layout_constraintEnd_toEndOf="parent"
+        adnroid:layout_constraintStart_toStartOf="parent"
+        adnroid:layout_constraintTop_toBottomOf="@+id/coordinatorLayout">
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/ic_outline_monetization_on_24"
-            android:ems="10"
-            android:hint="Price"
-            android:inputType="textPersonName"
-            android:textSize="14sp"
-            adnroid:layout_constraintBottom_toBottomOf="parent"
-            adnroid:layout_constraintEnd_toEndOf="parent"
-            adnroid:layout_constraintHorizontal_bias="0.207"
-            adnroid:layout_constraintStart_toEndOf="@+id/imageViewDrinkThumbnail"
-            adnroid:layout_constraintTop_toBottomOf="@+id/editTextDrinkName"
-            adnroid:layout_constraintVertical_bias="0.017" />
+            android:background="@drawable/drink_background3"
+            android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/editTextDrinkName"
-            android:layout_width="152dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:drawableLeft="@drawable/ic_baseline_local_bar_24"
-            android:ems="10"
-            android:hint="Name"
-            android:inputType="textPersonName"
-            android:textSize="14sp"
-            adnroid:layout_constraintEnd_toEndOf="parent"
-            adnroid:layout_constraintHorizontal_bias="0.217"
-            adnroid:layout_constraintStart_toEndOf="@+id/imageViewDrinkThumbnail"
-            adnroid:layout_constraintTop_toTopOf="parent" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/editTextDrinkCategory"
-            android:layout_width="152dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="7dp"
-            android:drawableLeft="@drawable/ic_outline_category_24"
-            android:ems="5"
-            android:hint="Category"
-            android:inputType="textPersonName"
-            android:textSize="14sp"
-            adnroid:layout_constraintEnd_toEndOf="parent"
-            adnroid:layout_constraintHorizontal_bias="0.195"
-            adnroid:layout_constraintStart_toEndOf="@+id/imageViewDrinkThumbnail"
-            adnroid:layout_constraintTop_toBottomOf="@+id/editTextDrinkPrice" />
+                <Button
+                    android:id="@+id/buttonDrinkConfirm"
+                    android:layout_width="105dp"
+                    android:layout_height="54dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="30dp"
+                    android:gravity="center"
+                    android:text="Confirm"
+                    adnroid:layout_constraintBottom_toBottomOf="parent"
+                    adnroid:layout_constraintEnd_toEndOf="parent"
+                    adnroid:layout_constraintHorizontal_bias="0.501"
+                    adnroid:layout_constraintStart_toStartOf="parent"
+                    adnroid:layout_constraintTop_toBottomOf="@+id/materialCardView"
+                    adnroid:layout_constraintVertical_bias="0.0" />
 
-        <EditText
-            android:id="@+id/editTextDrinkDescription"
-            android:layout_width="243dp"
-            android:layout_height="163dp"
-            android:layout_marginTop="40dp"
-            android:ems="10"
-            android:inputType="textMultiLine"
-            android:lines="5"
-            android:maxLines="8"
-            android:scrollbars="vertical"
-            android:singleLine="false"
-            android:textSize="14sp"
-            adnroid:layout_constraintEnd_toEndOf="parent"
-            adnroid:layout_constraintHorizontal_bias="0.508"
-            adnroid:layout_constraintStart_toStartOf="parent"
-            adnroid:layout_constraintTop_toBottomOf="@+id/editTextDrinkCategory" />
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/materialCardView"
+                    android:layout_width="262dp"
+                    android:layout_height="wrap_content"
 
-        <Button
-            android:id="@+id/buttonDrinkConfirm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Confirm"
-            adnroid:layout_constraintBottom_toBottomOf="parent"
-            adnroid:layout_constraintEnd_toEndOf="parent"
-            adnroid:layout_constraintStart_toStartOf="parent"
-            adnroid:layout_constraintTop_toBottomOf="@+id/editTextDrinkDescription" />
+                    android:layout_marginBottom="15dp"
+                    adnroid:cardCornerRadius="6dp"
+                    adnroid:cardElevation="8dp"
+                    adnroid:layout_constraintBottom_toBottomOf="parent"
+                    adnroid:layout_constraintEnd_toEndOf="parent"
+                    adnroid:layout_constraintHorizontal_bias="0.488"
+                    adnroid:layout_constraintStart_toStartOf="parent"
+                    adnroid:layout_constraintTop_toTopOf="parent"
+                    adnroid:layout_constraintVertical_bias="0.29000002"
+                    adnroid:layout_constraintWidth_percent="0.5">
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Description"
-            android:textStyle="bold"
-            adnroid:layout_constraintBottom_toTopOf="@+id/editTextDrinkDescription"
-            adnroid:layout_constraintEnd_toEndOf="parent"
-            adnroid:layout_constraintHorizontal_bias="0.127"
-            adnroid:layout_constraintStart_toStartOf="parent"
-            adnroid:layout_constraintTop_toBottomOf="@+id/buttonDrinkChooseImg"
-            adnroid:layout_constraintVertical_bias="0.718" />
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</com.google.android.material.card.MaterialCardView>
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textInputLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Name"
+                            adnroid:boxBackgroundColor="#FFFFFF"
+                            adnroid:layout_constraintEnd_toEndOf="parent"
+                            adnroid:layout_constraintStart_toStartOf="parent"
+                            adnroid:layout_constraintTop_toTopOf="parent">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/editTextDrinkName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:drawableLeft="@drawable/ic_baseline_local_bar_24"
+                                android:drawablePadding="10dp"></com.google.android.material.textfield.TextInputEditText>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textInputLayout2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Price"
+                            adnroid:boxBackgroundColor="#FFFFFF"
+                            adnroid:layout_constraintEnd_toEndOf="parent"
+                            adnroid:layout_constraintStart_toStartOf="parent"
+                            adnroid:layout_constraintTop_toBottomOf="@+id/textInputLayout">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/editTextDrinkPrice"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:drawableLeft="@drawable/ic_outline_monetization_on_24"
+                                android:drawablePadding="10dp"></com.google.android.material.textfield.TextInputEditText>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textInputLayout3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Category"
+                            adnroid:boxBackgroundColor="#FFFFFF"
+                            adnroid:layout_constraintEnd_toEndOf="parent"
+                            adnroid:layout_constraintHorizontal_bias="0.0"
+                            adnroid:layout_constraintStart_toStartOf="parent"
+                            adnroid:layout_constraintTop_toBottomOf="@+id/textInputLayout2">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/editTextDrinkCategory"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:drawableLeft="@drawable/ic_baseline_description_24"
+                                android:drawablePadding="10dp"></com.google.android.material.textfield.TextInputEditText>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textInputLayout4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Description"
+                            adnroid:boxBackgroundColor="#FFFFFF"
+                            adnroid:layout_constraintBottom_toBottomOf="parent"
+                            adnroid:layout_constraintEnd_toEndOf="parent"
+                            adnroid:layout_constraintHorizontal_bias="0.0"
+                            adnroid:layout_constraintStart_toStartOf="parent"
+                            adnroid:layout_constraintTop_toBottomOf="@+id/textInputLayout3"
+                            adnroid:layout_constraintVertical_bias="0.65">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/editTextDrinkDescription"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:drawableLeft="@drawable/ic_baseline_local_bar_24"
+                                android:drawablePadding="10dp"
+                                android:lines="3"
+                                android:maxLines="3"></com.google.android.material.textfield.TextInputEditText>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

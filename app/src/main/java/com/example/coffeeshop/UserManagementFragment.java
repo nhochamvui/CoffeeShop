@@ -199,7 +199,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         user.setUsername(editTextUserName.getText().toString());
         user.setRole(editTextRole.getText().toString());
         user.setPassword(hash(editTextPassword.getText().toString()));
-
+        // khi khong co imguri
         if(imgUri!=null)
         {
             final ProgressDialog progressDialog= new ProgressDialog(getContext());
