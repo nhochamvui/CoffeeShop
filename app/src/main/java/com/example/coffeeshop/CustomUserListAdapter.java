@@ -43,7 +43,7 @@ public class CustomUserListAdapter extends BaseAdapter {
             Log.e("convertView = null", "we are here");
             convertView = layoutInflater.inflate(R.layout.user_container_layout, null);
             holder = new ViewHolder();
-            holder.textViewID = (TextView) convertView.findViewById(R.id.textViewID);
+//            holder.textViewID = (TextView) convertView.findViewById(R.id.textViewID);
             holder.textViewUserName = (TextView) convertView.findViewById(R.id.textViewDrinkName);
             convertView.setTag(holder);
         } else {
@@ -52,7 +52,7 @@ public class CustomUserListAdapter extends BaseAdapter {
         Log.e("getView", "we are here");
         User user = this.userList.get(position);
         holder.textViewID.setText("Index: "+position);
-        holder.textViewUserName.setText(user.getUsername());
+        holder.textViewUserName.setText("Name: "+user.getUsername());
         return convertView;
     }
     static class ViewHolder {

@@ -3,18 +3,21 @@ package com.example.coffeeshop;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContentResolverCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +38,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -73,7 +77,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
     private DatabaseReference mDatabase;
     private RecyclerView recyclerView;
     private UserAdapter userAdapter;
-    private ImageView imageViewAddUser;
+    private FloatingActionButton floatingActionButtonAddUser;
     private ImageView imageViewChooseAvatar;
     private ValueEventListener valueEventListenerFetchUser;
     private final int PICK_IMAGE_REQUEST = 322;
@@ -122,7 +126,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         Log.e("from begin","userlist size: "+userList.size());
         //set up layout for RecyclerView
         userAdapter = new UserAdapter(UserManagementFragment.this.getContext(), userList, UserManagementFragment.this);
-        recyclerView.setLayoutManager(new GridLayoutManager(UserManagementFragment.this.getContext(),2));
+        recyclerView.setLayoutManager(new GridLayoutManager(UserManagementFragment.this.getContext(),1));
         recyclerView.setAdapter(userAdapter);
 //        fetchDataIntoRecyclerView();
 
@@ -153,8 +157,8 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
     {
         recyclerView = v.findViewById(R.id.recyclerViewUserManagement);
         userList = new ArrayList<User>();
-        imageViewAddUser = v.findViewById(R.id.imageViewAddUser);
-        imageViewAddUser.setOnClickListener(new View.OnClickListener() {
+        floatingActionButtonAddUser = v.findViewById(R.id.floatingActionButtonAddUser);
+        floatingActionButtonAddUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addUser();
@@ -166,6 +170,20 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         final Dialog dialog = new Dialog(this.getContext());
         dialog.setContentView(R.layout.dialog_add_user);
         dialog.show();
+        // xu ly khi nguoi dung nhan phim back -> xoa img da chon
+        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                    removeTheLastestImgURI();
+                    dialog.dismiss();
+                    return true;
+                }
+
+                Log.e("bug","here");
+                return false;
+            }
+        });
         editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
         editTextPassword = dialog.findViewById(R.id.editTextPassword_Add);
         editTextRole = dialog.findViewById(R.id.editTextRole_Add);
@@ -195,11 +213,13 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
     }
     public void uploadPicture()
     {
+        final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
         final User user = new User("", "", "", "");
         user.setUsername(editTextUserName.getText().toString());
         user.setRole(editTextRole.getText().toString());
         user.setPassword(hash(editTextPassword.getText().toString()));
-        // khi khong co imguri
+        // set default avatar for user
+        user.setAvatar("https://firebasestorage.googleapis.com/v0/b/tictactoe-c6001.appspot.com/o/avatars%2Fuser-default.png?alt=media&token=2b821695-3438-48cf-ad22-c530c75d991d");
         if(imgUri!=null)
         {
             final ProgressDialog progressDialog= new ProgressDialog(getContext());
@@ -217,28 +237,37 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                         @Override
                         public void onSuccess(Uri uri) {
                             Log.e("download url","got: "+uri.toString());
-                            DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
-                            DatabaseReference newUserRef = mDatabase.push();
+
+                            //push new
                             user.setAvatar(uri.toString());
+                            DatabaseReference newUserRef = mDatabase.push();
                             newUserRef.setValue(user);
-                            Toast.makeText(getContext(),"Insert new user successfully!",Toast.LENGTH_LONG).show();
+
+                            removeTheLastestImgURI();
+                            Toast.makeText(getContext(),"Create new user successfully!",Toast.LENGTH_LONG).show();
                         }
                     });
-
-
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     progressDialog.dismiss();
-                    Toast.makeText(getContext(), "Insert new user fail!", Toast.LENGTH_LONG).show();
+                    //push new
+                    DatabaseReference newUserRef = mDatabase.push();
+                    newUserRef.setValue(user);
+
+                    removeTheLastestImgURI();
+                    Toast.makeText(getContext(), "Upload avatar fail!", Toast.LENGTH_LONG).show();
                 }
             }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-
                 }
             });
+        }
+        else {
+            DatabaseReference newUserRef = mDatabase.push();
+            newUserRef.setValue(user);
         }
     }
     public void uploadPicture(final User userOriginal)
@@ -250,6 +279,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
             user.setPassword(userOriginal.getPassword());
         else
             user.setPassword(hash(editTextPassword.getText().toString()));
+        //set default avatar
         user.setAvatar(userOriginal.getAvatar());
 
         if(imgUri!=null)//save user when uploading new avatar
@@ -277,12 +307,14 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                                             user.setAvatar(uri.toString());
                                             Log.e("edit user when uri", "userOriginal: "+userOriginal.getUsername()+" -> "+editTextUserName.getText().toString());
                                             mDatabase.child(id.getKey()).setValue(user);
+                                            removeTheLastestImgURI();
                                             break;
                                         }
                                     }
                                 }
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    removeTheLastestImgURI();
                                 }
                             });
                         }
@@ -294,6 +326,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     progressDialog.dismiss();
+                    removeTheLastestImgURI();
                     Toast.makeText(getContext(), "Upload Failed!", Toast.LENGTH_LONG).show();
                 }
             }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
@@ -377,6 +410,18 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         final Dialog dialog = new Dialog(this.getContext());
         dialog.setContentView(R.layout.dialog_add_user);
         dialog.show();
+        // xu ly khi nguoi dung nhan phim back -> remove img da chon
+        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                    removeTheLastestImgURI();
+                    dialog.dismiss();
+                    return true;
+                }
+                return false;
+            }
+        });
         editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
         editTextPassword = dialog.findViewById(R.id.editTextPassword_Add);
         editTextRole = dialog.findViewById(R.id.editTextRole_Add);
@@ -421,28 +466,39 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
 
     @Override
     public void OnDeleteClick(int position) {
-//        Toast.makeText(this.getContext(), "delete", Toast.LENGTH_LONG).show();
         final String userNameCompare = userAdapter.getItem(position).getUsername();
-        userList.remove(position);
-        userAdapter.notifyItemRemoved(position);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User user = new User("", "", "","");
-                for (DataSnapshot id : dataSnapshot.getChildren()) {
-                    user = id.getValue(User.class);
-                    if(user.getUsername().equals(userNameCompare)) {
-                        mDatabase.child(id.getKey()).setValue(null);
-                        break;
+        new AlertDialog.Builder(getContext()).setTitle("Are you sure?").setMessage("This user will be deleted!")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
+                        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                User user = new User("", "", "","");
+                                for (DataSnapshot id : dataSnapshot.getChildren()) {
+                                    user = id.getValue(User.class);
+                                    if(user.getUsername().equals(userNameCompare)) {
+                                        mDatabase.child(id.getKey()).setValue(null);
+                                        Toast.makeText(getContext(), "User has been deleted!",Toast.LENGTH_SHORT);
+                                        break;
+                                    }
+                                }
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                            }
+                        });
                     }
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
+                })
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Toast.makeText(getContext(), "Canceled!",Toast.LENGTH_SHORT);
+                        Log.e("cancel", "cancel");
+                    }
+                }).show();
     }
 
     @Override
@@ -455,5 +511,9 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
     public void onResume() {
         super.onResume();
         fetchDataIntoRecyclerView();
+    }
+    public void removeTheLastestImgURI()
+    {
+        imgUri = null;
     }
 }

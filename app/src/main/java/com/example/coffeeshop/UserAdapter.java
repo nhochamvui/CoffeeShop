@@ -4,17 +4,18 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -37,15 +38,16 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
         ViewHolder viewHolder = new ViewHolder(userView, onClickListener);
         return viewHolder;
     }
-
+    // gan chuc nang cho component
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         User user = userArrayList.get(position);
         holder.textViewUserName.setText(user.getUsername());
-        holder.textViewID.setText(" Index: "+position);
+//        holder.textViewID.setText(" Index: "+position);
+        holder.textViewRole.setText(user.getRole());
         Glide.with(holder.imageViewAvatar.getContext())
                 .load(user.getAvatar())
-                .centerCrop()
+//                .centerCrop()
                 .error(R.drawable.ic_round_broken_image_24)
                 .placeholder(R.drawable.ic_baseline_image_24)
                 .transform(new RoundedCorners(10))
@@ -62,19 +64,22 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnLongClickListener {
-        private TextView textViewID;
+//        private TextView textViewID;
         private TextView textViewUserName;
         private ImageView imageViewAvatar;
-        private ImageView imageViewUpdate;
-        private ImageView imageViewDelete;
+        private CardView imageViewUpdate;
+        private CardView imageViewDelete;
+        private TextView textViewRole;
         OnClickListener onClickListener;
+        // khai bao cac component
         public ViewHolder(@NonNull View itemView, final OnClickListener onClickListener) {
             super(itemView);
-            textViewID = itemView.findViewById(R.id.textViewID);
+//            textViewID = itemView.findViewById(R.id.textViewID);
             textViewUserName = itemView.findViewById(R.id.textViewUserName);
             imageViewAvatar = itemView.findViewById(R.id.imageViewAvatar);
             imageViewUpdate = itemView.findViewById(R.id.imageViewSettingUser);
             imageViewDelete = itemView.findViewById(R.id.imageViewDeleteUser);
+            textViewRole = itemView.findViewById(R.id.textViewRole);
             imageViewUpdate.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
