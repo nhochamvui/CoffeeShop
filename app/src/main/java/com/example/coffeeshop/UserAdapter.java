@@ -47,10 +47,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
         holder.textViewRole.setText(user.getRole());
         Glide.with(holder.imageViewAvatar.getContext())
                 .load(user.getAvatar())
-//                .centerCrop()
+//                .circleCrop()
                 .error(R.drawable.ic_round_broken_image_24)
                 .placeholder(R.drawable.ic_baseline_image_24)
-                .transform(new RoundedCorners(10))
+//                .transform(new RoundedCorners(10))
                 .into(holder.imageViewAvatar);
     }
 

@@ -51,7 +51,7 @@ public class DrinkAdapter extends RecyclerView.Adapter<DrinkAdapter.ViewHolder>{
                 .centerCrop()
                 .error(R.drawable.ic_round_broken_image_24)
                 .placeholder(R.drawable.ic_baseline_image_24)
-                .transform(new RoundedCorners(10))
+                .transform(new RoundedCorners(20))
                 .into(holder.imageViewDrinkImg);
     }
 

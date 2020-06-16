@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity{
     private void doAuth()
     {
         User user = (User)intent.getSerializableExtra("user");
-        if(user.getRole().equals("admin")){
+        if(user.getRole().equalsIgnoreCase("Admin")){
 
             isAdmin = true;
         }

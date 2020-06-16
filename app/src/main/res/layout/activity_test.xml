@@ -8,12 +8,29 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="413dp"
+        android:layout_height="46dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintVertical_bias="0.275" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="409dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="84dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="hint"
+            android:text="nhochamvui"
+            />
+    </com.google.android.material.textfield.TextInputLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
