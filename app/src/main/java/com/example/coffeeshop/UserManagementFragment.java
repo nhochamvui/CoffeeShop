@@ -182,8 +182,6 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                     dialog.dismiss();
                     return true;
                 }
-
-                Log.e("bug","here");
                 return false;
             }
         });

@@ -20,7 +20,7 @@
         android:background="#E2EFEE"
         app:cardBackgroundColor="#FFFFFF"
         app:cardCornerRadius="10dp"
-        app:cardElevation="4dp"
+        app:cardElevation="5dp"
         app:cardMaxElevation="4dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout

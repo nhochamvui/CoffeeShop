@@ -5,10 +5,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -44,14 +46,26 @@ public class LoginActivity extends AppCompatActivity {
     }
     public void loadUserLogin()
     {
+        loadingBar = new ProgressDialog(this);
+        loadingBar.setTitle("Logging in");
+        loadingBar.setMessage("Please wait...");
+        loadingBar.setCanceledOnTouchOutside(false);
+        loadingBar.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                    dialog.dismiss();
+                    return true;
+                }
+                return false;
+            }
+        });
         SharedPreferences sharedPreferences = this.getSharedPreferences("remember login", Context.MODE_PRIVATE);
         if(!sharedPreferences.getString("username","").equals(""))
         {
-            loadingBar = new ProgressDialog(this);
-            loadingBar.setTitle("Logging in");
-            loadingBar.setMessage("Please wait...");
-            loadingBar.setCanceledOnTouchOutside(false);
             loadingBar.show();
+            editTextUserName.setText(sharedPreferences.getString("username",""));
+            editTextPassword.setText(sharedPreferences.getString("passsword",""));
             userName = sharedPreferences.getString("username","");
             password = sharedPreferences.getString("password","");
             doLogin(userName, password);
@@ -60,10 +74,6 @@ public class LoginActivity extends AppCompatActivity {
             buttonLogin.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    loadingBar = new ProgressDialog(v.getContext());
-                    loadingBar.setTitle("Logging in");
-                    loadingBar.setMessage("Please wait...");
-                    loadingBar.setCanceledOnTouchOutside(false);
                     loadingBar.show();
                     if(checkBoxRememberme.isChecked())
                         saveUserLogin();

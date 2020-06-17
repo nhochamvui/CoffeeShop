@@ -18,7 +18,7 @@
             android:id="@+id/background"
             android:layout_width="0dp"
             android:layout_height="174dp"
-            android:background="@drawable/drink_background4"
+            android:background="@drawable/drink_background3"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">

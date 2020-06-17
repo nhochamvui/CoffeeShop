@@ -197,6 +197,12 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
         }
     }
 
+    private void choosePicture() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Choose Picture"), PICK_IMAGE_REQUEST);
+    }
     private void uploadPicture() {
         final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("items");
         final DatabaseReference newDrinkRef = mDatabase.push();
@@ -213,8 +219,20 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
         }
         else {
             final ProgressDialog progressDialog = new ProgressDialog(getContext());
+            progressDialog.setMessage("Please wait...");
+            progressDialog.setCanceledOnTouchOutside(false);
             progressDialog.show();
-            progressDialog.setTitle("Creating new product");
+            progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+                @Override
+                public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                    if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        removeTheLastestImgURI();
+                        dialog.dismiss();
+                        return true;
+                    }
+                    return false;
+                }
+            });
 
             final FirebaseStorage storage = FirebaseStorage.getInstance();
             final StorageReference storageReference = storage.getReference().child("drinks/" + UUID.randomUUID().toString());
@@ -222,7 +240,7 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
-                    progressDialog.dismiss();
+
                     storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
@@ -231,6 +249,7 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
                             drink.setImg(uri.toString());
                             newDrinkRef.setValue(drink);
                             removeTheLastestImgURI();
+                            progressDialog.dismiss();
                             Toast.makeText(getContext(), "Insert new product successfully!", Toast.LENGTH_LONG).show();
                         }
                     });
@@ -252,14 +271,90 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
             });
         }
     }
+    private void uploadPicture(final Drink drink) {
+        final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("items");
 
-    private void choosePicture() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Choose Picture"), PICK_IMAGE_REQUEST);
+        final ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("Please wait...");
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.show();
+        progressDialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+            @Override
+            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                    removeTheLastestImgURI();
+                    dialog.dismiss();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+        drink.setName(editTextDrinkName.getText().toString());
+        drink.setPrice(editTextDrinkPrice.getText().toString());
+        drink.setCategory(editTextDrinkCategory.getText().toString());
+        drink.setDesc(editTextDrinkDescription.getText().toString());
+        Log.e("drink img","at "+drink.getImg());
+        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean isExist = false;
+                for(final DataSnapshot id : dataSnapshot.getChildren())
+                {
+                    if(id.child("id").getValue().equals(drink.getId())) {
+                        //if user change the picture
+                        if (imgUri != null) {
+                            Log.e("imgUri", "imgUri at " + imgUri.toString());
+                            final FirebaseStorage storage = FirebaseStorage.getInstance();
+                            final StorageReference storageReference = storage.getReference().child("drinks/" + UUID.randomUUID().toString());
+                            final UploadTask uploadTask = storageReference.putFile(imgUri);
+                            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
+                                    progressDialog.dismiss();
+                                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            Log.e("download url", "Upload product image successfully at : " + uri.toString());
+                                            drink.setImg(uri.toString());
+//                                            Toast.makeText(getContext(), "Upload product image successfully!", Toast.LENGTH_LONG).show();
+                                            mDatabase.child(id.getKey()).setValue(drink);
+                                            removeTheLastestImgURI();
+                                        }
+                                    });
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(getContext(), "Upload product image fail!", Toast.LENGTH_LONG).show();
+                                    mDatabase.child(id.getKey()).setValue(drink);
+                                    removeTheLastestImgURI();
+                                }
+                            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+
+                                }
+                            });
+                        }
+                        else{
+                            progressDialog.dismiss();
+                            mDatabase.child(id.getKey()).setValue(drink);
+                        }
+                        Log.e("item is exist","1. item is exist in database");
+                        isExist = true;
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
-
     private void fetchDataIntoRecyclerView() {
          mDatabase = FirebaseDatabase.getInstance().getReference().child("items");
          valueEventListenerFetchUser = mDatabase.addValueEventListener(new ValueEventListener() {
@@ -365,78 +460,7 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
     private void removeTheLastestImgURI(){
         imgUri = null;
     }
-    private void uploadPicture(final Drink drink) {
-        final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("items");
 
-        final ProgressDialog progressDialog = new ProgressDialog(getContext());
-        progressDialog.show();
-        progressDialog.setTitle("Edit product");
-
-        drink.setName(editTextDrinkName.getText().toString());
-        drink.setPrice(editTextDrinkPrice.getText().toString());
-        drink.setCategory(editTextDrinkCategory.getText().toString());
-        drink.setDesc(editTextDrinkDescription.getText().toString());
-        Log.e("drink img","at "+drink.getImg());
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                boolean isExist = false;
-                for(final DataSnapshot id : dataSnapshot.getChildren())
-                {
-                    if(id.child("id").getValue().equals(drink.getId())) {
-                        //if user change the picture
-                        if (imgUri != null) {
-                            Log.e("imgUri", "imgUri at " + imgUri.toString());
-                            final FirebaseStorage storage = FirebaseStorage.getInstance();
-                            final StorageReference storageReference = storage.getReference().child("drinks/" + UUID.randomUUID().toString());
-                            final UploadTask uploadTask = storageReference.putFile(imgUri);
-                            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
-                                    progressDialog.dismiss();
-                                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                        @Override
-                                        public void onSuccess(Uri uri) {
-                                            Log.e("download url", "Upload product image successfully at : " + uri.toString());
-                                            drink.setImg(uri.toString());
-//                                            Toast.makeText(getContext(), "Upload product image successfully!", Toast.LENGTH_LONG).show();
-                                            mDatabase.child(id.getKey()).setValue(drink);
-                                            removeTheLastestImgURI();
-                                        }
-                                    });
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    progressDialog.dismiss();
-                                    Toast.makeText(getContext(), "Upload product image fail!", Toast.LENGTH_LONG).show();
-                                    mDatabase.child(id.getKey()).setValue(drink);
-                                    removeTheLastestImgURI();
-                                }
-                            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-
-                                }
-                            });
-                        }
-                        else{
-                            progressDialog.dismiss();
-                            mDatabase.child(id.getKey()).setValue(drink);
-                        }
-                        Log.e("item is exist","1. item is exist in database");
-                        isExist = true;
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-    }
     @Override
     public void OnDeleteClick(int position) {
         final Drink drink = drinkArrayList.get(position);
