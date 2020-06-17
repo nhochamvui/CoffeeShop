@@ -26,6 +26,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
@@ -70,6 +71,7 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
     private ImageView imageViewDrinkThumbnail;
     private final int PICK_IMAGE_REQUEST = 233;
     private Uri imgUri;
+    private TextView textViewNumberOfProduct;
 
     public DrinkManagementFragment() {
         // Required empty public constructor
@@ -112,9 +114,9 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
             public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
                 int position = parent.getChildAdapterPosition(view);
                 if(position == 0 || position ==1)
-                    outRect.set(spacing, spacing+17, spacing, spacing);
+                    outRect.set(spacing+20, spacing+17, 0, spacing);
                 else
-                    outRect.set(spacing, spacing, spacing, spacing);
+                    outRect.set(spacing+20, spacing+24, 0, spacing);
             }
         });
 //        fetchDataIntoRecyclerView();
@@ -124,6 +126,7 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
     {
         recyclerView = v.findViewById(R.id.recyclerViewDrinkManagement);
         drinkArrayList = new ArrayList<Drink>();
+        textViewNumberOfProduct = v.findViewById(R.id.textViewNumberOfProduct);
         floatingActionButtonAddDrink = v.findViewById(R.id.floatingActionButtonAddDrink);
         floatingActionButtonAddDrink.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -272,6 +275,7 @@ public class DrinkManagementFragment extends Fragment implements DrinkAdapter.Dr
                         drinkArrayList.add(drink);
                     }
                 }
+                textViewNumberOfProduct.setText("Drink list: "+drinkArrayList.size()+" products");
                 drinkAdapter.notifyDataSetChanged();
             }
             @Override

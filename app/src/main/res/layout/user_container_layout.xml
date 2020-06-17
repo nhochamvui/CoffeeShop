@@ -32,7 +32,6 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="191dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:hint="User Name"
                 android:textColorHint="#000000"
                 app:layout_constraintBottom_toTopOf="@+id/guideline2"
@@ -40,7 +39,7 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.13999999">
+                app:layout_constraintVertical_bias="0.64">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/textViewUserName"
@@ -63,7 +62,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
                 app:layout_constraintTop_toTopOf="@+id/guideline2"
-                app:layout_constraintVertical_bias="0.0">
+                app:layout_constraintVertical_bias="0.13">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/textViewRole"
@@ -95,7 +94,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintGuide_percent="0.4513889"
+                app:layout_constraintGuide_percent="0.5"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.45" />
 

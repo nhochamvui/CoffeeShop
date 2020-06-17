@@ -24,6 +24,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -41,6 +42,7 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -76,6 +78,7 @@ public class FoodManagementFragment extends Fragment implements DrinkAdapter.Dri
     private ImageView imageViewDrinkThumbnail;
     private final int PICK_IMAGE_REQUEST = 233;
     private Uri imgUri;
+    private TextView textViewNumberOfProduct;
 
     public FoodManagementFragment() {
         // Required empty public constructor
@@ -128,9 +131,9 @@ public class FoodManagementFragment extends Fragment implements DrinkAdapter.Dri
             public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
                 int position = parent.getChildAdapterPosition(view);
                 if(position == 0 || position ==1)
-                    outRect.set(spacing, spacing+17, spacing, spacing);
+                    outRect.set(spacing+20, spacing+17, 0, spacing);
                 else
-                    outRect.set(spacing, spacing, spacing, spacing);
+                    outRect.set(spacing+20, spacing+24, 0, spacing);
             }
         });
         return v;
@@ -139,6 +142,7 @@ public class FoodManagementFragment extends Fragment implements DrinkAdapter.Dri
     private void initialComponent(View v) {
         recyclerView = v.findViewById(R.id.recyclerViewDrinkManagement);
         drinkArrayList = new ArrayList<Drink>();
+        textViewNumberOfProduct = v.findViewById(R.id.textViewNumberOfProduct);
         floatingActionButtonAddDrink = v.findViewById(R.id.floatingActionButtonAddDrink);
         floatingActionButtonAddDrink.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -359,6 +363,7 @@ public class FoodManagementFragment extends Fragment implements DrinkAdapter.Dri
                         drinkArrayList.add(drink);
                     }
                 }
+                textViewNumberOfProduct.setText("Food list: "+drinkArrayList.size()+" products");
                 drinkAdapter.notifyDataSetChanged();
             }
             @Override

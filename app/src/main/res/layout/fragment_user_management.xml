@@ -16,7 +16,7 @@
         app:fabSize="mini"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.07"
+        app:layout_constraintHorizontal_bias="0.94"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.96" />
@@ -43,9 +43,9 @@
                 android:id="@+id/textViewCurrentUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-medium"
+                android:fontFamily="sans-serif-light"
                 android:text="User: 0"
-                android:textColor="#515050"
+                android:textColor="#494848"
                 android:textSize="14sp"
                 app:layout_constraintBottom_toTopOf="@+id/linearLayoutHeaderDivider"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -56,12 +56,13 @@
 
             <LinearLayout
                 android:id="@+id/linearLayoutHeaderDivider"
-                android:layout_width="313dp"
+                android:layout_width="316dp"
                 android:layout_height="1dp"
                 android:background="#CCC8C8"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.55"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.110000014"></LinearLayout>
