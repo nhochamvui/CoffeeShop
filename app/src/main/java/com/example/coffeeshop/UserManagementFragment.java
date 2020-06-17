@@ -86,6 +86,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
     private EditText editTextUserName;
     private EditText editTextPassword;
     private EditText editTextRole;
+    private TextView textViewCurrentUser;
     public UserManagementFragment() {
         // Required empty public constructor
     }
@@ -145,6 +146,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                     user = id.getValue(User.class);
                     userList.add(user);
                 }
+                textViewCurrentUser.setText("Current user: "+userList.size());
                 userAdapter.notifyDataSetChanged();
             }
             @Override
@@ -158,6 +160,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         recyclerView = v.findViewById(R.id.recyclerViewUserManagement);
         userList = new ArrayList<User>();
         floatingActionButtonAddUser = v.findViewById(R.id.floatingActionButtonAddUser);
+        textViewCurrentUser = v.findViewById(R.id.textViewCurrentUser);
         floatingActionButtonAddUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

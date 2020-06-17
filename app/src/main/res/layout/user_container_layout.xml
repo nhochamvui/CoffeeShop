@@ -20,8 +20,8 @@
         android:background="#E2EFEE"
         app:cardBackgroundColor="#FFFFFF"
         app:cardCornerRadius="10dp"
-        app:cardElevation="6dp"
-        app:cardMaxElevation="6dp">
+        app:cardElevation="4dp"
+        app:cardMaxElevation="4dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -109,7 +109,7 @@
 
         android:background="@drawable/ic_baseline_account_circle_black_24"
         app:cardCornerRadius="50dp"
-        app:cardElevation="7dp"
+        app:cardElevation="6dp"
         app:cardPreventCornerOverlap="false"
         app:layout_anchor="@+id/coordinator"
         app:layout_anchorGravity="start|top"
