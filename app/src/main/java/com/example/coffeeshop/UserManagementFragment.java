@@ -146,7 +146,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                     user = id.getValue(User.class);
                     userList.add(user);
                 }
-                textViewCurrentUser.setText("Current user: "+userList.size());
+                textViewCurrentUser.setText("User list: "+userList.size()+" users");
                 userAdapter.notifyDataSetChanged();
             }
             @Override
