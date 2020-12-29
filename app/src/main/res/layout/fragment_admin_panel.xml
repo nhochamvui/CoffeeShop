@@ -5,15 +5,13 @@
 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#26AFC3D6">
+    android:background="@color/colorBackground">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayoutAdminPanel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:tabMode="scrollable"
-        android:layout_marginTop="50dp"
-        android:background="#00A0C3D6"
+        android:foreground="@color/colorBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -21,6 +19,7 @@
         app:tabIndicatorColor="#5E97D7"
         app:tabIndicatorFullWidth="false"
         app:tabIndicatorGravity="bottom"
+        app:tabMode="scrollable"
         app:tabTextColor="@color/nav_color" />
 
     <androidx.viewpager.widget.ViewPager
@@ -40,4 +39,5 @@
 
         </FrameLayout>
     </androidx.viewpager.widget.ViewPager>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
