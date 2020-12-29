@@ -141,7 +141,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
-            app:layout_anchor="@+id/coordinator"
             app:layout_anchorGravity="start|top"
             app:srcCompat="@drawable/ic_launcher_background"
             tools:ignore="VectorDrawableCompat" />
@@ -154,6 +153,7 @@
         app:cardElevation="6dp"
         app:layout_anchor="@+id/coordinator"
         android:background="#2690A0AF"
+        android:backgroundTint="#2690A0AF"
         app:layout_anchorGravity="start|bottom"
         tools:ignore="VectorDrawableCompat">
 
@@ -163,7 +163,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Delete"
-            android:background="#2690A0AF"
             android:textColor="#000000" />
     </androidx.cardview.widget.CardView>
 
@@ -174,6 +173,7 @@
         android:layout_marginBottom="45dp"
         app:cardElevation="6dp"
         android:background="#2690A0AF"
+        android:backgroundTint="#2690A0AF"
         app:layout_anchor="@+id/coordinator"
         app:layout_anchorGravity="start|bottom"
         tools:ignore="VectorDrawableCompat">
@@ -183,7 +183,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="#2690A0AF"
             android:text="Edit"
             android:textColor="#000000"
             android:textSize="16sp" />

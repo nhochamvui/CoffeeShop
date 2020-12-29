@@ -376,7 +376,7 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
                         Log.e("Fetch Sewer","getChannel: "+sewer.getChannel());
                         sewerArrayList.add(sewer);
                 }
-                textViewNumberOfProduct.setText("Food list: "+sewerArrayList.size()+" products");
+                textViewNumberOfProduct.setText("Sewer list: "+sewerArrayList.size()+" sewers");
                 sewerAdapter.notifyDataSetChanged();
             }
             @Override
