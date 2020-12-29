@@ -141,7 +141,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
-            app:layout_anchor="@+id/coordinator"
             app:layout_anchorGravity="start|top"
             app:srcCompat="@drawable/ic_launcher_background"
             tools:ignore="VectorDrawableCompat" />

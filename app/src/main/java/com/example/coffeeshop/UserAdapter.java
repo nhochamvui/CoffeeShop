@@ -13,6 +13,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import java.util.ArrayList;
 
@@ -55,10 +56,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
 //        holder.textViewRemove.append(user.getRemove().toString());
         Glide.with(holder.imageViewAvatar.getContext())
                 .load(user.getAvatar())
-//                .circleCrop()
+                .circleCrop()
                 .error(R.drawable.ic_round_broken_image_24)
                 .placeholder(R.drawable.ic_baseline_image_24)
-//                .transform(new RoundedCorners(10))
                 .into(holder.imageViewAvatar);
     }
 
