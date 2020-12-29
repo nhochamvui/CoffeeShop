@@ -3,59 +3,81 @@ package com.example.coffeeshop;
 import java.io.Serializable;
 
 public class User implements Serializable {
-    private String username;
-    private String pwd;
-    private String id;
-    private String role;
+    private String Username;
+    private String Role;
+    private String Password;
+    private String Avatar;
+    private Boolean Add;
+    private Boolean Remove;
+    private Boolean Modify;
     public User()
     {
-        //for returning object from firebase
+
     }
-    public User(String username, String pwd, String role) {
-        this.username = username;
-        this.pwd = pwd;
-        this.role = role;
-    }
-    public User(String username, String pwd, String role, String id) {
-        this.username = username;
-        this.pwd = pwd;
-        this.role = role;
-        this.id = id;
+
+    public User(String username, String role, String password, String avatar, Boolean add, Boolean remove, Boolean modify) {
+        Username = username;
+        Role = role;
+        Password = password;
+        Avatar = avatar;
+        Add = add;
+        Remove = remove;
+        Modify = modify;
     }
 
     public String getUsername() {
-        return username;
+        return Username;
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        Username = username;
     }
-
-    public String getPwd() {
-        return pwd;
-    }
-
-    public void setPwd(String pwd) {
-        this.pwd = pwd;
-    }
-
-
 
     public String getRole() {
-        return role;
+        return Role;
     }
 
     public void setRole(String role) {
-        this.role = role;
+        Role = role;
     }
-    public boolean isNull()
-    {
-        return (this.username.equals("") && this.pwd.equals("") && this.role.equals(""));
+
+    public String getPassword() {
+        return Password;
     }
-    public void setId(String id) {
-        this.id = id;
+
+    public void setPassword(String password) {
+        Password = password;
     }
-    public String getId() {
-        return id;
+
+    public String getAvatar() {
+        return Avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        Avatar = avatar;
+    }
+
+    public Boolean getAdd() {
+        return Add;
+    }
+
+    public void setAdd(Boolean add) {
+        Add = add;
+    }
+
+    public Boolean getRemove() {
+        return Remove;
+    }
+
+    public void setRemove(Boolean remove) {
+        Remove = remove;
+    }
+
+    public Boolean getModify() {
+        return Modify;
+    }
+
+    public void setModify(Boolean modify) {
+        Modify = modify;
     }
 }

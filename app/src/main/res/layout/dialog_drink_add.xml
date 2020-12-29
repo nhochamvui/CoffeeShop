@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:adnroid="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="700dp"
+    adnroid:cardCornerRadius="10dp">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinatorLayout"
+        android:layout_width="414dp"
+        android:layout_height="110dp"
+        adnroid:layout_constraintEnd_toEndOf="parent"
+        adnroid:layout_constraintHeight_percent="0.26"
+        adnroid:layout_constraintStart_toStartOf="parent"
+        adnroid:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="72dp"
+            android:background="@color/colorPrimary"
+            android:orientation="vertical">
+
+        </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/materialCardView2"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:elevation="10dp"
+            android:orientation="vertical"
+            adnroid:cardBackgroundColor="#FFCC80"
+            adnroid:cardElevation="10dp"
+            adnroid:layout_anchor="@+id/linearLayout"
+            adnroid:layout_anchorGravity="bottom|center">
+
+            <ImageView
+                android:id="@+id/imageViewDrinkThumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:cropToPadding="false"
+                adnroid:layout_constraintHeight_percent="0.3"
+                adnroid:layout_constraintWidth_percent="0.3"
+                adnroid:srcCompat="@drawable/ic_baseline_add_photo_alternate_24"
+                tools:ignore="VectorDrawableCompat"
+                tools:srcCompat="@drawable/ic_baseline_add_photo_alternate_24" />
+        </com.google.android.material.card.MaterialCardView>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="414dp"
+        android:layout_height="452dp"
+        android:fillViewport="true"
+        adnroid:layout_constraintEnd_toEndOf="parent"
+        adnroid:layout_constraintStart_toStartOf="parent"
+        adnroid:layout_constraintTop_toBottomOf="@+id/coordinatorLayout">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:id="@+id/buttonDrinkConfirm"
+                    android:layout_width="105dp"
+                    android:layout_height="54dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="30dp"
+                    android:gravity="center"
+                    android:text="Confirm"
+                    adnroid:layout_constraintBottom_toBottomOf="parent"
+                    adnroid:layout_constraintEnd_toEndOf="parent"
+                    adnroid:layout_constraintHorizontal_bias="0.501"
+                    adnroid:layout_constraintStart_toStartOf="parent"
+                    adnroid:layout_constraintTop_toBottomOf="@+id/materialCardView"
+                    adnroid:layout_constraintVertical_bias="0.0" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/materialCardView"
+                    android:layout_width="262dp"
+                    android:layout_height="wrap_content"
+
+                    android:layout_marginBottom="15dp"
+                    adnroid:cardCornerRadius="6dp"
+                    adnroid:cardElevation="8dp"
+                    adnroid:layout_constraintBottom_toBottomOf="parent"
+                    adnroid:layout_constraintEnd_toEndOf="parent"
+                    adnroid:layout_constraintHorizontal_bias="0.488"
+                    adnroid:layout_constraintStart_toStartOf="parent"
+                    adnroid:layout_constraintTop_toTopOf="parent"
+                    adnroid:layout_constraintVertical_bias="0.29000002"
+                    adnroid:layout_constraintWidth_percent="0.5">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textInputLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Name"
+                            adnroid:boxBackgroundColor="#FFFFFF"
+                            adnroid:layout_constraintEnd_toEndOf="parent"
+                            adnroid:layout_constraintStart_toStartOf="parent"
+                            adnroid:layout_constraintTop_toTopOf="parent">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/editTextDrinkName"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:drawableLeft="@drawable/ic_baseline_local_bar_24"
+                                android:drawablePadding="10dp"></com.google.android.material.textfield.TextInputEditText>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textInputLayout2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Price"
+                            adnroid:boxBackgroundColor="#FFFFFF"
+                            adnroid:layout_constraintEnd_toEndOf="parent"
+                            adnroid:layout_constraintStart_toStartOf="parent"
+                            adnroid:layout_constraintTop_toBottomOf="@+id/textInputLayout">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/editTextDrinkPrice"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:drawableLeft="@drawable/ic_outline_monetization_on_24"
+                                android:drawablePadding="10dp"></com.google.android.material.textfield.TextInputEditText>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textInputLayout3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Category"
+                            adnroid:boxBackgroundColor="#FFFFFF"
+                            adnroid:layout_constraintEnd_toEndOf="parent"
+                            adnroid:layout_constraintHorizontal_bias="0.0"
+                            adnroid:layout_constraintStart_toStartOf="parent"
+                            adnroid:layout_constraintTop_toBottomOf="@+id/textInputLayout2">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/editTextDrinkCategory"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:drawableLeft="@drawable/ic_baseline_description_24"
+                                android:drawablePadding="10dp"
+                                android:editable="false"></com.google.android.material.textfield.TextInputEditText>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/textInputLayout4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Description"
+                            adnroid:boxBackgroundColor="#FFFFFF"
+                            adnroid:layout_constraintBottom_toBottomOf="parent"
+                            adnroid:layout_constraintEnd_toEndOf="parent"
+                            adnroid:layout_constraintHorizontal_bias="0.0"
+                            adnroid:layout_constraintStart_toStartOf="parent"
+                            adnroid:layout_constraintTop_toBottomOf="@+id/textInputLayout3"
+                            adnroid:layout_constraintVertical_bias="0.65">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/editTextDrinkDescription"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:drawableLeft="@drawable/ic_baseline_local_bar_24"
+                                android:drawablePadding="10dp"
+                                android:lines="3"
+                                android:maxLines="3"></com.google.android.material.textfield.TextInputEditText>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

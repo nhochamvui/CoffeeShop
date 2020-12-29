@@ -2,17 +2,20 @@ package com.example.coffeeshop;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Debug;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.database.*;
 
 import java.security.MessageDigest;
@@ -29,7 +32,6 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initialComponent();
-
         doAuth();
         createFragments(savedInstanceState);
 
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity{
     private void doAuth()
     {
         User user = (User)intent.getSerializableExtra("user");
-        if(user.getRole().equals("admin")){
+        if(user.getRole().equalsIgnoreCase("Admin")){
 
             isAdmin = true;
         }
@@ -142,9 +144,8 @@ public class MainActivity extends AppCompatActivity{
                     for (DataSnapshot data : dataSnapshot.getChildren())
                         lastID = Integer.parseInt(data.getKey()) + 1;
                     mDatabase.child("" + lastID).child("username").setValue(user.getUsername());
-                    mDatabase.child("" + lastID).child("pwd").setValue(hash(user.getPwd()));
+                    mDatabase.child("" + lastID).child("pwd").setValue(hash(user.getPassword()));
                     mDatabase.child("" + lastID).child("role").setValue(user.getRole());
-                    mDatabase.child("" + lastID).child("id").setValue("" + lastID);
                 }
 
                 @Override
@@ -164,15 +165,15 @@ public class MainActivity extends AppCompatActivity{
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     boolean isSuccess = false;
                     for (DataSnapshot id : dataSnapshot.getChildren()) {
-                        Log.e("UPDATE inner class", "liet ke ID: " + id.child("id").getValue() + " user id = "+user.getId());
-                        if (id.child("id").getValue().toString().equals(user.getId()))
+                        Log.e("UPDATE inner class", "liet ke ID: " + id.child("id").getValue() + " user id = ");
+                        if (id.child("username").equals(user.getUsername()))
                         {
                             Log.e("UPDATE inner class", "found ID: " + id.getKey());
                             mDatabase.child(id.getKey()).child("username").setValue(user.getUsername());
-                            mDatabase.child(id.getKey()).child("pwd").setValue(hash(user.getPwd()));
+                            mDatabase.child(id.getKey()).child("pwd").setValue(hash(user.getPassword()));
                             mDatabase.child(id.getKey()).child("role").setValue(user.getRole());
 
-                            Log.e("UPDATE USER", "inner class: " +user.getUsername());
+
                             isSuccess = true;
                             break;
                         }
@@ -224,8 +225,8 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 boolean flag = false;
-                User user1 = new User("", "", "");
-                String pwd = hash(user.getPwd());
+                User user1 = new User("", "", "","",false,false,false);
+                String pwd = hash(user.getPassword());
                 Log.e("RETRIEVE USER", "HASH: " +pwd);
                 for (DataSnapshot id : dataSnapshot.getChildren()) {
                     if (id.child("username").getValue().equals(user.getUsername()))
