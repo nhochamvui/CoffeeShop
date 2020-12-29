@@ -82,6 +82,17 @@ public class LoginActivity extends AppCompatActivity {
             userName = sharedPreferences.getString("username","");
             password = sharedPreferences.getString("password","");
             doLogin(userName, password);
+            buttonLogin.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    loadingBar.show();
+                    if(checkBoxRememberme.isChecked())
+                        savedUserLogin();
+                    userName = editTextUserName.getText().toString();
+                    password = editTextPassword.getText().toString();
+                    doLogin(userName, hash(password));
+                }
+            });
         }
         else{
             buttonLogin.setOnClickListener(new View.OnClickListener() {
