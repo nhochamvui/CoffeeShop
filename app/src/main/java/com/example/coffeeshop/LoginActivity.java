@@ -140,7 +140,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 boolean flag = false;
-                User user = new User("","", "","", false, false, false);
+                User user = new User("", "", "", "","", false, false, false);
                 Log.e("check login","username "+userName + " hash pwd: "+(password));
 
                 for (DataSnapshot id : dataSnapshot.getChildren()) {
@@ -154,7 +154,7 @@ public class LoginActivity extends AppCompatActivity {
                 if(flag)
                 {
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("display_name", user.getUsername());
+                    editor.putString("display_name", user.getDisplayname());
                     editor.commit();
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.putExtra("user", user);

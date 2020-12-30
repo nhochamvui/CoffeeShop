@@ -27,42 +27,59 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:layout_marginEnd="64dp"
-        android:layout_marginRight="64dp"
+        android:layout_marginLeft="10dp"
         android:ems="8"
-        android:hint="User Name"
+        android:hint="Display Name"
         android:inputType="textPersonName"
         android:textColor="#090909"
         android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/imageViewChooseAvatar" />
 
-    <EditText
-        android:id="@+id/editTextRole_Add"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/relativeSpinner"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="64dp"
-        android:ems="8"
-        android:hint="Role"
-        android:inputType="textPersonName"
-        android:textColor="#6E6666"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextPassword_Add" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="39dp"
+        android:layout_weight=".28"
+        android:background="@drawable/spinner_background"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toEndOf="@+id/imageView3"
+        app:layout_constraintTop_toBottomOf="@+id/editTextPassword_Add">
+
+        <Spinner
+            android:id="@+id/editTextRole_Add"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:spinnerMode="dropdown" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_baseline_arrow_drop_down_24" />
+
+    </RelativeLayout>
 
     <EditText
         android:id="@+id/editTextPassword_Add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="28dp"
-        android:layout_marginEnd="64dp"
-        android:layout_marginRight="64dp"
         android:ems="8"
         android:hint="Password"
         android:inputType="textPersonName"
         android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginLeft="10dp"
+        app:layout_constraintStart_toEndOf="@+id/imageView2"
         app:layout_constraintTop_toBottomOf="@+id/editTextUserName_Add" />
 
     <TextView
@@ -70,7 +87,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="20dp"
         android:backgroundTint="#FFFFFF"
         android:fontFamily="sans-serif"
         android:text="Add"
@@ -78,17 +95,18 @@
         android:textColor="#A5A5A5"
         app:iconTint="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editTextRole_Add" />
+        app:layout_constraintTop_toBottomOf="@id/relativeSpinner"
+        android:layout_marginLeft="60dp" />
 
     <RadioGroup
         android:id="@+id/radio_group_add"
         android:layout_width="138dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="20dp"
         android:layout_marginRight="47dp"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextRole_Add">
+        app:layout_constraintTop_toBottomOf="@+id/relativeSpinner">
 
         <RadioButton
             android:id="@+id/radio1"
@@ -124,7 +142,8 @@
         android:textColor="#A5A5A5"
         app:iconTint="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewAdd" />
+        app:layout_constraintTop_toBottomOf="@id/textViewAdd"
+        android:layout_marginLeft="60dp" />
 
     <RadioGroup
         android:id="@+id/radio_group_remove"
@@ -169,7 +188,8 @@
         android:textColor="#A5A5A5"
         app:iconTint="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewRemove" />
+        app:layout_constraintTop_toBottomOf="@id/textViewRemove"
+        android:layout_marginLeft="60dp" />
 
     <RadioGroup
         android:id="@+id/radio_group_modify"
@@ -206,7 +226,7 @@
         android:id="@+id/buttonConfirm_Add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="70dp"
         android:text="Confirm"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -222,10 +242,6 @@
         android:layout_marginStart="50dp"
         android:layout_marginLeft="50dp"
         android:layout_marginTop="152dp"
-        android:layout_marginEnd="6dp"
-        android:layout_marginRight="6dp"
-        app:layout_constraintEnd_toStartOf="@+id/editTextUserName_Add"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_outline_person_24"
@@ -238,8 +254,6 @@
         android:layout_marginStart="50dp"
         android:layout_marginLeft="50dp"
         android:layout_marginTop="48dp"
-        app:layout_constraintEnd_toStartOf="@+id/editTextPassword_Add"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView"
         app:srcCompat="@drawable/ic_outline_lock_24"
@@ -252,8 +266,6 @@
         android:layout_marginStart="50dp"
         android:layout_marginLeft="50dp"
         android:layout_marginTop="48dp"
-        app:layout_constraintEnd_toStartOf="@+id/editTextRole_Add"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView2"
         app:srcCompat="@drawable/ic_outline_verified_user_24"

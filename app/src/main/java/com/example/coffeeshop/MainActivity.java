@@ -12,8 +12,11 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.database.*;
@@ -26,13 +29,22 @@ public class MainActivity extends AppCompatActivity{
     private Intent intent;
     private boolean isAdmin = false;
     private Menu menu;
+    private User user;
     private BottomNavigationView bottomNavigationView;
+    private ImageView ivAvatar;
+    private TextView tvUsername;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initialComponent();
         doAuth();
+        tvUsername.setText(user.getDisplayname());
+        Glide.with(this)
+                .load(user.getAvatar())
+                .circleCrop()
+                .into(ivAvatar);
         createFragments(savedInstanceState);
 
         /* //for testing methods
@@ -54,6 +66,8 @@ public class MainActivity extends AppCompatActivity{
         mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
         intent = getIntent();
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        tvUsername = findViewById(R.id.tvUsername);
+        ivAvatar = findViewById(R.id.ivAvatar);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
@@ -63,7 +77,7 @@ public class MainActivity extends AppCompatActivity{
     }
     private void doAuth()
     {
-        User user = (User)intent.getSerializableExtra("user");
+        user = (User)intent.getSerializableExtra("user");
         if(user.getRole().equalsIgnoreCase("Admin")){
 
             isAdmin = true;
@@ -225,7 +239,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 boolean flag = false;
-                User user1 = new User("", "", "","",false,false,false);
+                User user1 = new User("", "", "", "","",false,false,false);
                 String pwd = hash(user.getPassword());
                 Log.e("RETRIEVE USER", "HASH: " +pwd);
                 for (DataSnapshot id : dataSnapshot.getChildren()) {

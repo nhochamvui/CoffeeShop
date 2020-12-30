@@ -91,7 +91,7 @@ public class AdminPanelFragment extends Fragment {
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager(), 0);
         viewPagerAdapter.addFragment(new SewerManagementFragment(), "Sewer");
         viewPagerAdapter.addFragment(new UserManagementFragment(), "User");
-        viewPagerAdapter.addFragment(new MsgBoardFragment(), "MessageBoard");
+        viewPagerAdapter.addFragment(new MsgBoardFragment(), "Message Board");
 
         viewPagerAdminPanel.setAdapter(viewPagerAdapter);
         tabLayoutAdminPanel.setupWithViewPager(viewPagerAdminPanel);

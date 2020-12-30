@@ -23,4 +23,11 @@
         <item name="cornerSizeTopRight">0dp</item>
     </style>
 
+    <style name="spinnerItemStyle" parent="android:Widget.TextView.SpinnerItem">
+    </style>
+
+    <style name="spinnerDropDownItemStyle" parent="android:TextAppearance.Widget.TextView.SpinnerItem">
+        <item name="android:layout_width">100dp</item>
+    </style>
+
 </resources>
