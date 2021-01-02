@@ -1,24 +1,25 @@
 package com.example.coffeeshop;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.firebase.database.*;
 
 import java.security.MessageDigest;
@@ -33,6 +34,9 @@ public class MainActivity extends AppCompatActivity{
     private BottomNavigationView bottomNavigationView;
     private ImageView ivAvatar;
     private TextView tvUsername;
+    private Button logoutButton;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,10 +72,17 @@ public class MainActivity extends AppCompatActivity{
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         tvUsername = findViewById(R.id.tvUsername);
         ivAvatar = findViewById(R.id.ivAvatar);
+        logoutButton = findViewById(R.id.logoutButton);
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 return true;
+            }
+        });
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logoutDiag();
             }
         });
     }
@@ -93,15 +104,8 @@ public class MainActivity extends AppCompatActivity{
         // Set default fragment for specific role
         if(savedInstanceState == null)
         {
-            if(isAdmin)
-            {
-                bottomNavigationView.setSelectedItemId(R.id.menuAdminPanel);
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new AdminPanelFragment()).commit();
-            }
-            else{
-                bottomNavigationView.setSelectedItemId(R.id.menuStore);
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new StoreFragment()).commit();
-            }
+            bottomNavigationView.setSelectedItemId(R.id.menuAdminPanel);
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, new AdminPanelFragment()).commit();
         }
         // Listen to fragment selection
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -114,7 +118,7 @@ public class MainActivity extends AppCompatActivity{
                         fragment = new AdminPanelFragment();
                         break;
                     case R.id.menuStore:
-                        fragment = new StoreFragment();
+                        fragment = new AccountManagementFragment();
                         break;
                 }
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
@@ -345,5 +349,43 @@ public class MainActivity extends AppCompatActivity{
         } catch (Exception err) {
             Log.d("update user", "" + err);
         }
+    }
+    @Override
+    public void onBackPressed() {
+// TODO Auto-generated method stub
+        logoutDiag();
+    }
+    public void logoutDiag() {
+        AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+        // builder.setCancelable(false);
+        builder.setTitle("Logging out...");
+        builder.setMessage("Do you want to Logout?");
+        builder.setPositiveButton("yes",new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                intent.putExtra("justLoggedOut", 1);
+                finish();
+                MainActivity.this.startActivity(intent);
+            }
+        });
+        builder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                dialog.cancel();
+
+            }
+        });
+        AlertDialog alert=builder.create();
+        alert.show();
+        //super.onBackPressed();
+    }
+    public void reloadName() {
+        SharedPreferences sharedPreferences = this.getSharedPreferences("chat room", Context.MODE_PRIVATE);
+        tvUsername.setText(sharedPreferences.getString("display_name","Anonymous"));
     }
 }

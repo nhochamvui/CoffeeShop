@@ -37,7 +37,8 @@ public class AdminPanelFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    private boolean isAdmin = false;
+    private User user;
     private TabLayout tabLayoutAdminPanel;
     private ViewPager viewPagerAdminPanel;
     private TabItem tabItemUserManagement, tabItemDrink, tabItemFood;
@@ -87,12 +88,16 @@ public class AdminPanelFragment extends Fragment {
         Log.e("onCreateView","we are here");
         viewPagerAdminPanel = view.findViewById(R.id.viewPagerAdmin);
         tabLayoutAdminPanel = view.findViewById(R.id.tabLayoutAdminPanel);
-
+        doAuth();
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getChildFragmentManager(), 0);
         viewPagerAdapter.addFragment(new SewerManagementFragment(), "Sewer");
-        viewPagerAdapter.addFragment(new UserManagementFragment(), "User");
+        if(isAdmin){
+            viewPagerAdapter.addFragment(new UserManagementFragment(), "User");
+        }
+        else{
+            viewPagerAdapter.addFragment(new AccountManagementFragment(), "Account");
+        }
         viewPagerAdapter.addFragment(new MsgBoardFragment(), "Message Board");
-
         viewPagerAdminPanel.setAdapter(viewPagerAdapter);
         tabLayoutAdminPanel.setupWithViewPager(viewPagerAdminPanel);
 
@@ -127,6 +132,17 @@ public class AdminPanelFragment extends Fragment {
         public CharSequence getPageTitle(int position) {
             Log.e("getPageTitle","working "+fragments_title.get(position));
             return fragments_title.get(position);
+        }
+    }
+    private void doAuth()
+    {
+        user = (User)getActivity().getIntent().getSerializableExtra("user");
+        if(user.getRole().equalsIgnoreCase("Admin")){
+            isAdmin = true;
+        }
+
+        else{
+            isAdmin = false;
         }
     }
 }
