@@ -66,14 +66,15 @@ public class SewerCreateActivity extends AppCompatActivity {
         newSewerRef.setValue(sewer).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
+                SewerCreateActivity.this.finish();
                 Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
             }
         })
-        .addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e("loi", e.getMessage());
-            }
-        });
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(), "Đã xảy ra lỗi: "+e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 }

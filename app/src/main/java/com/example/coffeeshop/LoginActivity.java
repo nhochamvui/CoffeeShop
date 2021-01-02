@@ -82,17 +82,6 @@ public class LoginActivity extends AppCompatActivity {
             userName = sharedPreferences.getString("username","");
             password = sharedPreferences.getString("password","");
             doLogin(userName, password);
-            buttonLogin.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    loadingBar.show();
-                    if(checkBoxRememberme.isChecked())
-                        savedUserLogin();
-                    userName = editTextUserName.getText().toString();
-                    password = editTextPassword.getText().toString();
-                    doLogin(userName, hash(password));
-                }
-            });
         }
         else{
             buttonLogin.setOnClickListener(new View.OnClickListener() {
@@ -140,7 +129,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 boolean flag = false;
-                User user = new User("","", "","", false, false, false);
+                User user = new User("", "", "", "","", false, false, false);
                 Log.e("check login","username "+userName + " hash pwd: "+(password));
 
                 for (DataSnapshot id : dataSnapshot.getChildren()) {
@@ -154,7 +143,7 @@ public class LoginActivity extends AppCompatActivity {
                 if(flag)
                 {
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("display_name", user.getUsername());
+                    editor.putString("display_name", user.getDisplayname());
                     editor.commit();
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     intent.putExtra("user", user);

@@ -30,7 +30,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-light"
-                android:text="TextView"
+                android:text="Sewer list:"
                 android:textColor="#494848"
                 android:visibility="visible"
                 app:layout_constraintBottom_toTopOf="@+id/linearLayoutHeaderDivider"
@@ -57,27 +57,35 @@
                 android:id="@+id/recyclerViewDrinkManagement"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:layout_marginStart="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayoutHeaderDivider"
-                app:layout_constraintVertical_bias="0.0"/>
+                app:layout_constraintVertical_bias="0.0" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/floatingActionButtonAddDrink"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="@color/colorBackground"
                 android:clickable="true"
-                android:layout_marginLeft="10dp"
-                android:src="@drawable/ic_round_add_2_24"
-                app:backgroundTint="@color/colorBackground"
+                android:src="@drawable/ic_round_add_24"
+                android:tint="#FFFFFF"
+                app:backgroundTint="#5E97D7"
+                app:backgroundTintMode="screen"
                 app:fabSize="mini"
                 app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
                 app:layout_constraintBottom_toTopOf="@+id/recyclerViewDrinkManagement"
-                app:layout_constraintStart_toEndOf="@id/textViewNumberOfProduct"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.93"
+                app:layout_constraintStart_toEndOf="@+id/textViewNumberOfProduct"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.568"/>
+                app:layout_constraintVertical_bias="0.36" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!--            app:layout_constraintBottom_toBottomOf="parent"-->

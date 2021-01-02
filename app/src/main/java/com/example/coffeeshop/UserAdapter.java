@@ -13,9 +13,9 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 
 import java.util.ArrayList;
+import org.w3c.dom.Text;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
     private Context mContext;
@@ -43,6 +43,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
         holder.textViewAuthor.setText("");
         User user = userArrayList.get(position);
         holder.textViewUserName.setText(user.getUsername());
+        holder.textViewDisplayName.setText(user.getDisplayname());
         holder.textViewRole.setText(user.getRole());
         if (user.getAdd() == true)
             holder.textViewAuthor.append("Add\n");
@@ -73,6 +74,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnLongClickListener {
         private TextView textViewUserName;
+        private TextView textViewDisplayName;
         private ImageView imageViewAvatar;
         private CardView imageViewUpdate;
         private CardView imageViewDelete;
@@ -92,6 +94,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
             imageViewDelete = itemView.findViewById(R.id.imageViewDeleteUser);
             textViewRole = itemView.findViewById(R.id.textViewRole);
             textViewAuthor = itemView.findViewById(R.id.textViewAuthor);
+            textViewDisplayName = itemView.findViewById(R.id.textViewDisplayName);
 //            textViewRemove = itemView.findViewById(R.id.textViewRemove);
 //            textViewModify = itemView.findViewById(R.id.textViewModify);
             imageViewUpdate.setOnClickListener(new View.OnClickListener() {

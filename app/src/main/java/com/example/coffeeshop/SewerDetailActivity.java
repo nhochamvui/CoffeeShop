@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -13,9 +14,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.MessageQueue;
 import android.renderscript.Sampler;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -58,9 +64,9 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
 
     private Socket mySocket;
     int i = 0;
-    private ImageView videoContainer, imageViewMqttStatusColor, imageViewSewerDetailBackButton;
-    private ImageButton imageViewButtonUp, imageViewButtonDown, imageViewButtonStop;
-    private TextView textViewSewerMqttStatus, textViewName, textViewStatus, textViewMyMqttStatus, textViewSocketStatus, textViewControlMode;
+    private ImageView videoContainer, imageViewMyMqttStatusColor, imageViewSewerDetailBackButton, imageViewSewerMqttStatusColor, imageViewSocketStatusColor;
+    private ImageButton imageViewButtonUp, imageViewButtonDown, imageViewButtonStop, imageButtonIncreaseDistance, imageButtonDecreaseDistance;
+    private TextView textViewSewerDistance, textViewSewerMqttStatus, textViewName, textViewSewerStatus, textViewMyMqttStatus, textViewSocketStatus, textViewControlMode;
     private EditText editTextNumberControlDistance;
     private com.google.android.material.slider.Slider sliderRangeControl;
     private Sewer sewer;
@@ -69,6 +75,10 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
     private final Bitmap bitmapTemp = Bitmap.createBitmap(768, 432, Bitmap.Config.ARGB_4444);;
     private final String OFFLINE_COLOR = "#828282";
     private final String ONLINE_COLOR = "#40B85C";
+    private final String SOCKET_ONLINE_COLOR = "#F6E550";
+    private long start = 0;
+    private int flagToStartWorker = 0;
+    private int TIME_OUT = 60000;// 6 seconds
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -138,22 +148,104 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
         }).start();
     }
 
+    private void checkSewerConnectionTimeout() {
+        new Thread(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void run() {
+                try {
+                    while(true){
+                        if(System.currentTimeMillis() - start >= 60000){
+                            imageViewSewerMqttStatusColor.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    imageViewSewerMqttStatusColor.getDrawable().setTint(Color.parseColor(OFFLINE_COLOR));
+                                    Log.e("sewerConnection", "changed the color of sewer connection");
+                                }
+                            });
+                            textViewSewerMqttStatus.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    textViewSewerMqttStatus.setText("Disconnected");
+                                    Log.e("sewerConnection", "changed the text of sewer connection");
+                                }
+                            });
+                        }
+                        Thread.sleep(TIME_OUT);
+                    }
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
     private void initialComponent() {
         fetchSewer();
         editTextNumberControlDistance = findViewById(R.id.editTextNumberControlDistance);
         sliderRangeControl = findViewById(R.id.sliderRangeControl);
         videoContainer = findViewById(R.id.imageView6);
-        imageViewMqttStatusColor = findViewById(R.id.imageViewSewerMqttStatusColor);
+        imageViewMyMqttStatusColor = findViewById(R.id.imageViewMyMqttStatusColor);
         imageViewButtonUp = findViewById(R.id.imageViewButtonUp);
         imageViewButtonDown = findViewById(R.id.imageViewButtonDown);
         imageViewButtonStop = findViewById(R.id.imageViewButtonStop);
         imageViewSewerDetailBackButton = findViewById(R.id.imageViewSewerDetailBackButton);
+        imageViewSewerMqttStatusColor = findViewById(R.id.imageViewSewerMqttStatusColor);
+        imageButtonIncreaseDistance = findViewById(R.id.imageButtonIncreaseDistance);
+        imageButtonDecreaseDistance = findViewById(R.id.imageButtonDecreaseDistance);
+        imageViewSocketStatusColor = findViewById(R.id.imageViewSocketStatusColor);
         textViewControlMode = findViewById(R.id.textViewControlMode);
         textViewSewerMqttStatus = findViewById(R.id.textViewSewerMqttStatus);
         textViewName = findViewById(R.id.textViewName);
-        textViewStatus = findViewById(R.id.textViewStatus);
+        textViewSewerStatus = findViewById(R.id.textViewSewerStatus);
         textViewMyMqttStatus = findViewById(R.id.textViewMyMqttStatus);
         textViewSocketStatus = findViewById(R.id.textViewSocketStatus);
+        textViewSewerDistance = findViewById(R.id.textViewSewerDistance);
+        editTextNumberControlDistance.setFilters(new InputFilter[]{ new EditTextFilter("0", "20")});
+        editTextNumberControlDistance.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId== EditorInfo.IME_ACTION_DONE){
+                    //Clear focus here from edittext
+                    editTextNumberControlDistance.clearFocus();
+                }
+                return false;
+            }
+        });
+        imageButtonIncreaseDistance.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int num = 0;
+                String input = editTextNumberControlDistance.getText().toString();
+                if(!input.equals("")){
+                    num = Integer.parseInt(input);
+                    if(num < 20){
+                        num = num +1;
+                    }
+                    else{
+                        num = 0;
+                    }
+                }
+                editTextNumberControlDistance.setText(""+num);
+            }
+        });
+        imageButtonDecreaseDistance.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int num = 0;
+                String input = editTextNumberControlDistance.getText().toString();
+                if(!input.equals("")){
+                    num = Integer.parseInt(input);
+                    if(num != 0){
+                        num = num -1;
+                    }
+                    else{
+                        num = 20;
+                    }
+                }
+                editTextNumberControlDistance.setText(""+num);
+            }
+        });
         imageViewSewerDetailBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -165,9 +257,9 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
             public void onClick(View view) {
                 if(mqttClientHelper.getMqttClient().isConnected()){
                     try {
-                        int controlDistance = Integer.parseInt(editTextNumberControlDistance.getText().toString());
-                        mqttClientHelper.getMqttClient().publish(sewer.getChannel(),
-                                new MqttMessage(mqttClientHelper.getControlStatement(controlDistance, mqttClientHelper.DOWN)));
+
+                        mqttClientHelper.getMqttClient().publish("controller",
+                                new MqttMessage(mqttClientHelper.getControlStatement(getcontrolDistance(), mqttClientHelper.DOWN)));
                     } catch (MqttException e) {
                         e.printStackTrace();
                     }
@@ -179,8 +271,8 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
             public void onClick(View view) {
                 if(mqttClientHelper.getMqttClient().isConnected()){
                     try {
-                        mqttClientHelper.getMqttClient().publish(sewer.getChannel(),
-                                new MqttMessage(mqttClientHelper.getControlStatement(0, mqttClientHelper.UP)));
+                        mqttClientHelper.getMqttClient().publish("controller",
+                                new MqttMessage(mqttClientHelper.getControlStatement(getcontrolDistance(), mqttClientHelper.UP)));
                     } catch (MqttException e) {
                         e.printStackTrace();
                     }
@@ -192,14 +284,19 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
             public void onClick(View view) {
                 if(mqttClientHelper.getMqttClient().isConnected()){
                     try {
-                        mqttClientHelper.getMqttClient().publish(sewer.getChannel(),
-                                new MqttMessage(mqttClientHelper.getControlStatement(0, mqttClientHelper.STOP)));
+                        mqttClientHelper.getMqttClient().publish("controller",
+                                new MqttMessage(mqttClientHelper.getControlStatement(getcontrolDistance(), mqttClientHelper.STOP)));
                     } catch (MqttException e) {
                         e.printStackTrace();
                     }
                 }
             }
         });
+    }
+
+    private int getcontrolDistance() {
+        int controlDistance = Integer.parseInt(editTextNumberControlDistance.getText().toString());
+        return controlDistance*10;
     }
 
     private void setUpMqtt() {
@@ -213,7 +310,7 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
     private boolean setUpSocket(){
         try{
             IO.Options opts = new IO.Options();
-                opts.transports = new String[] { WebSocket.NAME };
+            opts.transports = new String[] { WebSocket.NAME };
             this.mySocket = IO.socket("http://104.155.233.176:3000/", opts);
             return true;
         }
@@ -233,9 +330,6 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
                     long start = System.currentTimeMillis();
                     try{
                         frameQueue.add(data);
-//                        final Bitmap image;
-//                        image = BitmapFactory.decodeByteArray(data, 0, data.length);
-//                        videoContainer.setImageBitmap(image);
                     }
                     catch(Exception e){
                         Log.e("Queue", "Add queue faled: "+e.getMessage());
@@ -250,10 +344,12 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
         @Override
         public void call(final Object... args) {
             runOnUiThread(new Runnable() {
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 @Override
                 public void run() {
                     Log.e("onDisconnect", "onDisconnect");
                     textViewSocketStatus.setText("Disconnected");
+                    imageViewSocketStatusColor.getDrawable().setTint(Color.parseColor(OFFLINE_COLOR));
                 }
             });
         }
@@ -262,10 +358,12 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
         @Override
         public void call(final Object... args) {
             runOnUiThread(new Runnable() {
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 @Override
                 public void run() {
                     Log.e("onConnect", "onConnect");
                     textViewSocketStatus.setText("Connected");
+                    imageViewSocketStatusColor.getDrawable().setTint(Color.parseColor(SOCKET_ONLINE_COLOR));
                 }
             });
         }
@@ -274,10 +372,12 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
         @Override
         public void call(final Object... args) {
             runOnUiThread(new Runnable() {
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 @Override
                 public void run() {
                     Log.e("onConnectError", "onConnectError");
                     textViewSocketStatus.setText("Connection Error");
+                    imageViewSocketStatusColor.getDrawable().setTint(Color.parseColor(OFFLINE_COLOR));
                 }
             });
         }
@@ -286,10 +386,12 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
         @Override
         public void call(final Object... args) {
             runOnUiThread(new Runnable() {
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 @Override
                 public void run() {
                     Log.e("onConnectTimeout", "onConnectTimeout");
                     textViewSocketStatus.setText("Connection Timeout");
+                    imageViewSocketStatusColor.getDrawable().setTint(Color.parseColor(OFFLINE_COLOR));
                 }
             });
         }
@@ -298,10 +400,12 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
         @Override
         public void call(final Object... args) {
             runOnUiThread(new Runnable() {
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 @Override
                 public void run() {
                     Log.e("onReconnecting", "onReconnecting");
                     textViewSocketStatus.setText("Reconnecting");
+                    imageViewSocketStatusColor.getDrawable().setTint(Color.parseColor(OFFLINE_COLOR));
                 }
             });
         }
@@ -310,10 +414,12 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
         @Override
         public void call(final Object... args) {
             runOnUiThread(new Runnable() {
+                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 @Override
                 public void run() {
                     Log.e("onReconnectFailed", "onReconnectFailed");
                     textViewSocketStatus.setText("Reconnect Failed");
+                    imageViewSocketStatusColor.getDrawable().setTint(Color.parseColor(OFFLINE_COLOR));
                 }
             });
         }
@@ -333,18 +439,23 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
         mqttClientHelper.doDisconnect();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void connectComplete(boolean reconnect, String serverURI) {
         Log.e("MQTT", "connection established!");
+        imageViewMyMqttStatusColor.getDrawable().setTint(Color.parseColor(ONLINE_COLOR));
         textViewMyMqttStatus.setText("Connected");
         listenToMqttStatus();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void connectionLost(Throwable cause) {
         Log.e("MQTT", "connection lost");
-        if(textViewSewerMqttStatus.getText().toString().equals("Connected"))
-        textViewMyMqttStatus.setText("Reconnecting");
+        if(textViewMyMqttStatus.getText().toString().equals("Connected") || textViewMyMqttStatus.getText().toString().equals("Mqtt Status")){
+            imageViewMyMqttStatusColor.getDrawable().setTint(Color.parseColor(OFFLINE_COLOR));
+            textViewMyMqttStatus.setText("Reconnecting");
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -358,24 +469,38 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
                 String distance = infoExtract[0];
                 String controlMode = infoExtract[1];
                 String sewerMqttStatus = infoExtract[2];
-                setSewerInfo(distance, controlMode, sewerMqttStatus);
+                setSewerInfo(Integer.valueOf(distance), controlMode, sewerMqttStatus);
                 break;
             case "connection":
+                start = System.currentTimeMillis();
+                if(flagToStartWorker == 0){
+                    checkSewerConnectionTimeout();
+                    flagToStartWorker ++;
+                }
                 String sewerMqttConnection = new String(message.getPayload());
                 setSewerState(sewerMqttConnection);
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void setSewerState(String sewerMqttConnection) {
+        if(textViewSewerMqttStatus.getText().toString().equals("Disconnected") || flagToStartWorker == 0){
+            Log.e("fuck", "fucked changed color");
+            imageViewSewerMqttStatusColor.getDrawable().setTint(Color.parseColor(ONLINE_COLOR));
+        }
+        textViewSewerMqttStatus.setText(sewerMqttConnection);
 
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void setSewerInfo(String distance, String controlMode, String sewerMqttStatus) {
-        textViewSewerMqttStatus.setText(sewerMqttStatus);
-        imageViewMqttStatusColor.getDrawable().setTint(Color.parseColor(sewerMqttStatus.equals("Connected") ? ONLINE_COLOR : OFFLINE_COLOR));
-        sliderRangeControl.setValue(Integer.valueOf(distance));
+    private void setSewerInfo(int distance, String controlMode, String sewerMqttStatus) {
+        textViewSewerStatus.setText(sewerMqttStatus);
+        if(distance > 19){
+            distance = 19;
+        }
+        sliderRangeControl.setValue(distance);
         textViewControlMode.setText(controlMode);
+        textViewSewerDistance.setText(String.valueOf(distance));
     }
 
     @Override

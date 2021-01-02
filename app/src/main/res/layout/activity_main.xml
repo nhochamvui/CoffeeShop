@@ -7,6 +7,22 @@
     android:background="@color/colorBackground"
     tools:context=".MainActivity">
 
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayoutAdminPanel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="#00A0C3D6"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView16"
+        app:tabIconTint="@color/nav_color"
+        app:tabIndicatorColor="#5E97D7"
+        app:tabIndicatorFullWidth="false"
+        app:tabIndicatorGravity="bottom"
+        app:tabMode="scrollable"
+        app:tabTextColor="@color/nav_color" />
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
@@ -21,79 +37,83 @@
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/menu" />
 
-    <FrameLayout
-        android:id="@+id/fragmentContainer"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPagerAdmin2"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="100dp"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView"
+        android:background="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tabLayoutAdminPanel"
         app:layout_constraintVertical_bias="0.0">
 
-    </FrameLayout>
+        <FrameLayout
+            android:id="@+id/fragmentContainerTest"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <androidx.cardview.widget.CardView
+        </FrameLayout>
+    </androidx.viewpager.widget.ViewPager>
+
+    <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardView2"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        app:cardCornerRadius="50dp"
-        app:layout_constraintBottom_toTopOf="@+id/fragmentContainer"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="28dp"
+        android:layout_marginRight="28dp"
+        app:cardCornerRadius="30dp"
+        app:cardPreventCornerOverlap="false"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewDisplayName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.64"
-        app:layout_constraintStart_toEndOf="@+id/textView18"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.78">
+        app:layout_constraintTop_toTopOf="@+id/textViewDisplayName"
+        app:layout_constraintVertical_bias="0.616"
+        app:strokeWidth="2dp">
 
         <ImageView
             android:id="@+id/imageView7"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            tools:srcCompat="@tools:sample/avatars" />
-    </androidx.cardview.widget.CardView>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="start|top"
+
+            tools:ignore="VectorDrawableCompat" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/textViewDisplayName"
+        android:layout_width="230dp"
+        android:layout_height="30dp"
+        android:text="Hello Tho,"
+        android:textColor="@color/reflectColor"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.083"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView8" />
+
+    <ImageView
+        android:id="@+id/imageView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:contentDescription="TODO"
+        android:src="@drawable/ic_round_home_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/reflectColor" />
 
     <TextView
         android:id="@+id/textView16"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginLeft="5dp"
-        android:gravity="center|start"
-        android:text="Hoang Tho"
-        android:textColor="#000000"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/fragmentContainer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.52"
-        app:layout_constraintStart_toEndOf="@+id/cardView2"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.74" />
-
-    <TextView
-        android:id="@+id/textView17"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
-        android:text="Home"
-        android:textColor="#000000"
-        android:textSize="26sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/textView18"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Welcome"
-        app:layout_constraintBottom_toTopOf="@+id/fragmentContainer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.053"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView17"
-        app:layout_constraintVertical_bias="0.4" />
+        android:text="Have a great day!"
+        android:textColor="#5E97D7"
+        app:layout_constraintEnd_toEndOf="@+id/textViewDisplayName"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/textViewDisplayName"
+        app:layout_constraintTop_toBottomOf="@+id/textViewDisplayName" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

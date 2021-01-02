@@ -11,12 +11,14 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +48,8 @@ import com.google.firebase.storage.UploadTask;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
@@ -79,7 +83,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
     private String downloadImageUrl = new String("");
     private EditText editTextUserName;
     private EditText editTextPassword;
-    private EditText editTextRole;
+    private Spinner editTextRole;
     private RadioGroup radioGroupAdd;
     private RadioGroup radioGroupRemove;
     private RadioGroup radioGroupModify;
@@ -142,7 +146,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 userList.clear();
-                User user = new User("", "", "", "", false, false, false);
+                User user = new User("", "", "", "", "", false, false, false);
                 Log.e("on DataChange","userlist size: "+userList.size());
                 for (DataSnapshot id : dataSnapshot.getChildren()) {
                     user = id.getValue(User.class);
@@ -193,6 +197,12 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
         editTextPassword = dialog.findViewById(R.id.editTextPassword_Add);
         editTextRole = dialog.findViewById(R.id.editTextRole_Add);
+        String[] Roles = new String[]{"Select Role", "Admin", "User"};
+        final List<String> plantsList = new ArrayList<>(Arrays.asList(Roles));
+        final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_text, plantsList);
+        spinnerArrayAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
+        editTextRole.setAdapter(spinnerArrayAdapter);
+        editTextRole.setSelection(0);
         imageViewChooseAvatar = dialog.findViewById(R.id.imageViewChooseAvatar);
         imageViewChooseAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -205,7 +215,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
             @Override
             public void onClick(View v) {
                 if(editTextPassword.getText().toString().equals("")
-                        || editTextRole.getText().toString().equals("")
+                        || editTextRole.getSelectedItem().toString().equals("Select Role")
                         || editTextUserName.getText().toString().equals("")) {
                     Toast.makeText(getContext(), "Please fill out the form!", Toast.LENGTH_SHORT).show();
                 }
@@ -222,9 +232,9 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
     public void uploadPicture()
     {
         final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
-        final User user = new User("", "", "", "", false, false, false);
+        final User user = new User("", "", "", "", "", false, false, false);
         user.setUsername(editTextUserName.getText().toString());
-        user.setRole(editTextRole.getText().toString());
+        user.setRole(editTextRole.getSelectedItem().toString());
         user.setPassword(hash(editTextPassword.getText().toString()));
         user.setAdd(Boolean.parseBoolean(radioButtonAdd.getText().toString()));
         user.setRemove(Boolean.parseBoolean(radioButtonRemove.getText().toString()));
@@ -283,9 +293,10 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
     }
     public void uploadPicture(final User userOriginal)
     {
-        final User user = new User("", "", "", "", false, false, false);
-        user.setUsername(editTextUserName.getText().toString());
-        user.setRole(editTextRole.getText().toString());
+        final User user = new User("", "", "", "", "", false, false, false);
+        user.setUsername(userOriginal.getUsername());
+        user.setDisplayname(editTextUserName.getText().toString());
+        user.setRole(editTextRole.getSelectedItem().toString());
         if(editTextPassword.getText().toString().equals(""))// password field is blank
             user.setPassword(userOriginal.getPassword());
         else
@@ -444,9 +455,17 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
         editTextPassword = dialog.findViewById(R.id.editTextPassword_Add);
         editTextRole = dialog.findViewById(R.id.editTextRole_Add);
-        editTextUserName.setText(userList.get(position).getUsername());
+        editTextUserName.setText(userList.get(position).getDisplayname());
         editTextPassword.setText("");
-        editTextRole.setText(userList.get(position).getRole());
+        String[] Roles = new String[]{"Select Role", "Admin", "User"};
+        final List<String> plantsList = new ArrayList<>(Arrays.asList(Roles));
+        final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_text, plantsList);
+        spinnerArrayAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
+        editTextRole.setAdapter(spinnerArrayAdapter);
+        if(userList.get(position).getRole().equals("Admin"))
+            editTextRole.setSelection(1);
+        else
+            editTextRole.setSelection(2);
         if (userList.get(position).getAdd())
             radioGroupAdd.check(R.id.radio1);
         else
@@ -469,18 +488,19 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                 .transform(new RoundedCorners(10))
                 .into(imageViewChooseAvatar);
         final User userOriginal = new User(userList.get(position).getUsername()
-                                    ,userList.get(position).getRole()
-                                    ,userList.get(position).getPassword()
-                                    ,userList.get(position).getAvatar()
-                                    ,userList.get(position).getAdd()
-                                    ,userList.get(position).getModify()
-                                    ,userList.get(position).getRemove()
-                                    );
+                ,userList.get(position).getDisplayname()
+                ,userList.get(position).getRole()
+                ,userList.get(position).getPassword()
+                ,userList.get(position).getAvatar()
+                ,userList.get(position).getAdd()
+                ,userList.get(position).getModify()
+                ,userList.get(position).getRemove()
+        );
         Button buttonConfirm = dialog.findViewById(R.id.buttonConfirm_Add);
         buttonConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(editTextUserName.getText().equals("") || editTextRole.getText().equals(""))
+                if(editTextUserName.getText().equals("") || editTextRole.getSelectedItem().equals("Select Role"))
                 {
                     Toast.makeText(getContext(), "User Name and Role are required!", Toast.LENGTH_SHORT).show();
                 }
@@ -513,7 +533,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                         mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                User user = new User("", "", "", "", false, false, false);
+                                User user = new User("", "", "", "", "", false, false, false);
                                 for (DataSnapshot id : dataSnapshot.getChildren()) {
                                     user = id.getValue(User.class);
                                     if(user.getUsername().equals(userNameCompare)) {

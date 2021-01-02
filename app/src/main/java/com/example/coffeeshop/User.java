@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class User implements Serializable {
     private String Username;
+    private String Displayname;
     private String Role;
     private String Password;
     private String Avatar;
@@ -15,8 +16,9 @@ public class User implements Serializable {
 
     }
 
-    public User(String username, String role, String password, String avatar, Boolean add, Boolean remove, Boolean modify) {
+    public User(String username, String displayname, String role, String password, String avatar, Boolean add, Boolean remove, Boolean modify) {
         Username = username;
+        Displayname = displayname;
         Role = role;
         Password = password;
         Avatar = avatar;
@@ -31,6 +33,13 @@ public class User implements Serializable {
 
     public void setUsername(String username) {
         Username = username;
+    }
+    public String getDisplayname() {
+        return Displayname;
+    }
+
+    public void setDisplayname(String displayname) {
+        Displayname = displayname;
     }
 
     public String getRole() {

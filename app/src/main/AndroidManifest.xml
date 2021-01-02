@@ -18,7 +18,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".SewerCreateActivity"></activity>
+        <activity android:name=".SewerInfoActivity"></activity>
+        <activity android:name=".SewerCreateActivity" />
         <activity android:name=".SewerEditActivity" />
         <activity android:name=".SewerDetailActivity" />
         <activity android:name=".LoginActivity">
@@ -28,7 +29,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".MainActivity"
             android:windowSoftInputMode="stateAlwaysHidden|adjustNothing">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
