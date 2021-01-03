@@ -121,15 +121,14 @@
 
     <ImageView
         android:id="@+id/imageViewSewerDetailBackButton"
-        android:layout_width="46dp"
+        android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/back_button_full_state_background"
-        app:tint="@color/button_full_state_color" />
+        app:srcCompat="@drawable/back_button_full_state_background" />
 
     <View
         android:id="@+id/divider"
