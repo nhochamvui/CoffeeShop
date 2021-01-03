@@ -24,10 +24,6 @@ android {
 dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.firebaseui:firebase-ui-database:4.3.2'
-//    implementation 'com.firebaseui:firebase-ui-firestore:4.3.2'
-//    implementation 'com.google.android.gms:play-services-gcm:17.0.0'
-//    implementation 'com.google.android.gms:play-services-location:17.1.0'
-//    implementation 'com.google.android.gms:play-services-auth:19.0.0'
     implementation 'com.google.firebase:firebase-auth:20.0.1'
     implementation 'com.firebase:firebase-client-android:2.5.0'
     implementation 'com.firebaseui:firebase-ui:0.6.0'

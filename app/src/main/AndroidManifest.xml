@@ -18,7 +18,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".SewerInfoActivity"></activity>
+        <activity android:name=".AccountManagementFragment"></activity>
+        <activity android:name=".SewerInfoActivity" />
         <activity android:name=".SewerCreateActivity" />
         <activity android:name=".SewerEditActivity" />
         <activity android:name=".SewerDetailActivity" />

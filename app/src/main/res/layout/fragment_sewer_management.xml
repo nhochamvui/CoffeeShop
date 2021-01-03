@@ -38,7 +38,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.1" />
+                app:layout_constraintVertical_bias="0.08" />
 
             <TextView
                 android:id="@+id/textViewNumberOfProduct"
@@ -69,6 +69,8 @@
                 android:id="@+id/floatingActionButtonAddDrink"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
                 android:clickable="true"
                 android:src="@drawable/ic_round_add_24"
                 android:tint="#FFFFFF"
@@ -79,10 +81,10 @@
                 app:layout_behavior="com.google.android.material.floatingactionbutton.FloatingActionButton$Behavior"
                 app:layout_constraintBottom_toTopOf="@+id/divider2"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.9"
+                app:layout_constraintHorizontal_bias="0.928"
                 app:layout_constraintStart_toEndOf="@+id/textViewNumberOfProduct"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"
+                app:layout_constraintVertical_bias="0.51"
                 app:rippleColor="#FFFFFF" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 

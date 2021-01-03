@@ -2,6 +2,7 @@ package com.example.coffeeshop;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -9,13 +10,17 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -42,6 +47,7 @@ public class MainActivity extends AppCompatActivity{
     private TabLayout tabLayoutAdminPanel;
     private ViewPager viewPagerAdminPanel;
     private TextView textViewDisplayName;
+    private Button logoutButton;
     public static AuthorizeService authorizeService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +78,7 @@ public class MainActivity extends AppCompatActivity{
         textViewDisplayName.setText("Hello "+user.getDisplayname()+",");
         viewPagerAdminPanel = findViewById(R.id.viewPagerAdmin2);
         tabLayoutAdminPanel = findViewById(R.id.tabLayoutAdminPanel);
+        logoutButton = findViewById(R.id.logoutButton);
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 0);
         viewPagerAdapter.addFragment(new SewerManagementFragment(), "Sewer");
         viewPagerAdapter.addFragment(new UserManagementFragment(), "User");
@@ -95,6 +102,13 @@ public class MainActivity extends AppCompatActivity{
                 .error(R.drawable.ic_round_broken_image_24)
                 .placeholder(R.drawable.ic_baseline_image_24)
                 .into(imageView7);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logoutDiag();
+            }
+        });
+
     }
     private void doAuth()
     {
@@ -137,5 +151,43 @@ public class MainActivity extends AppCompatActivity{
             Log.e("getPageTitle","working "+fragments_title.get(position));
             return fragments_title.get(position);
         }
+    }
+    @Override
+    public void onBackPressed() {
+// TODO Auto-generated method stub
+        logoutDiag();
+    }
+    public void logoutDiag() {
+        AlertDialog.Builder builder=new AlertDialog.Builder(MainActivity.this);
+        // builder.setCancelable(false);
+        builder.setTitle("Logging out...");
+        builder.setMessage("Do you want to Logout?");
+        builder.setPositiveButton("yes",new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                intent.putExtra("justLoggedOut", 1);
+                finish();
+                MainActivity.this.startActivity(intent);
+            }
+        });
+        builder.setNegativeButton("No",new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // TODO Auto-generated method stub
+                dialog.cancel();
+
+            }
+        });
+        AlertDialog alert=builder.create();
+        alert.show();
+        //super.onBackPressed();
+    }
+    public void reloadName() {
+        SharedPreferences sharedPreferences = this.getSharedPreferences("chat room", Context.MODE_PRIVATE);
+//        tvUsername.setText(sharedPreferences.getString("display_name","Anonymous"));
     }
 }
