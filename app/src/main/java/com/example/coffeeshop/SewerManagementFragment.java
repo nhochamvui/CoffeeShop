@@ -1,52 +1,60 @@
 package com.example.coffeeshop;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Rect;
-import android.net.Uri;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDialog;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
+import com.google.android.material.timepicker.TimeFormat;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.UUID;
+import java.util.Calendar;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -66,21 +74,13 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
     private String mParam1;
     private String mParam2;
 
-    private DatabaseReference mDatabase;
-    private ValueEventListener valueEventListenerFetchUser;
     private ArrayList<Sewer> sewerArrayList;
     private SewerAdapter sewerAdapter;
     private RecyclerView recyclerView;
     private FloatingActionButton floatingActionButtonAddDrink;
-    private EditText editTextDrinkName;
-    private EditText editTextDrinkPrice;
-    private EditText editTextDrinkDescription;
-    private EditText editTextDrinkCategory;
-    private Button buttonDrinkChooseImg;
-    private ImageView imageViewDrinkThumbnail;
-    private final int PICK_IMAGE_REQUEST = 233;
-    private Uri imgUri;
     private TextView textViewNumberOfProduct;
+    private User2 user;
+    private HttpRequestHelper httpRequestHelper;
 
     public SewerManagementFragment() {
         // Required empty public constructor
@@ -150,63 +150,67 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
     }
 
     private void initialComponent(View v) {
+        user = MainActivity.user;
+        httpRequestHelper = new HttpRequestHelper(getResources().getString(R.string.server_address));
         recyclerView = v.findViewById(R.id.recyclerViewDrinkManagement);
+//        sewerArrayList = new ArrayList<Sewer>();
         sewerArrayList = new ArrayList<Sewer>();
         textViewNumberOfProduct = v.findViewById(R.id.textViewNumberOfProduct);
         floatingActionButtonAddDrink = v.findViewById(R.id.floatingActionButtonAddDrink);
         floatingActionButtonAddDrink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(MainActivity.authorizeService.canCreate()){
+//                if(MainActivity.authorizeService.canCreate()){
                     Intent intent = new Intent(getContext(), SewerCreateActivity.class);
+                    intent.putExtra("User", user);
                     SewerManagementFragment.this.startActivity(intent);
-                }
-                else{
-                    Toast.makeText(getContext(), "You don't have permission!", Toast.LENGTH_LONG).show();
-                }
+//                }
+//                else{
+//                    Toast.makeText(getContext(), "You don't have permission!", Toast.LENGTH_LONG).show();
+//                }
             }
         });
     }
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data!=null && data.getData() != null)
-        {
-            imgUri = data.getData();
-            Log.e("onactivity",""+imgUri.toString());
-            imageViewDrinkThumbnail.setImageURI(imgUri);
-        }
-    }
-
 
     // load data from firebase and fetch to recycler view
     private void fetchDataIntoRecyclerView() {
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("sewer");
-        valueEventListenerFetchUser = mDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Log.e("ON CHANGING SEWER","detected changed!");
-                sewerArrayList.clear();
-                Sewer sewer = new Sewer("", "", "","","", "");
-                for (DataSnapshot sewerObject : dataSnapshot.getChildren()) {
-                    Log.e("Fetch Sewer","Fetching Sewer");
-                    sewer = sewerObject.getValue(Sewer.class);
-                    Log.e("Fetch Sewer","getId: "+sewer.getId());
-                    Log.e("Fetch Sewer","getName: "+sewer.getName());
-                    Log.e("Fetch Sewer","getDesc: "+sewer.getDesc());
-                    Log.e("Fetch Sewer","getCategory: "+sewer.getCategory());
-                    Log.e("Fetch Sewer","getLocation: "+sewer.getLocation());
-                    Log.e("Fetch Sewer","getChannel: "+sewer.getChannel());
-                    sewerArrayList.add(sewer);
+        sewerArrayList = null;
+        final Request getRequest = httpRequestHelper.getGetRequest("/sewers", user.getAccessToken());
+            new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 }
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                    String json = null;
+                    try {
+                        json = response.body().string();
+                        int i = 0;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    if (!response.isSuccessful()) {
+                        Toast.makeText(SewerManagementFragment.this.getContext(), "Error: "+json, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Gson gson = new Gson();
+                        Type listType = new TypeToken<ArrayList<Sewer>>(){}.getType();
+                        sewerArrayList = gson.fromJson(json, listType);
+                        sewerAdapter.setItems(sewerArrayList);
+                        updateSewerAdapter();
+                    }
+                }
+
+            });
+    }
+    public void updateSewerAdapter(){
+        SewerManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
                 textViewNumberOfProduct.setText("Sewer list: "+sewerArrayList.size()+" sewers");
                 sewerAdapter.notifyDataSetChanged();
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
         });
     }
-
 
     @Override
     public void onStart() {
@@ -227,7 +231,7 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
     public void onPause() {
         super.onPause();
         Log.e("food","onPause");
-        mDatabase.removeEventListener(valueEventListenerFetchUser);
+//        mDatabase.removeEventListener(valueEventListenerFetchUser);
         int i = 0;
     }
 
@@ -291,27 +295,27 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
                 if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
                     bottomSheetView.findViewById(R.id.bottomSSheetDeleteOption).setBackground(getResources().getDrawable(R.drawable.background_gradient_color));
                     bottomSheetDialog.dismiss();
-                    if(MainActivity.authorizeService.canRemove()){
-                        new MaterialAlertDialogBuilder(getContext())
-                                .setTitle("Xóa")
-                                .setMessage("Xóa vĩnh viễn: "+sewer.getName()+"?")
-                                .setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        Toast.makeText(getContext(), "Đã hủy", Toast.LENGTH_SHORT).show();
-                                    }
-                                })
-                                .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        deleteSewer(sewer);
-                                    }
-                                })
-                                .show();
-                    }
-                    else{
-                        Toast.makeText(getContext(), "You don't have permission!", Toast.LENGTH_LONG).show();
-                    }
+//                    if(MainActivity.authorizeService.canRemove()){
+                    new MaterialAlertDialogBuilder(getContext())
+                            .setTitle("Xóa")
+                            .setMessage("Xóa vĩnh viễn: "+sewer.getName()+"?")
+                            .setNegativeButton("Hủy", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    Toast.makeText(getContext(), "Đã hủy", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .setPositiveButton("Xóa", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    deleteSewer(sewer);
+                                }
+                            })
+                            .show();
+//                    }
+//                    else{
+//                        Toast.makeText(getContext(), "You don't have permission!", Toast.LENGTH_LONG).show();
+//                    }
                     return true;
                 }
                 if(motionEvent.getAction() == MotionEvent.ACTION_UP){
@@ -341,79 +345,132 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
                 return false;
             }
         });
+        bottomSheetView.findViewById(R.id.bottomSheetCreateScheduleOption).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
+                    bottomSheetView.findViewById(R.id.bottomSheetEditOption).setBackground(getResources().getDrawable(R.drawable.background_gradient_color));
+                    bottomSheetDialog.dismiss();
+                    openCreateScheduleDialog();
+                    return true;
+                }
+                if(motionEvent.getAction() == MotionEvent.ACTION_UP){
+                    //finger was lifted
+                    bottomSheetView.findViewById(R.id.bottomSheetEditOption).setBackground(getResources().getDrawable(R.color.colorWhite));
+                    return true;
+                }
+                return false;
+            }
+        });
         bottomSheetDialog.setContentView(bottomSheetView);
         bottomSheetDialog.show();
     }
-    public void deleteSewer(final Sewer sewer){
-        final ProgressDialog progressDialog = new ProgressDialog(getContext());
-        progressDialog.show();
-        progressDialog.setTitle("Đang xóa");
-        final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("sewer");
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+
+    private void openCreateScheduleDialog() {
+        final Dialog dialog = new Dialog(SewerManagementFragment.this.getContext());
+        dialog.setContentView(R.layout.dialog_create_schedule);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        final EditText editTextMqttAddress,editTextMqttPort, editTextSocketAddress, editTextSocketPort;
+        final TextView textViewSetTime,textViewSetDate;
+        final int[] time = new int[2];
+        Calendar calendar = Calendar.getInstance();
+        final int year = calendar.get(Calendar.YEAR);
+        final int month = calendar.get(Calendar.MONTH);
+        final int day = calendar.get(Calendar.DAY_OF_MONTH);
+        final int date[] = new int[3];
+        date[0] = year; date[1] = month; date[2] = day;
+        textViewSetTime = dialog.findViewById(R.id.textViewSetTime);
+        textViewSetDate = dialog.findViewById(R.id.textViewSetDate);
+        Button buttonCreateSchedule;
+        buttonCreateSchedule = dialog.findViewById(R.id.buttonCreateSchedule);
+        editTextMqttAddress = dialog.findViewById(R.id.editTextMqttAddress);
+        editTextMqttPort = dialog.findViewById(R.id.editTextMqttPort);
+        editTextSocketAddress = dialog.findViewById(R.id.editTextSocketAddress);
+        editTextSocketPort = dialog.findViewById(R.id.editTextSocketPort);
+        dialog.show();
+
+        textViewSetTime.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(DataSnapshot id : dataSnapshot.getChildren())
-                {
-                    if(id.child("id").getValue().equals(sewer.getId())) {
-                        mDatabase.child(id.getKey()).setValue(null).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Toast.makeText(getContext(), "Đã xóa", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Toast.makeText(getContext(), "Đã xảy ra lỗi: "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                        break;
+            public void onClick(View v) {
+                final TimePickerDialog timePickerDialog = new TimePickerDialog(SewerManagementFragment.this.getContext(),
+                        android.R.style.Theme_Holo_Light_Dialog_MinWidth, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        textViewSetTime.setText((hourOfDay/10<=0?"0"+hourOfDay:hourOfDay)+":"+( minute/10 <= 0 ? "0"+minute: minute));
+                        time[0] = hourOfDay;
+                        time[1] = minute;
                     }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                }, 12, 00, true);
+                timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                timePickerDialog.updateTime(time[0], time[1]);
+                timePickerDialog.show();
             }
         });
-        progressDialog.dismiss();
+        textViewSetDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(SewerManagementFragment.this.getContext(),
+                        android.R.style.Theme_Holo_Light_Dialog_MinWidth, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        month = month+1;
+                        textViewSetDate.setText(year+"-"+(month/10<=0?"0"+month:month)+"-"+(dayOfMonth/10<=0?"0"+dayOfMonth:dayOfMonth));
+                        date[0] = year; date[1] = month; date[2] = day;
+                    }
+                }, year, month, day);
+                datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                datePickerDialog.updateDate(date[0], date[1], date[2]);
+                datePickerDialog.show();
+            }
+        });
+        buttonCreateSchedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(editTextMqttAddress.getText().toString().equals("")
+                        || editTextMqttPort.getText().toString().equals("")
+                        || editTextSocketAddress.getText().toString().equals("")
+                        || editTextSocketPort.getText().toString().equals(""))
+                {
+                    dialog.dismiss();
+                }
+            }
+        });
+    }
+
+    public void deleteSewer(final Sewer sewer){
+        final ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setTitle("Processing request...");
+        progressDialog.show();
+        HttpRequestHelper httpRequestHelper = new HttpRequestHelper(getResources().getString(R.string.server_address));
+        Request deleteRequest = httpRequestHelper.getDeleteRequest("/sewers", sewer.getId(), user.getAccessToken());
+        new OkHttpClient().newCall(deleteRequest).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            }
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                SewerManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            JSONObject message = new JSONObject(response.body().string());
+                            if (!response.isSuccessful()) {
+                                progressDialog.dismiss();
+                                Toast.makeText(SewerManagementFragment.this.getContext(), "Error: " + message.getString("message"), Toast.LENGTH_SHORT).show();
+                            } else {
+                                progressDialog.dismiss();
+                                Toast.makeText(SewerManagementFragment.this.getContext(), "Successful: " + message.getString("message"), Toast.LENGTH_SHORT).show();
+                                fetchDataIntoRecyclerView();
+                            }
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
     }
     @Override
     public void OnDeleteClick(int position) {
-        final Sewer sewer = sewerArrayList.get(position);
-        new AlertDialog.Builder(getContext()).setTitle("Are you sure?").setMessage("This product will be deleted!")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("items");
-                        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                for(DataSnapshot id : dataSnapshot.getChildren())
-                                {
-                                    if(id.child("id").getValue().equals(sewer.getId())) {
-                                        mDatabase.child(id.getKey()).setValue(null);
-                                        Log.e("ok", "ok");
-                                        Toast.makeText(getContext(), "Deleted!",Toast.LENGTH_SHORT);
-                                        break;
-                                    }
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getContext(), "Canceled!",Toast.LENGTH_SHORT);
-                        Log.e("cancel", "cancel");
-                    }
-                }).show();
     }
 }

@@ -1,25 +1,34 @@
 package com.example.coffeeshop;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.util.Log;
-import android.view.SearchEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.gson.Gson;
+
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class SewerCreateActivity extends AppCompatActivity {
 
-    private EditText editTextSewerName, editTextSewerDesc, editTextSewerCategory, editTextSewerLocation, editTextSewerChannel;
+    private EditText editTextSewerName, editTextSewerDesc, editTextSewerCategory, editTextSewerLocationDistrict, editTextSewerLocationCity, editTextSewerChannel;
     private Button buttonCancel, buttonSewerCreate;
+    private User2 user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,22 +37,17 @@ public class SewerCreateActivity extends AppCompatActivity {
     }
 
     private void initialComponents() {
+        user = (User2) getIntent().getSerializableExtra("User");
         editTextSewerName = findViewById(R.id.editTextCreateSewerName);
         editTextSewerDesc = findViewById(R.id.editTextCreateSewerDesc);
-        editTextSewerCategory = findViewById(R.id.editTextCreateSewerCategory);
-        editTextSewerLocation = findViewById(R.id.editTextCreateSewerLocation);
-        editTextSewerChannel = findViewById(R.id.editTextCreateSewerChannel);
-        buttonCancel = findViewById(R.id.buttonCancel);
-        buttonSewerCreate = findViewById(R.id.buttonSewerCreate);
+        editTextSewerLocationDistrict = findViewById(R.id.editTextCreateSewerLocationDistrict);
+        editTextSewerLocationCity = findViewById(R.id.editTextCreateSewerLocationCity);
+        buttonCancel = findViewById(R.id.buttonSewerCreateCancel);
+        buttonSewerCreate = findViewById(R.id.buttonSewerCreateInfo);
         buttonSewerCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(editTextSewerName.getText().toString().equals("") || editTextSewerChannel.getText().toString().equals("")) {
-                    Toast.makeText(getApplicationContext(), "Name and Channel are required!", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    createNewSewer();
-                }
+                createNewSewer();
             }
         });
         buttonCancel.setOnClickListener(new View.OnClickListener() {
@@ -57,24 +61,42 @@ public class SewerCreateActivity extends AppCompatActivity {
     private void createNewSewer() {
         Sewer sewer = new Sewer();
         sewer.setName(editTextSewerName.getText().toString());
-        sewer.setCategory(editTextSewerName.getText().toString());
-        sewer.setLocation(editTextSewerLocation.getText().toString());
-        sewer.setChannel(editTextSewerChannel.getText().toString());
-        final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("sewer");
-        final DatabaseReference newSewerRef = mDatabase.push();
-        sewer.setId(newSewerRef.getKey());
-        newSewerRef.setValue(sewer).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                SewerCreateActivity.this.finish();
-                Toast.makeText(getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
-            }
-        })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(), "Đã xảy ra lỗi: "+e.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
+        sewer.setDescription(editTextSewerDesc.getText().toString());
+        Map<String, String> location = new HashMap<>();
+        location.put("city", editTextSewerLocationCity.getText().toString());
+        location.put("district", editTextSewerLocationDistrict.getText().toString());
+        sewer.setLocation(location);
+
+        if(sewer.isValidForCreate()){
+            HttpRequestHelper requestHelper = new HttpRequestHelper(getResources().getString(R.string.server_address));
+            String json = new Gson().toJson(sewer, Sewer.class);
+            Request postRequest = requestHelper.getPostRequest("/sewers", json, user.getAccessToken());
+            new OkHttpClient().newCall(postRequest).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                }
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JSONObject jsonObject = new JSONObject(response.body().string());
+                                if (!response.isSuccessful()) {
+                                    Toast.makeText(getApplicationContext(), "Error: "+jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    SewerCreateActivity.this.finish();
+                                    Toast.makeText(getApplicationContext(), "Successful: "+jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (IOException | JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+                }
+            });
+        }
+
     }
 }

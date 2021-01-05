@@ -11,13 +11,13 @@
         android:id="@+id/constraintLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="15dp"
         android:background="#000000"
         app:layout_constraintBottom_toTopOf="@+id/divider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewName"
+        app:layout_constraintTop_toBottomOf="@+id/textView3"
         app:layout_constraintVertical_bias="0.0">
 
         <ImageView
@@ -34,28 +34,18 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/textViewName"
-        android:layout_width="142dp"
-        android:layout_height="21dp"
-        android:gravity="center"
-        android:text="Name"
-        android:textColor="#000000"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
-
     <com.google.android.material.slider.Slider
         android:id="@+id/sliderRangeControl"
         style="@style/Widget.MaterialComponents.Slider"
-        android:layout_width="141dp"
-        android:layout_height="93dp"
+        android:layout_width="116dp"
+        android:layout_height="84dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginLeft="50dp"
         android:enabled="false"
         android:rotation="-90"
+
         android:rotationX="0"
         android:rotationY="0"
-
         android:stepSize="1.0"
         android:value="9.0"
         android:valueFrom="0.0"
@@ -64,10 +54,10 @@
         app:labelBehavior="floating"
         app:layout_constraintBottom_toBottomOf="@+id/constraintLayout2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.746"
+        app:layout_constraintHorizontal_bias="0.414"
         app:layout_constraintStart_toEndOf="@+id/constraintLayout2"
         app:layout_constraintTop_toTopOf="@+id/constraintLayout2"
-        app:layout_constraintVertical_bias="0.495" />
+        app:layout_constraintVertical_bias="0.504" />
 
     <ImageButton
         android:id="@+id/imageButtonDecreaseDistance"
@@ -143,6 +133,7 @@
         app:layout_constraintVertical_bias="0.416" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -152,8 +143,8 @@
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView3"
-            android:layout_width="180dp"
-            android:layout_height="130dp"
+            android:layout_width="200dp"
+            android:layout_height="150dp"
             app:cardCornerRadius="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -167,22 +158,21 @@
                     android:id="@+id/textViewSewerMqttStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="5dp"
                     android:layout_marginEnd="10dp"
                     android:layout_marginRight="10dp"
                     android:text="Disconnected"
-                    android:textColor="@color/reflectColor"
-                    app:layout_constraintEnd_toEndOf="@+id/imageView9"
-                    app:layout_constraintHorizontal_bias="0.013"
-                    app:layout_constraintStart_toStartOf="@+id/imageView9"
-                    app:layout_constraintTop_toBottomOf="@+id/imageView9" />
+                    app:layout_constraintEnd_toEndOf="@+id/textViewName"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/textViewName"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewName" />
 
                 <TextView
                     android:id="@+id/textViewSewerStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="status"
+                    android:text="Status: "
                     app:layout_constraintEnd_toEndOf="@+id/textViewSewerMqttStatus"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/textViewSewerMqttStatus"
@@ -210,13 +200,26 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:tint="@color/reflectColor" />
+
+                <TextView
+                    android:id="@+id/textViewName"
+                    android:layout_width="142dp"
+                    android:layout_height="21dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Name"
+                    android:textColor="#000000"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="@+id/imageView9"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/imageView9"
+                    app:layout_constraintTop_toBottomOf="@+id/imageView9" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
             android:id="@+id/cardView4"
-            android:layout_width="180dp"
+            android:layout_width="200dp"
             android:layout_height="150dp"
             android:layout_marginTop="10dp"
             app:cardCornerRadius="20dp"
@@ -230,55 +233,29 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <ImageView
-                    android:id="@+id/imageViewMyMqttStatusColor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginLeft="16dp"
-                    android:layout_marginTop="36dp"
-                    android:src="@drawable/ic_mqtt_connection"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/imageView10"
-                    app:tint="#828282" />
-
                 <TextView
                     android:id="@+id/textViewMyMqttStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginLeft="8dp"
                     android:text="Disconnected"
                     android:textSize="13sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageViewMyMqttStatusColor"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView11"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.01"
-                    app:layout_constraintStart_toEndOf="@+id/imageViewMyMqttStatusColor"
-                    app:layout_constraintTop_toTopOf="@+id/imageViewMyMqttStatusColor"
-                    app:layout_constraintVertical_bias="0.51" />
+                    app:layout_constraintHorizontal_bias="0.209"
+                    app:layout_constraintStart_toEndOf="@+id/textView11"
+                    app:layout_constraintTop_toTopOf="@+id/textView11" />
 
                 <ImageView
                     android:id="@+id/imageView10"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="14dp"
                     android:src="@drawable/ic_round_phonelink_ring_24"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.495"
+                    app:layout_constraintHorizontal_bias="0.114"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:tint="@color/reflectColor" />
-
-                <ImageView
-                    android:id="@+id/imageViewSocketStatusColor"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:src="@drawable/ic_round_flash_on_24"
-                    app:layout_constraintEnd_toEndOf="@+id/imageViewMyMqttStatusColor"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/imageViewMyMqttStatusColor"
-                    app:layout_constraintTop_toBottomOf="@+id/imageViewMyMqttStatusColor" />
 
                 <TextView
                     android:id="@+id/textViewSocketStatus"
@@ -286,23 +263,58 @@
                     android:layout_height="19dp"
                     android:text="Connection Timeout"
                     android:textSize="13sp"
-                    app:layout_constraintBottom_toBottomOf="@+id/imageViewSocketStatusColor"
+                    app:layout_constraintBottom_toBottomOf="@+id/textView17"
                     app:layout_constraintEnd_toEndOf="@+id/textViewMyMqttStatus"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/textViewMyMqttStatus"
-                    app:layout_constraintTop_toTopOf="@+id/imageViewSocketStatusColor"
-                    app:layout_constraintVertical_bias="0.52" />
+                    app:layout_constraintTop_toTopOf="@+id/textView17"
+                    app:layout_constraintVertical_bias="1.0" />
 
                 <TextView
                     android:id="@+id/textView4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
+                    android:layout_marginTop="8dp"
                     android:text="My Device"
                     android:textColor="#070505"
                     app:layout_constraintEnd_toEndOf="@+id/imageView10"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="@+id/imageView10"
                     app:layout_constraintTop_toBottomOf="@+id/imageView10" />
+
+                <TextView
+                    android:id="@+id/textView11"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:text="MQTT:"
+                    app:layout_constraintStart_toStartOf="@+id/textView4"
+                    app:layout_constraintTop_toBottomOf="@+id/textView4" />
+
+                <TextView
+                    android:id="@+id/textView17"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Socket:"
+                    app:layout_constraintEnd_toEndOf="@+id/textView11"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="@+id/textView11"
+                    app:layout_constraintTop_toBottomOf="@+id/textView11" />
+
+                <ImageView
+                    android:id="@+id/buttonSettingConnection"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"
+                    android:src="@drawable/ic_round_settings_24"
+                    app:layout_constraintBottom_toBottomOf="@+id/imageView10"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/imageView10"
+                    app:layout_constraintVertical_bias="0.0"
+                    app:tint="@color/button_full_state_color" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -311,8 +323,8 @@
         android:id="@+id/textViewSewerDistance"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="5dp"
-        android:layout_marginRight="5dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
         android:gravity="end"
         android:text="00"
         app:layout_constraintBottom_toBottomOf="@+id/sliderRangeControl"

@@ -1,47 +1,40 @@
 package com.example.coffeeshop;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.media.Image;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class SewerEditActivity extends AppCompatActivity {
 
-    private TextInputEditText editTextSewerName, editTextSewerDesc, editTextSewerLocation, editTextSewerChannel;
+    private TextInputEditText editTextSewerName, editTextSewerDesc, editTextSewerLocationDistrict, editTextSewerLocationCity, editTextSewerChannel;
     private Button buttonUpdateSewerInfo, buttonSewerEditCancel;
     private ImageView imageViewSewerEditBackButton;
     private AutoCompleteTextView autoCompleteTextViewSewerCategory;
@@ -62,24 +55,25 @@ public class SewerEditActivity extends AppCompatActivity {
         sewer = (Sewer) intent.getSerializableExtra("Sewer");
         editTextSewerName = findViewById(R.id.editTextSewerName);
         editTextSewerDesc = findViewById(R.id.editTextSewerDesc);
-        editTextSewerLocation = findViewById(R.id.editTextSewerLocation);
+        editTextSewerLocationDistrict = findViewById(R.id.editTextSewerLocationDistrict);
+        editTextSewerLocationCity = findViewById(R.id.editTextSewerLocationCity);
         editTextSewerChannel = findViewById(R.id.editTextSewerChannel);
         editTextSewerName.setText(sewer.getName());
-        editTextSewerDesc.setText(sewer.getDesc());
-        editTextSewerLocation.setText(sewer.getLocation());
-        editTextSewerChannel.setText(sewer.getChannel());
+        editTextSewerDesc.setText(sewer.getDescription());
+        editTextSewerLocationDistrict.setText(sewer.getLocation().get("district"));
+        editTextSewerLocationCity.setText(sewer.getLocation().get("city"));
+        editTextSewerChannel.setText(sewer.getId());
 
         imageViewSewerEditBackButton = findViewById(R.id.imageViewSewerEditBackButton);
         buttonSewerEditCancel = findViewById(R.id.buttonSewerEditCancel);
         autoCompleteTextViewSewerCategory = findViewById(R.id.my_spinner_dropdown_sewer_category);
-        sewer = (Sewer) getIntent().getSerializableExtra("Sewer");
         buttonUpdateSewerInfo = findViewById(R.id.buttonUpdateSewerInfo);
         List<String> categories = new ArrayList<String>();
         categories.add("Rất nhỏ");categories.add("Nhỏ");categories.add("Vừa");categories.add("Tương đối lớn");categories.add("Lớn");
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item, categories);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         autoCompleteTextViewSewerCategory.setAdapter(dataAdapter);
-        autoCompleteTextViewSewerCategory.setText(sewer.getCategory(), false);
+//        autoCompleteTextViewSewerCategory.setText(sewer.getCategory(), false);
         imageViewSewerEditBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,39 +100,40 @@ public class SewerEditActivity extends AppCompatActivity {
     }
 
     private void editSewer(final Sewer sewer){
-        final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("sewer");
+        sewer.setId(editTextSewerChannel.getText().toString());
         sewer.setName(editTextSewerName.getText().toString());
-        sewer.setDesc(editTextSewerDesc.getText().toString().equals(null) ? "" : editTextSewerLocation.getText().toString());
-        sewer.setCategory(autoCompleteTextViewSewerCategory.getText().toString());
-        sewer.setLocation(editTextSewerLocation.getText().toString().equals(null) ? "" : editTextSewerLocation.getText().toString());
-        sewer.setChannel(editTextSewerChannel.getText().toString());
-        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for(final DataSnapshot id : dataSnapshot.getChildren())
-                {
-                    if(id.child("id").getValue().equals(sewer.getId())) {
-                        mDatabase.child(id.getKey()).setValue(sewer).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Toast.makeText(getApplicationContext(), "Chỉnh sửa thành công", Toast.LENGTH_SHORT).show();
-                                SewerEditActivity.this.finish();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(getApplicationContext(), "Đã xảy ra lỗi: "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        break;
-                    }
+        sewer.setDescription(editTextSewerDesc.getText().toString().equals(null) ? "" : editTextSewerDesc.getText().toString());
+        Map<String, String> location = new HashMap<>();
+        location.put("city", editTextSewerLocationCity.getText().toString());
+        location.put("district", editTextSewerLocationDistrict.getText().toString());
+        sewer.setLocation(location);
+        if(sewer.isValidForEdit()){
+            HttpRequestHelper requestHelper = new HttpRequestHelper(getResources().getString(R.string.server_address));
+            Request editRequest = requestHelper.getEditRequest("/sewers", sewer.getId(), new Gson().toJson(sewer, Sewer.class), MainActivity.user.getAccessToken());
+            new OkHttpClient().newCall(editRequest).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                JSONObject jsonObject = new JSONObject(response.body().string());
+                                if (!response.isSuccessful()) {
+                                    Toast.makeText(getApplicationContext(), "Error: "+jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    SewerEditActivity.this.finish();
+                                    Toast.makeText(getApplicationContext(), "Successful: "+jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (IOException | JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+            });
+        }
     }
 }

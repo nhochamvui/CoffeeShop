@@ -66,23 +66,31 @@
             android:lines="2"
             android:maxLines="2"
             android:minLines="1"
-            android:text="Địa điểm: "
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="@+id/textViewSewerCategory"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/textViewSewerCategory"
-            app:layout_constraintTop_toBottomOf="@+id/textViewSewerCategory" />
-
-        <TextView
-            android:id="@+id/textViewSewerCategory"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Loại: "
+            android:text="Location: "
             android:textSize="14sp"
             app:layout_constraintEnd_toEndOf="@+id/textViewSewerName"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/textViewSewerName"
             app:layout_constraintTop_toBottomOf="@+id/textViewSewerName" />
+
+        <TextView
+            android:id="@+id/textViewSewerCategory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:layout_marginRight="20dp"
+            android:lines="2"
+            android:maxLines="2"
+            android:minLines="1"
+            android:singleLine="false"
+            android:text="Description: "
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/textViewSewerLocation"
+            app:layout_constraintTop_toBottomOf="@+id/textViewSewerLocation"
+            app:layout_constraintVertical_bias="0.0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

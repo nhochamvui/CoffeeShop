@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cardCornerRadius="20dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/outlinedTextFieldMqttAddress"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="#00FFFFFF"
+            android:hint="MQTT Address"
+            android:textColorHint="@color/reflectColor"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusBottomEnd="20dp"
+            app:boxCornerRadiusBottomStart="20dp"
+            app:boxCornerRadiusTopEnd="20dp"
+            app:boxCornerRadiusTopStart="20dp"
+            app:boxStrokeColor="#5E97D7"
+            app:boxStrokeWidth="0dp"
+            app:endIconTint="#000000"
+            app:hintAnimationEnabled="true"
+            app:hintTextColor="#000000"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextMqttAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/outlinedTextFieldMqttPort"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="#00FFFFFF"
+            android:hint="MQTT Port"
+            android:textColorHint="@color/reflectColor"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusBottomEnd="20dp"
+            app:boxCornerRadiusBottomStart="20dp"
+            app:boxCornerRadiusTopEnd="20dp"
+            app:boxCornerRadiusTopStart="20dp"
+            app:boxStrokeColor="#5E97D7"
+            app:boxStrokeWidth="0dp"
+            app:endIconTint="#000000"
+            app:hintAnimationEnabled="true"
+            app:hintTextColor="#000000"
+            app:layout_constraintEnd_toEndOf="@id/outlinedTextFieldMqttAddress"
+            app:layout_constraintStart_toStartOf="@id/outlinedTextFieldMqttAddress"
+            app:layout_constraintTop_toBottomOf="@+id/outlinedTextFieldMqttAddress">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextMqttPort"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/outlinedTextFieldSocketAddress"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="#00FFFFFF"
+            android:hint="Socket Address"
+            android:textColorHint="@color/reflectColor"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusBottomEnd="20dp"
+            app:boxCornerRadiusBottomStart="20dp"
+            app:boxCornerRadiusTopEnd="20dp"
+            app:boxCornerRadiusTopStart="20dp"
+            app:boxStrokeColor="#5E97D7"
+            app:boxStrokeWidth="0dp"
+            app:endIconTint="#000000"
+            app:hintAnimationEnabled="true"
+            app:hintTextColor="#000000"
+            app:layout_constraintEnd_toEndOf="@id/outlinedTextFieldMqttPort"
+            app:layout_constraintStart_toStartOf="@id/outlinedTextFieldMqttPort"
+            app:layout_constraintTop_toBottomOf="@+id/outlinedTextFieldMqttPort">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextSocketAddress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/outlinedTextFieldSocketPort"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="#00FFFFFF"
+            android:hint="Socket Port"
+            android:textColorHint="@color/reflectColor"
+            app:boxBackgroundColor="#FFFFFF"
+            app:boxBackgroundMode="outline"
+            app:boxCornerRadiusBottomEnd="20dp"
+            app:boxCornerRadiusBottomStart="20dp"
+            app:boxCornerRadiusTopEnd="20dp"
+            app:boxCornerRadiusTopStart="20dp"
+            app:boxStrokeColor="#5E97D7"
+            app:boxStrokeWidth="0dp"
+            app:endIconTint="#000000"
+            app:hintAnimationEnabled="true"
+            app:hintTextColor="#000000"
+            app:layout_constraintEnd_toEndOf="@id/outlinedTextFieldSocketAddress"
+            app:layout_constraintStart_toStartOf="@id/outlinedTextFieldSocketAddress"
+            app:layout_constraintTop_toBottomOf="@+id/outlinedTextFieldSocketAddress">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextSocketPort"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/buttonSaveSettingConnection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="Save"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/outlinedTextFieldSocketPort"
+            app:layout_constraintTop_toBottomOf="@+id/outlinedTextFieldSocketPort"
+            app:layout_constraintVertical_bias="0.0" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
