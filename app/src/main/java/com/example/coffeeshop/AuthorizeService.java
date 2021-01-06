@@ -14,10 +14,8 @@ public class AuthorizeService {
     private User user;
     private DatabaseReference mDatabase;
 
-    public AuthorizeService(String userName){
-        this.mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
-        retrieveUser(userName);
-
+    public AuthorizeService(User user){
+        this.user = user;
     }
 
     public void setUser(User user){
@@ -47,14 +45,5 @@ public class AuthorizeService {
     }
     public boolean isAdmin(){
         return this.user.getRole().equals("Admin") ? true : false;
-    }
-    public boolean canCreate(){
-        return this.user.getAdd();
-    }
-    public boolean canModify(){
-        return this.user.getModify();
-    }
-    public boolean canRemove(){
-        return this.user.getRemove();
     }
 }

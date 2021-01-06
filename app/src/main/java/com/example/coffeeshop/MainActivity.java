@@ -36,11 +36,12 @@ public class MainActivity extends AppCompatActivity{
     private Menu menu;
     private BottomNavigationView bottomNavigationView;
     private ImageView imageView7;
-    static User2 user;
+    protected static User user;
     private TabLayout tabLayoutAdminPanel;
     private ViewPager viewPagerAdminPanel;
     private TextView textViewDisplayName;
     private Button logoutButton;
+    protected static HttpRequestHelper httpRequestHelper;
     public static AuthorizeService authorizeService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,19 +65,25 @@ public class MainActivity extends AppCompatActivity{
         return true;
     }
     private void initialComponent(){
+        httpRequestHelper = new HttpRequestHelper(getResources().getString(R.string.server_address));
         intent = getIntent();
-        user = (User2)intent.getSerializableExtra("User");
-        this.authorizeService = new AuthorizeService("linh");
+        user = (User)intent.getSerializableExtra("User");
+        this.authorizeService = new AuthorizeService(user);
         textViewDisplayName = findViewById(R.id.textViewDisplayName);
         textViewDisplayName.setText("Hello "+user.getName()+",");
         viewPagerAdminPanel = findViewById(R.id.viewPagerAdmin2);
         tabLayoutAdminPanel = findViewById(R.id.tabLayoutAdminPanel);
         logoutButton = findViewById(R.id.logoutButton);
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), 0);
-        viewPagerAdapter.addFragment(new SewerManagementFragment(), "Sewer");
-        viewPagerAdapter.addFragment(new UserManagementFragment(), "User");
-        viewPagerAdapter.addFragment(new MsgBoardFragment(), "Message Board");
+        if(!MainActivity.authorizeService.getUser().getRole().equals("Guest")){
+            viewPagerAdapter.addFragment(new SewerManagementFragment(), "Sewer");
+        }
         viewPagerAdapter.addFragment(new ScheduleManagementFragment(), "Schedule");
+        if(MainActivity.authorizeService.isAdmin()){
+            viewPagerAdapter.addFragment(new UserManagementFragment(), "User");
+        }
+        viewPagerAdapter.addFragment(new MsgBoardFragment(), "Message Board");
+
         viewPagerAdminPanel.setOffscreenPageLimit(1);
         viewPagerAdminPanel.setAdapter(viewPagerAdapter);
         tabLayoutAdminPanel.setupWithViewPager(viewPagerAdminPanel);

@@ -28,7 +28,7 @@ public class SewerCreateActivity extends AppCompatActivity {
 
     private EditText editTextSewerName, editTextSewerDesc, editTextSewerCategory, editTextSewerLocationDistrict, editTextSewerLocationCity, editTextSewerChannel;
     private Button buttonCancel, buttonSewerCreate;
-    private User2 user;
+    private User user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +37,7 @@ public class SewerCreateActivity extends AppCompatActivity {
     }
 
     private void initialComponents() {
-        user = (User2) getIntent().getSerializableExtra("User");
+        user = (User) getIntent().getSerializableExtra("User");
         editTextSewerName = findViewById(R.id.editTextCreateSewerName);
         editTextSewerDesc = findViewById(R.id.editTextCreateSewerDesc);
         editTextSewerLocationDistrict = findViewById(R.id.editTextCreateSewerLocationDistrict);

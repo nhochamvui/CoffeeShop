@@ -1,11 +1,17 @@
 package com.example.coffeeshop;
 
+import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.DrmInitData;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,11 +22,15 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -34,6 +44,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -62,7 +75,7 @@ public class ScheduleManagementFragment extends Fragment implements ScheduleAdap
     private HttpRequestHelper httpRequestHelper;
     private TextView textViewNumberOfSchedule;
     private FloatingActionButton floatingActionButtonAddSchedule;
-    private User2 user;
+    private User user;
     private String date = "2020-12-29";
     private String time = "15:15";
 //    action: '1';
@@ -142,22 +155,31 @@ public class ScheduleManagementFragment extends Fragment implements ScheduleAdap
             }
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                JSONObject message = null;
+                String json = null;
+                try {
+                    json = response.body().string();
+                    message = new JSONObject(json);
+                } catch (JSONException e) {
+                    Log.e("scheduleFetch", "error while convert from json");
+                }
+                final JSONObject finalMessage = message;
+                final String finalJson = json;
                 ScheduleManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         try {
                             if (!response.isSuccessful()) {
-                                JSONObject message = new JSONObject(response.body().string());
-                                Toast.makeText(ScheduleManagementFragment.this.getContext(), "Error: "+message.getString("message"), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ScheduleManagementFragment.this.getContext(), "Error: "+ finalMessage.getString("message"), Toast.LENGTH_SHORT).show();
                             } else {
                                 Gson gson = new Gson();
                                 Type listType = new TypeToken<ArrayList<Schedule>>(){}.getType();
-                                scheduleArrayList = gson.fromJson(response.body().string(), listType);
+                                scheduleArrayList = gson.fromJson(finalJson, listType);
                                 scheduleAdapter.setItems(scheduleArrayList);
                                 scheduleAdapter.notifyDataSetChanged();
                             }
-                        } catch (IOException | JSONException e) {
-                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            Toast.makeText(ScheduleManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -199,20 +221,16 @@ public class ScheduleManagementFragment extends Fragment implements ScheduleAdap
         final View bottomSheetView = LayoutInflater.from(this.getContext()).inflate(R.layout.bottom_sheet_menu, (LinearLayout)this.getActivity().findViewById(R.id.bottomSheetContainer));
         bottomSheetView.findViewById(R.id.bottomSheetInfoOption).setVisibility(View.GONE);
         bottomSheetView.findViewById(R.id.bottomSheetControlOption).setVisibility(View.GONE);
+        bottomSheetView.findViewById(R.id.bottomSheetCreateScheduleOption).setVisibility(View.GONE);
+        bottomSheetView.findViewById(R.id.bottomSheetEditOption).setVisibility(View.GONE);
         bottomSheetView.findViewById(R.id.bottomSheetEditOption).setOnTouchListener(new View.OnTouchListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
                     bottomSheetView.findViewById(R.id.bottomSheetEditOption).setBackground(getResources().getDrawable(R.drawable.background_gradient_color));
                     bottomSheetDialog.dismiss();
-                    if(MainActivity.authorizeService.canModify()){
-                        Intent intent = new Intent(getContext(), SewerEditActivity.class);
-                        intent.putExtra("Schedule", schedule);
-                        ScheduleManagementFragment.this.startActivity(intent);
-                    }
-                    else{
-                        Toast.makeText(getContext(), "You don't have permission!", Toast.LENGTH_LONG).show();
-                    }
+                    openEditScheduleDialog(schedule);
                     return true;
                 }
                 if(motionEvent.getAction() == MotionEvent.ACTION_UP){
@@ -281,6 +299,108 @@ public class ScheduleManagementFragment extends Fragment implements ScheduleAdap
         });
         bottomSheetDialog.setContentView(bottomSheetView);
         bottomSheetDialog.show();
+    }
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void openEditScheduleDialog(final Schedule schedule) {
+        final Dialog dialog = new Dialog(ScheduleManagementFragment.this.getContext());
+        dialog.setContentView(R.layout.dialog_create_schedule);
+//        dialog.setTitle("Create Schedule");
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        List<String> actions = new ArrayList<String>();
+        actions.add("Open");actions.add("Close");
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(ScheduleManagementFragment.this.getContext(), R.layout.support_simple_spinner_dropdown_item, actions);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        final AutoCompleteTextView autoCompleteTextViewScheduleAction = dialog.findViewById(R.id.autoCompleteTextViewScheduleAction);
+        autoCompleteTextViewScheduleAction.setAdapter(dataAdapter);
+        autoCompleteTextViewScheduleAction.setText(schedule.parseAction(Integer.parseInt(schedule.getAction())), false);
+        final TextView textViewSetTime,textViewSetDate;
+        final int[] time = new int[2];
+        Calendar calendar = Calendar.getInstance();
+        final int year = calendar.get(Calendar.YEAR);
+        final int month = calendar.get(Calendar.MONTH);
+        final int day = calendar.get(Calendar.DAY_OF_MONTH);
+        final int date[] = new int[3];
+        date[0] = year; date[1] = month; date[2] = day;
+        textViewSetTime = dialog.findViewById(R.id.textViewSetTime);
+        textViewSetDate = dialog.findViewById(R.id.textViewSetDate);
+        textViewSetTime.setText(schedule.getTime());
+        textViewSetDate.setText(schedule.getDate());
+        Button buttonCreateSchedule;
+        buttonCreateSchedule = dialog.findViewById(R.id.buttonCreateSchedule);
+        buttonCreateSchedule.setText("Update");
+        dialog.show();
+
+        textViewSetTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final TimePickerDialog timePickerDialog = new TimePickerDialog(ScheduleManagementFragment.this.getContext(),
+                        android.R.style.Theme_Holo_Light_Dialog_MinWidth, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        textViewSetTime.setText((hourOfDay/10<=0?"0"+hourOfDay:hourOfDay)+":"+( minute/10 <= 0 ? "0"+minute: minute));
+                        time[0] = hourOfDay;
+                        time[1] = minute;
+                    }
+                }, 12, 00, true);
+                timePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                timePickerDialog.updateTime(time[0], time[1]);
+                timePickerDialog.show();
+            }
+        });
+        textViewSetDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(ScheduleManagementFragment.this.getContext(),
+                        android.R.style.Theme_Holo_Light_Dialog_MinWidth, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        month = month+1;
+                        textViewSetDate.setText(year+"-"+(month/10<=0?"0"+month:month)+"-"+(dayOfMonth/10<=0?"0"+dayOfMonth:dayOfMonth));
+                        date[0] = year; date[1] = month-1; date[2] = dayOfMonth;
+                    }
+                }, year, month, day);
+                datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                datePickerDialog.updateDate(date[0], date[1], date[2]);
+                datePickerDialog.getDatePicker().setMinDate(new Date().getTime()- 10000);
+                datePickerDialog.show();
+            }
+        });
+        buttonCreateSchedule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!textViewSetTime.getText().toString().equals("Set Time") || !textViewSetDate.getText().toString().equals("Set Date")) {
+                    schedule.setTime(textViewSetTime.getText().toString());
+                    schedule.setTime(textViewSetDate.getText().toString());
+                    schedule.setAction(autoCompleteTextViewScheduleAction.getText().toString().equals("Open")?"1":"0");
+                    new OkHttpClient().newCall(httpRequestHelper.getEditRequest("/schedules", schedule.getId(), new Gson().toJson(schedule), user.getAccessToken())).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            Log.e("Create Schedule", ""+e.getMessage());
+                        }
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                            ScheduleManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(response.body().string());
+                                        if (!response.isSuccessful()) {
+                                            Toast.makeText(ScheduleManagementFragment.this.getContext(), "Error: "+jsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                                        } else {
+                                            dialog.dismiss();
+                                            Toast.makeText(ScheduleManagementFragment.this.getContext(), "Successful: "+jsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                                        }
+                                    } catch (IOException | JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
     }
     public void deleteSchedule(final Schedule schedule){
         final ProgressDialog progressDialog = new ProgressDialog(getContext());

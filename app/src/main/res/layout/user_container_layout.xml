@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="45dp"
+    android:layout_marginTop="40dp"
+    android:layout_marginBottom="5dp"
     android:background="#00FFFFFF"
     android:fadingEdgeLength="1dp">
 
@@ -25,8 +26,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
+            android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout5"
@@ -34,7 +34,7 @@
                 android:layout_width="195dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:hint="User Name"
+                android:hint="Email"
                 android:textColorHint="#000000"
                 app:layout_constraintBottom_toTopOf="@+id/textInputLayout8"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -83,8 +83,9 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="195dp"
                 android:layout_height="wrap_content"
-                android:hint="Role"
                 android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:hint="Role"
                 android:textColorHint="#000000"
                 app:layout_constraintBottom_toTopOf="@+id/textInputLayout7"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -106,9 +107,10 @@
                 android:layout_width="195dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:hint="Authorization"
                 android:layout_marginBottom="10dp"
+                android:hint="Authorization"
                 android:textColorHint="#000000"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -150,11 +152,11 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardView"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
 
-        android:background="@drawable/ic_baseline_account_circle_black_24"
-        app:cardCornerRadius="50dp"
+        android:background="@drawable/ic_launcher_background"
+        app:cardCornerRadius="40dp"
         app:cardElevation="6dp"
         app:cardPreventCornerOverlap="false"
         app:layout_anchor="@+id/coordinator"
@@ -166,8 +168,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
+            android:src="@drawable/ic_baseline_account_circle_black_24"
             app:layout_anchorGravity="start|top"
-            app:srcCompat="@drawable/ic_launcher_background"
             tools:ignore="VectorDrawableCompat" />
     </com.google.android.material.card.MaterialCardView>
 
@@ -175,10 +177,10 @@
         android:id="@+id/imageViewDeleteUser"
         android:layout_width="59dp"
         android:layout_height="26dp"
-        app:cardElevation="6dp"
-        app:layout_anchor="@+id/coordinator"
         android:background="#2690A0AF"
         android:backgroundTint="#2690A0AF"
+        app:cardElevation="6dp"
+        app:layout_anchor="@+id/coordinator"
         app:layout_anchorGravity="start|bottom"
         tools:ignore="VectorDrawableCompat">
 
@@ -196,9 +198,9 @@
         android:layout_width="60dp"
         android:layout_height="26dp"
         android:layout_marginBottom="45dp"
-        app:cardElevation="6dp"
         android:background="#2690A0AF"
         android:backgroundTint="#2690A0AF"
+        app:cardElevation="6dp"
         app:layout_anchor="@+id/coordinator"
         app:layout_anchorGravity="start|bottom"
         tools:ignore="VectorDrawableCompat">

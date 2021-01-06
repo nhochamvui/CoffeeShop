@@ -1,7 +1,6 @@
 package com.example.coffeeshop;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 public class Schedule implements Serializable {
     public final static int SCHEDULE_OPEN = 1;
@@ -13,6 +12,20 @@ public class Schedule implements Serializable {
     private Sewer sewer;
     public Schedule(){
 
+    }
+    public Schedule(String date, String time, String action, Sewer sewer){
+        setId("");
+        setDate(date);
+        setTime(time);
+        setAction(action);
+        setSewer(sewer);
+    }
+    public Schedule(String date, String time, int action, Sewer sewer){
+        setId("");
+        setDate(date);
+        setTime(time);
+        setAction(parseAction(action));
+        setSewer(sewer);
     }
 
     public String getId() {
@@ -40,15 +53,19 @@ public class Schedule implements Serializable {
     }
 
     public String getAction() {
-        switch (Integer.parseInt(this.action)){
+        return this.action;
+    }
+
+    public String parseAction(int action){
+        switch (action){
             case SCHEDULE_OPEN:
                 return "Open";
             case SCHEDULE_CLOSE:
-                return "CLose";
-            default: break;
+                return "Close";
+            default: return "Undefined";
         }
-        return action;
     }
+
 
     public void setAction(String action) {
         this.action = action;

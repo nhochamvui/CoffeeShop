@@ -22,9 +22,10 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -33,8 +34,6 @@ import android.widget.Toast;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.timepicker.TimeFormat;
-import com.google.firebase.database.DatabaseReference;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -44,19 +43,16 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
-import static android.app.Activity.RESULT_OK;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -79,7 +75,7 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
     private RecyclerView recyclerView;
     private FloatingActionButton floatingActionButtonAddDrink;
     private TextView textViewNumberOfProduct;
-    private User2 user;
+    private User user;
     private HttpRequestHelper httpRequestHelper;
 
     public SewerManagementFragment() {
@@ -126,26 +122,6 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
         recyclerView.setLayoutManager(new GridLayoutManager(SewerManagementFragment.this.getContext(),1));
         recyclerView.setAdapter(sewerAdapter);
         recyclerView.setHasFixedSize(true);
-        final int spacing = getResources().getDimensionPixelSize(R.dimen.spacing)/2;
-
-//        recyclerView.setPadding(spacing, spacing, spacing, spacing);
-//        recyclerView.setClipToPadding(true);
-//        recyclerView.setClipChildren(true);
-        /*recyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-                int position = parent.getChildAdapterPosition(view);
-                int left = 0, right = 0, top = 0, bottom = spacing+15;
-                if(position == 0 || position == 1){
-                    top = spacing + 15;
-                }
-                if(position %2 == 0) {
-//                    left = 5;
-                    right = 5;
-                }
-                outRect.set(left, top, right, bottom);
-            }
-        });*/
         return v;
     }
 
@@ -160,14 +136,14 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
         floatingActionButtonAddDrink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                if(MainActivity.authorizeService.canCreate()){
+                if(MainActivity.authorizeService.isAdmin()){
                     Intent intent = new Intent(getContext(), SewerCreateActivity.class);
                     intent.putExtra("User", user);
                     SewerManagementFragment.this.startActivity(intent);
-//                }
-//                else{
-//                    Toast.makeText(getContext(), "You don't have permission!", Toast.LENGTH_LONG).show();
-//                }
+                }
+                else{
+                    Toast.makeText(getContext(), "You don't have permission!", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -271,14 +247,9 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
                 if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
                     bottomSheetView.findViewById(R.id.bottomSheetEditOption).setBackground(getResources().getDrawable(R.drawable.background_gradient_color));
                     bottomSheetDialog.dismiss();
-                    if(MainActivity.authorizeService.canModify()){
-                        Intent intent = new Intent(getContext(), SewerEditActivity.class);
-                        intent.putExtra("Sewer", sewer);
-                        SewerManagementFragment.this.startActivity(intent);
-                    }
-                    else{
-                        Toast.makeText(getContext(), "You don't have permission!", Toast.LENGTH_LONG).show();
-                    }
+                    Intent intent = new Intent(getContext(), SewerEditActivity.class);
+                    intent.putExtra("Sewer", sewer);
+                    SewerManagementFragment.this.startActivity(intent);
                     return true;
                 }
                 if(motionEvent.getAction() == MotionEvent.ACTION_UP){
@@ -295,7 +266,6 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
                 if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
                     bottomSheetView.findViewById(R.id.bottomSSheetDeleteOption).setBackground(getResources().getDrawable(R.drawable.background_gradient_color));
                     bottomSheetDialog.dismiss();
-//                    if(MainActivity.authorizeService.canRemove()){
                     new MaterialAlertDialogBuilder(getContext())
                             .setTitle("Xóa")
                             .setMessage("Xóa vĩnh viễn: "+sewer.getName()+"?")
@@ -312,10 +282,6 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
                                 }
                             })
                             .show();
-//                    }
-//                    else{
-//                        Toast.makeText(getContext(), "You don't have permission!", Toast.LENGTH_LONG).show();
-//                    }
                     return true;
                 }
                 if(motionEvent.getAction() == MotionEvent.ACTION_UP){
@@ -346,12 +312,13 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
             }
         });
         bottomSheetView.findViewById(R.id.bottomSheetCreateScheduleOption).setOnTouchListener(new View.OnTouchListener() {
+            @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
                     bottomSheetView.findViewById(R.id.bottomSheetEditOption).setBackground(getResources().getDrawable(R.drawable.background_gradient_color));
                     bottomSheetDialog.dismiss();
-                    openCreateScheduleDialog();
+                    openCreateScheduleDialog(sewer);
                     return true;
                 }
                 if(motionEvent.getAction() == MotionEvent.ACTION_UP){
@@ -366,11 +333,19 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
         bottomSheetDialog.show();
     }
 
-    private void openCreateScheduleDialog() {
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
+    private void openCreateScheduleDialog(final Sewer sewer) {
         final Dialog dialog = new Dialog(SewerManagementFragment.this.getContext());
         dialog.setContentView(R.layout.dialog_create_schedule);
+//        dialog.setTitle("Create Schedule");
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        final EditText editTextMqttAddress,editTextMqttPort, editTextSocketAddress, editTextSocketPort;
+        List<String> actions = new ArrayList<String>();
+        actions.add("Open");actions.add("Close");
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(SewerManagementFragment.this.getContext(), R.layout.support_simple_spinner_dropdown_item, actions);
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        final AutoCompleteTextView autoCompleteTextViewScheduleAction = dialog.findViewById(R.id.autoCompleteTextViewScheduleAction);
+        autoCompleteTextViewScheduleAction.setAdapter(dataAdapter);
+        autoCompleteTextViewScheduleAction.setText("Open", false);
         final TextView textViewSetTime,textViewSetDate;
         final int[] time = new int[2];
         Calendar calendar = Calendar.getInstance();
@@ -383,10 +358,6 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
         textViewSetDate = dialog.findViewById(R.id.textViewSetDate);
         Button buttonCreateSchedule;
         buttonCreateSchedule = dialog.findViewById(R.id.buttonCreateSchedule);
-        editTextMqttAddress = dialog.findViewById(R.id.editTextMqttAddress);
-        editTextMqttPort = dialog.findViewById(R.id.editTextMqttPort);
-        editTextSocketAddress = dialog.findViewById(R.id.editTextSocketAddress);
-        editTextSocketPort = dialog.findViewById(R.id.editTextSocketPort);
         dialog.show();
 
         textViewSetTime.setOnClickListener(new View.OnClickListener() {
@@ -415,23 +386,49 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                         month = month+1;
                         textViewSetDate.setText(year+"-"+(month/10<=0?"0"+month:month)+"-"+(dayOfMonth/10<=0?"0"+dayOfMonth:dayOfMonth));
-                        date[0] = year; date[1] = month; date[2] = day;
+                        date[0] = year; date[1] = month-1; date[2] = dayOfMonth;
                     }
                 }, year, month, day);
                 datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 datePickerDialog.updateDate(date[0], date[1], date[2]);
+                datePickerDialog.getDatePicker().setMinDate(new Date().getTime()- 10000);
                 datePickerDialog.show();
             }
         });
         buttonCreateSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(editTextMqttAddress.getText().toString().equals("")
-                        || editTextMqttPort.getText().toString().equals("")
-                        || editTextSocketAddress.getText().toString().equals("")
-                        || editTextSocketPort.getText().toString().equals(""))
-                {
-                    dialog.dismiss();
+                if(!textViewSetTime.getText().toString().equals("Set Time") || !textViewSetDate.getText().toString().equals("Set Date")) {
+                    Schedule schedule = new Schedule(textViewSetDate.getText().toString()
+                            ,textViewSetTime.getText().toString()
+                            ,(autoCompleteTextViewScheduleAction.getText().toString().equals("Open")?"1":"0")
+                            ,sewer);
+                    new OkHttpClient().newCall(httpRequestHelper.getPostRequest("/schedules", new Gson().toJson(schedule), user.getAccessToken())).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            Log.e("Create Schedule", ""+e.getMessage());
+                        }
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                            SewerManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(response.body().string());
+                                        if (!response.isSuccessful()) {
+                                            Toast.makeText(SewerManagementFragment.this.getContext(), "Error: "+jsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                                        } else {
+                                            dialog.dismiss();
+                                            Toast.makeText(SewerManagementFragment.this.getContext(), "Successful: "+jsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                                        }
+                                    } catch (IOException | JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            });
+                        }
+                    });
                 }
             }
         });

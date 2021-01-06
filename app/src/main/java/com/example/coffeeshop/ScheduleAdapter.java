@@ -43,7 +43,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.ViewHo
         final Schedule schedule = scheduleArrayList.get(position);
         holder.textViewScheduleSewerName.setText(schedule.getSewer().getName());
         holder.textViewScheduleSewerLocation.setText("Location: " +schedule.getSewer().getLocation().get("district")+", "+schedule.getSewer().getLocation().get("city"));
-        holder.textViewScheduleAction.setText("Action: " +schedule.getAction());
+        holder.textViewScheduleAction.setText("Action: " +schedule.parseAction(Integer.parseInt(schedule.getAction())));
         holder.editTextScheduleTime.setText(schedule.getTime() + " " + schedule.getDate());
     }
 

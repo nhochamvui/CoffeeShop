@@ -142,13 +142,13 @@ public class AccountManagementFragment extends Fragment {
         avatar = v.findViewById(R.id.avatar);
     }
     public void fetchView(){
-        userId.setText(user.getUsername());
-        userName.setText(user.getDisplayname());
-        userRole.setText(user.getRole());
-        Glide.with(this)
-                .load(user.getAvatar())
-                .circleCrop()
-                .into(avatar);
+//        userId.setText(user.getUsername());
+//        userName.setText(user.getDisplayname());
+//        userRole.setText(user.getRole());
+//        Glide.with(this)
+//                .load(user.getAvatar())
+//                .circleCrop()
+//                .into(avatar);
     }
     public void editInfo(){
         final Dialog dialog = new Dialog(this.getContext());
@@ -175,7 +175,7 @@ public class AccountManagementFragment extends Fragment {
         editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
         editTextPassword = dialog.findViewById(R.id.editTextPassword_Add);
         editTextRole = dialog.findViewById(R.id.editTextRole_Add);
-        editTextUserName.setText(user.getDisplayname());
+//        editTextUserName.setText(user.getDisplayname());
         editTextPassword.setText("");
         String[] Roles = new String[]{"Select Role", "Admin", "User"};
         final List<String> plantsList = new ArrayList<>(Arrays.asList(Roles));
@@ -188,18 +188,18 @@ public class AccountManagementFragment extends Fragment {
             editTextRole.setSelection(2);
         editTextRole.setEnabled(false);
         editTextRole.setClickable(false);
-        if (user.getAdd())
-            radioGroupAdd.check(R.id.radio1);
-        else
-            radioGroupAdd.check(R.id.radio2);
-        if (user.getRemove())
-            radioGroupRemove.check(R.id.radio3);
-        else
-            radioGroupRemove.check(R.id.radio4);
-        if (user.getModify())
-            radioGroupModify.check(R.id.radio5);
-        else
-            radioGroupModify.check(R.id.radio6);
+//        if (user.getAdd())
+//            radioGroupAdd.check(R.id.radio1);
+//        else
+//            radioGroupAdd.check(R.id.radio2);
+//        if (user.getRemove())
+//            radioGroupRemove.check(R.id.radio3);
+//        else
+//            radioGroupRemove.check(R.id.radio4);
+//        if (user.getModify())
+//            radioGroupModify.check(R.id.radio5);
+//        else
+//            radioGroupModify.check(R.id.radio6);
         for (int i = 0; i < radioGroupAdd.getChildCount(); i++) {
             radioGroupAdd.getChildAt(i).setEnabled(false);
         }
@@ -210,22 +210,22 @@ public class AccountManagementFragment extends Fragment {
             radioGroupModify.getChildAt(i).setEnabled(false);
         }
         imageViewChooseAvatar = dialog.findViewById(R.id.imageViewChooseAvatar);
-        Glide.with(imageViewChooseAvatar.getContext())
-                .load(user.getAvatar())
-                .centerCrop()
-                .error(R.drawable.ic_round_broken_image_24)
-                .placeholder(R.drawable.ic_baseline_image_24)
-                .transform(new RoundedCorners(10))
-                .into(imageViewChooseAvatar);
-        final User userOriginal = new User(user.getUsername()
-                ,user.getDisplayname()
-                ,user.getRole()
-                ,user.getPassword()
-                ,user.getAvatar()
-                ,user.getAdd()
-                ,user.getModify()
-                ,user.getRemove()
-        );
+//        Glide.with(imageViewChooseAvatar.getContext())
+//                .load(user.getAvatar())
+//                .centerCrop()
+//                .error(R.drawable.ic_round_broken_image_24)
+//                .placeholder(R.drawable.ic_baseline_image_24)
+//                .transform(new RoundedCorners(10))
+//                .into(imageViewChooseAvatar);
+//        final User userOriginal = new User(user.getUsername()
+//                ,user.getDisplayname()
+//                ,user.getRole()
+//                ,user.getPassword()
+//                ,user.getAvatar()
+//                ,user.getAdd()
+//                ,user.getModify()
+//                ,user.getRemove()
+//        );
         Button buttonConfirm = dialog.findViewById(R.id.buttonConfirm_Add);
         buttonConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -238,7 +238,7 @@ public class AccountManagementFragment extends Fragment {
                     radioButtonAdd = dialog.findViewById(radioGroupAdd.getCheckedRadioButtonId());
                     radioButtonRemove = dialog.findViewById(radioGroupRemove.getCheckedRadioButtonId());
                     radioButtonModify = dialog.findViewById(radioGroupModify.getCheckedRadioButtonId());
-                    uploadPicture(userOriginal);
+//                    uploadPicture(userOriginal);
                     dialog.dismiss();
                 }
             }
@@ -250,7 +250,7 @@ public class AccountManagementFragment extends Fragment {
             }
         });
     }
-    public void uploadPicture(final User userOriginal)
+    /*public void uploadPicture(final User userOriginal)
     {
         final User user1 = new User("", "", "", "", "", false, false, false);
         user1.setUsername(userOriginal.getUsername());
@@ -346,7 +346,7 @@ public class AccountManagementFragment extends Fragment {
                 }
             });
         }
-    }
+    }*/
     public void choosePicture()
     {
         Intent intent = new Intent();

@@ -5,10 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -16,14 +14,9 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +24,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -146,7 +138,13 @@ public class LoginActivity extends AppCompatActivity {
             Handler handler = new Handler(LoginActivity.this.getMainLooper());
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadingBar.dismiss();
+                        Toast.makeText(LoginActivity.this, "Failed to connect to the server!", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
@@ -163,11 +161,9 @@ public class LoginActivity extends AppCompatActivity {
                         } else {
                             Gson gson = new Gson();
                             User user = null;
-                            User2 user2 = null;
                             try {
                                 String json = response.body().string();
                                 user = gson.fromJson(json, User.class);
-                                user2 = gson.fromJson(json, User2.class);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -175,7 +171,7 @@ public class LoginActivity extends AppCompatActivity {
                             editor.putString("display_name", user.getName());
                             editor.commit();
                             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            intent.putExtra("User", user2);
+                            intent.putExtra("User", user);
                             loadingBar.dismiss();
                             finish();
                             LoginActivity.this.startActivity(intent);
