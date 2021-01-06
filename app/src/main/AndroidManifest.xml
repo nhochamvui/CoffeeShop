@@ -18,8 +18,6 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity android:name=".ScheduleCreateActivity"></activity>
-        <activity android:name=".MainActivity2" />
-        <activity android:name=".AccountManagementFragment" />
         <activity android:name=".SewerInfoActivity" />
         <activity android:name=".SewerCreateActivity" />
         <activity android:name=".SewerEditActivity" />

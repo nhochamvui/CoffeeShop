@@ -31,6 +31,14 @@ public class User implements Serializable {
         this.location = location;
     }
 
+    public User(String name, String email, String role, String password, Map<String, String> location){
+        this.name = name;
+        this.email = email;
+        this.role = role;
+        this.location = location;
+        this.password = password;
+    }
+
     public Map<String, String> getLocation() {
         return location;
     }

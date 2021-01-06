@@ -218,37 +218,6 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
             }
         });
     }
-    public void addUser() {
-        final Dialog dialog = new Dialog(this.getContext());
-        dialog.setContentView(R.layout.dialog_add_user);
-        dialog.show();
-        // xu ly khi nguoi dung nhan phim back -> xoa img da chon
-
-        editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
-        editTextPassword = dialog.findViewById(R.id.editTextUserPassword);
-        editTextRole = dialog.findViewById(R.id.editTextRole_Add);
-        String[] Roles = new String[]{"Select Role", "Admin", "User"};
-        final List<String> plantsList = new ArrayList<>(Arrays.asList(Roles));
-        final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_text, plantsList);
-        spinnerArrayAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
-        editTextRole.setAdapter(spinnerArrayAdapter);
-        editTextRole.setSelection(0);
-        buttonConfirm = dialog.findViewById(R.id.buttonConfirm_Add);
-        buttonConfirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(editTextPassword.getText().toString().equals("")
-                        || editTextRole.getSelectedItem().toString().equals("Select Role")
-                        || editTextUserName.getText().toString().equals("")) {
-                    Toast.makeText(getContext(), "Please fill out the form!", Toast.LENGTH_SHORT).show();
-                }
-                else {
-
-                    dialog.dismiss();
-                }
-            }
-        });
-    }
     public void choosePicture()
     {
         Intent intent = new Intent();
@@ -295,6 +264,86 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
     @Override
     public void OnItemClick(int position) {
         Toast.makeText(this.getContext(), ""+userList.get(position).getName(), Toast.LENGTH_LONG).show();
+    }
+
+    public void addUser() {
+        final Dialog dialog = new Dialog(this.getContext());
+        dialog.setContentView(R.layout.dialog_add_user);
+        dialog.show();
+        // xu ly khi nguoi dung nhan phim back -> xoa img da chon
+        final EditText editTextEmail_Add, editTextUserCity, editTextUserDistrict;
+        editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
+        editTextPassword = dialog.findViewById(R.id.editTextUserPassword);
+        editTextRole = dialog.findViewById(R.id.editTextRole_Add);
+        editTextEmail_Add = dialog.findViewById(R.id.editTextEmail_Add);
+        editTextUserCity = dialog.findViewById(R.id.editTextUserCity);
+        editTextUserDistrict = dialog.findViewById(R.id.editTextUserDistrict);
+
+        String[] Roles = new String[]{"Select Role", "Admin", "User"};
+        final List<String> plantsList = new ArrayList<>(Arrays.asList(Roles));
+        final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_text, plantsList);
+        spinnerArrayAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
+        editTextRole.setAdapter(spinnerArrayAdapter);
+        editTextRole.setSelection(0);
+        buttonConfirm = dialog.findViewById(R.id.buttonConfirm_Add);
+        buttonConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(editTextPassword.getText().toString().equals("")
+                        || editTextRole.getSelectedItem().toString().equals("Select Role")
+                        || editTextUserName.getText().toString().equals("")
+                        || editTextEmail_Add.getText().toString().equals("")
+                        || editTextUserCity.getText().toString().equals("")
+                        || editTextUserDistrict.getText().toString().equals("")) {
+                    Toast.makeText(getContext(), "Please fill out the form!", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Map<String, String> location = new HashMap<>();
+                    location.put("city", editTextUserCity.getText().toString());
+                    location.put("district", editTextUserDistrict.getText().toString());
+                    User user = new User(editTextUserName.getText().toString()
+                            ,editTextEmail_Add.getText().toString()
+                            ,editTextRole.getSelectedItem().toString()
+                            ,editTextPassword.getText().toString()
+                            ,location);
+                    Request postRequest = MainActivity.httpRequestHelper.getPostRequest("/users", new Gson().toJson(user), MainActivity.user.getAccessToken());
+                    new OkHttpClient().newCall(postRequest).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(UserManagementFragment.this.getContext(), "Failed to connect!", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        if (!response.isSuccessful()) {
+                                            JSONObject jsonObject = new JSONObject(response.body().string());
+                                            Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+jsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                                        } else {
+                                            JSONObject jsonObject = new JSONObject(response.body().string());
+                                            dialog.dismiss();
+                                            Toast.makeText(UserManagementFragment.this.getContext(), "Successful: "+jsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                                            fetchDataIntoRecyclerView();
+                                        }
+                                    } catch (JSONException | IOException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
     }
 
     @Override
