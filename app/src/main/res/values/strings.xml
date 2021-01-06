@@ -2,5 +2,5 @@
     <string name="app_name">CoffeeShop</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="server_address">http://104.155.233.176:3000/api</string>
+    <string name="server_address">http://192.168.13.105:3000/api</string>
 </resources>

@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
@@ -137,12 +138,13 @@ public class LoginActivity extends AppCompatActivity {
         new OkHttpClient().newCall(postRequest).enqueue(new Callback() {
             Handler handler = new Handler(LoginActivity.this.getMainLooper());
             @Override
-            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            public void onFailure(@NotNull Call call, @NotNull final IOException e) {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         loadingBar.dismiss();
                         Toast.makeText(LoginActivity.this, "Failed to connect to the server!", Toast.LENGTH_LONG).show();
+                        Log.e("Error", e.toString());
                     }
                 });
             }
