@@ -1,73 +1,59 @@
 package com.example.coffeeshop;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Sewer implements Serializable {
-    String OFFLINE_COLOR = "#828282";
-    String ONLINE_COLOR = "#40B85C";
-    String Name;
-    String Desc="";
-    String Category="";// loai cong (lon, vua, nho)
-    String Location="";//dia diem
-    String Channel;//channel mqtt va socket
-    String Id;
-    public Sewer() {
-        //for returning object from firebase
-    }
+    private String _id;
+    private String name;
+    private String description;
+    private Map<String, String> location;
+    public Sewer(){
 
-    public Sewer(String name, String desc, String category, String location, String channel, String id) {
-        Name = name;
-        Desc = desc;
-        Category = category;
-        Location = location;
-        Channel = channel;
-        Id = id;
-    }
-    public String getName() {
-        return Name;
-    }
-
-    public void setName(String name) {
-        Name = name;
-    }
-
-    public String getDesc() {
-        return Desc;
-    }
-
-    public void setDesc(String desc) {
-        Desc = desc;
-    }
-
-    public String getCategory() {
-        return Category;
-    }
-
-    public void setCategory(String category) {
-        Category = category;
-    }
-
-    public String getLocation(){
-        return Location;
-    }
-
-    public void setLocation(String location){
-        Location = location;
-    }
-
-    public String getChannel(){
-        return Channel;
-    }
-
-    public void setChannel(String channel){
-        Channel = channel;
     }
 
     public String getId() {
-        return Id;
+        return _id;
     }
 
     public void setId(String id) {
-        Id = id;
+        this._id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Map<String, String> getLocation() {
+        return location;
+    }
+
+    public void setLocation(Map<String, String> location) {
+        this.location = location;
+    }
+    public boolean isValidForEdit(){
+        if(getLocation().size() != 0 && !getName().equals("") && !getId().equals("")){
+            return true;
+        }
+        return false;
+    }
+    public boolean isValidForCreate(){
+        if(getLocation().size() != 0 && !getName().equals("")){
+            return true;
+        }
+        return false;
     }
 }

@@ -3,91 +3,75 @@ package com.example.coffeeshop;
 import java.io.Serializable;
 
 public class User implements Serializable {
-    private String Username;
-    private String Displayname;
-    private String Role;
-    private String Password;
-    private String Avatar;
-    private Boolean Add;
-    private Boolean Remove;
-    private Boolean Modify;
-    public User()
-    {
+    String name;
+    String email;
+    String role;
+    String created_day;
+    String city;
+    String accessToken;
+    public User(){
 
     }
-
-    public User(String username, String displayname, String role, String password, String avatar, Boolean add, Boolean remove, Boolean modify) {
-        Username = username;
-        Displayname = displayname;
-        Role = role;
-        Password = password;
-        Avatar = avatar;
-        Add = add;
-        Remove = remove;
-        Modify = modify;
+    public User(String name, String email, String role, String created_day, String city, String accessToken){
+        this.name = name;
+        this.email = email;
+        this.role = role;
+        this.created_day = created_day;
+        this.city = city;
+        this.accessToken = accessToken;
+    }
+    public User(String name, String email, String role, String city){
+        this.name = name;
+        this.email = email;
+        this.role = role;
+        this.city = city;
     }
 
-    public String getUsername() {
-        return Username;
+    public String getName() {
+        return name;
     }
 
-    public void setUsername(String username) {
-        Username = username;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getDisplayname() {
-        return Displayname;
+    public String getEmail() {
+        return email;
     }
 
-    public void setDisplayname(String displayname) {
-        Displayname = displayname;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getRole() {
-        return Role;
+        return role;
     }
 
     public void setRole(String role) {
-        Role = role;
+        this.role = role;
     }
 
-    public String getPassword() {
-        return Password;
+    public String getCreated_day() {
+        return created_day;
     }
 
-    public void setPassword(String password) {
-        Password = password;
+    public void setCreated_day(String created_day) {
+        this.created_day = created_day;
     }
 
-    public String getAvatar() {
-        return Avatar;
+    public String getCity() {
+        return city;
     }
 
-    public void setAvatar(String avatar) {
-        Avatar = avatar;
+    public void setCity(String city) {
+        this.city = city;
     }
 
-    public Boolean getAdd() {
-        return Add;
+    public String getAccessToken() {
+        return accessToken;
     }
 
-    public void setAdd(Boolean add) {
-        Add = add;
-    }
-
-    public Boolean getRemove() {
-        return Remove;
-    }
-
-    public void setRemove(Boolean remove) {
-        Remove = remove;
-    }
-
-    public Boolean getModify() {
-        return Modify;
-    }
-
-    public void setModify(Boolean modify) {
-        Modify = modify;
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 }

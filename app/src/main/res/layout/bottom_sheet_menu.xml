@@ -30,6 +30,44 @@
        />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottomSheetInfoOption"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="5dp"
+        android:layout_weight="1">
+
+        <ImageView
+            android:id="@+id/imageViewSewerInfo"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:src="@drawable/ic_round_info_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textViewSewerInfo"
+            android:layout_width="408dp"
+            android:layout_height="38dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:paddingTop="8dp"
+            android:text="Information"
+            android:textColor="#000000"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/imageViewSewerInfo"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottomSheetEditOption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,7 +82,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
-            android:background="@drawable/ic_round_edit_24"
+            android:src="@drawable/ic_round_edit_24"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -56,7 +94,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginLeft="10dp"
             android:paddingTop="8dp"
-            android:text="Chỉnh sửa"
+            android:text="Edit"
             android:textColor="#000000"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -94,7 +132,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginLeft="10dp"
             android:paddingTop="8dp"
-            android:text="Xóa"
+            android:text="Delete"
             android:textColor="#000000"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -109,6 +147,7 @@
         android:id="@+id/bottomSheetControlOption"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="5dp"
         android:layout_weight="1">
 
         <ImageView
@@ -131,13 +170,50 @@
             android:layout_marginStart="10dp"
             android:layout_marginLeft="10dp"
             android:paddingTop="8dp"
-            android:text="Điều khiển từ xa"
+            android:text="Remote Control"
             android:textColor="#000000"
             android:textSize="15sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/imageView96"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottomSheetCreateScheduleOption"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <ImageView
+            android:id="@+id/imageView332"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:src="@drawable/ic_round_assignment_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView963"
+            android:layout_width="408dp"
+            android:layout_height="38dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:paddingTop="8dp"
+            android:text="Set Schedule"
+            android:textColor="#000000"
+            android:textSize="15sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/imageView332"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0" />
     </androidx.constraintlayout.widget.ConstraintLayout>

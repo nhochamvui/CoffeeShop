@@ -4,8 +4,9 @@
     <color name="colorPrimaryDark">#3949AB</color>
     <color name="colorPrimaryVariant">#5D0149</color>
     <color name="colorPrimarySurface">#E2EFEE</color>
-<!--    <color name="colorAccent">#E2EFEE</color>-->
+    <!--    <color name="colorAccent">#E2EFEE</color>-->
     <color name="colorAccent">#3949AB</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBackground">#26AFC3D6</color>
+    <color name="reflectColor">#0755DE</color>
 </resources>

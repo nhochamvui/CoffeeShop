@@ -1,10 +1,8 @@
 package com.example.coffeeshop;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Build;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -43,9 +41,8 @@ public class SewerAdapter extends RecyclerView.Adapter<SewerAdapter.ViewHolder>{
     public void onBindViewHolder(@NonNull final SewerAdapter.ViewHolder holder, final int position) {
         final Sewer sewer = sewerArrayList.get(position);
         holder.textViewSewerName.setText(sewer.getName());
-//        holder.textViewSewerStatus.setText(sewer.getStatus());
-//        holder.textViewSewerMqttConnection.setText(sewer.getMqttStatus());
-//        holder.imageViewSewerMqttStatus.getDrawable().setTint(Color.parseColor(sewer.getMqttStatusColor()));
+        holder.textViewSewerDescription.setText("Description: " +sewer.getDescription());
+        holder.textViewSewerLocation.setText("Location: " +sewer.getLocation().get("district") + ", " + sewer.getLocation().get("city"));
     }
 
     @Override
@@ -56,60 +53,30 @@ public class SewerAdapter extends RecyclerView.Adapter<SewerAdapter.ViewHolder>{
     {
         return sewerArrayList.get(position);
     }
+    public void setItems(ArrayList<Sewer> sewers){
+        this.sewerArrayList = sewers;
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
-        private TextView textViewSewerName;
-        private TextView textViewSewerMqttConnection;
-        private TextView textViewSewerStatus;
-        private ImageView imageViewSewerMqttStatus;
+        private TextView textViewSewerName, textViewSewerLocation, textViewSewerDescription;
         private ImageView imageViewSetting;
         private CardView cardViewSewer;
-        private ConstraintLayout sewerHiddenLayout;
-//        private ImageView imageViewDelete;
+        private ConstraintLayout constraintLayoutSewerContainer;
         SewerAdapter.SewerOnClickListener onClickListener;
         public ViewHolder(@NonNull View itemView, final SewerAdapter.SewerOnClickListener onClickListener) {
             super(itemView);
             textViewSewerName = itemView.findViewById(R.id.textViewSewerName);
-            textViewSewerMqttConnection = itemView.findViewById(R.id.textViewSewerMqttConnection);
-            textViewSewerStatus = itemView.findViewById(R.id.textViewSewerStatus);
-            imageViewSewerMqttStatus = itemView.findViewById(R.id.imageViewSewerMqttConnection);
+            textViewSewerLocation = itemView.findViewById(R.id.textViewSewerLocation);
             imageViewSetting = itemView.findViewById(R.id.imageViewSettingSewer);
-//            imageViewDelete = itemView.findViewById(R.id.imageViewDeleteSewer);
+            textViewSewerDescription = itemView.findViewById(R.id.textViewSewerCategory);
             cardViewSewer = itemView.findViewById(R.id.cardViewSewer);
-            cardViewSewer.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
-                        cardViewSewer.setCardBackgroundColor(Color.parseColor("#5E97D7"));
-                        onClickListener.OnSettingClick(getAdapterPosition());
-                    }
-                    if(motionEvent.getAction() == MotionEvent.ACTION_UP){
-                        //finger was lifted
-                        cardViewSewer.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
-                    }
-                    return false;
-                }
-            });
-            imageViewSetting.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View view, MotionEvent motionEvent) {
-                    if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
-                        cardViewSewer.setCardBackgroundColor(Color.parseColor("#5E97D7"));
-                        onClickListener.OnSettingClick(getAdapterPosition());
-                    }
-                    if(motionEvent.getAction() == MotionEvent.ACTION_UP){
-                        //finger was lifted
-                        cardViewSewer.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
-                    }
-                    return false;
-                }
-            });
-            /*imageViewSetting.setOnClickListener(new View.OnClickListener() {
+            constraintLayoutSewerContainer = itemView.findViewById(R.id.constraintLayoutSewerContainer);
+            imageViewSetting.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     onClickListener.OnSettingClick(getAdapterPosition());
                 }
-            });*/
+            });
             this.onClickListener = onClickListener;
             itemView.setOnClickListener(this);
         }

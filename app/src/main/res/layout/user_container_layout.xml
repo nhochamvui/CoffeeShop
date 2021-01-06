@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="45dp"
+    android:layout_marginTop="40dp"
+    android:layout_marginBottom="5dp"
     android:background="#00FFFFFF"
     android:fadingEdgeLength="1dp">
 
@@ -25,8 +26,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
+            android:layout_height="wrap_content">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout5"
@@ -34,9 +34,9 @@
                 android:layout_width="195dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:hint="User Name"
+                android:hint="Email"
                 android:textColorHint="#000000"
-                app:layout_constraintBottom_toTopOf="@+id/textInputLayout6"
+                app:layout_constraintBottom_toTopOf="@+id/textInputLayout8"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -54,17 +54,43 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputLayout8"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="195dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:hint="Display Name"
+                android:textColorHint="#000000"
+                app:layout_constraintBottom_toTopOf="@+id/textInputLayout6"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/guideline"
+                app:layout_constraintTop_toBottomOf="@id/textInputLayout5">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textViewDisplayName"
+                    android:layout_width="180dp"
+                    android:layout_height="wrap_content"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:text="Hoang Tho">
+
+                </com.google.android.material.textfield.TextInputEditText>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/textInputLayout6"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="195dp"
                 android:layout_height="wrap_content"
-                android:hint="Role"
                 android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                android:hint="Role"
                 android:textColorHint="#000000"
                 app:layout_constraintBottom_toTopOf="@+id/textInputLayout7"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
-                app:layout_constraintTop_toBottomOf="@+id/textInputLayout5">
+                app:layout_constraintTop_toBottomOf="@+id/textInputLayout8">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/textViewRole"
@@ -81,9 +107,10 @@
                 android:layout_width="195dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:hint="Authorization"
                 android:layout_marginBottom="10dp"
+                android:hint="Authorization"
                 android:textColorHint="#000000"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/guideline"
@@ -96,21 +123,21 @@
                     android:focusable="false"
                     android:focusableInTouchMode="false" />
 
-<!--                <com.google.android.material.textfield.TextInputEditText-->
-<!--                    android:id="@+id/textViewRemove"-->
-<!--                    android:layout_width="180dp"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:focusable="false"-->
-<!--                    android:focusableInTouchMode="false"-->
-<!--                    android:text="Remove: " />-->
+                <!--                <com.google.android.material.textfield.TextInputEditText-->
+                <!--                    android:id="@+id/textViewRemove"-->
+                <!--                    android:layout_width="180dp"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:focusable="false"-->
+                <!--                    android:focusableInTouchMode="false"-->
+                <!--                    android:text="Remove: " />-->
 
-<!--                <com.google.android.material.textfield.TextInputEditText-->
-<!--                    android:id="@+id/textViewModify"-->
-<!--                    android:layout_width="180dp"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:focusable="false"-->
-<!--                    android:focusableInTouchMode="false"-->
-<!--                    android:text="Modify: " />-->
+                <!--                <com.google.android.material.textfield.TextInputEditText-->
+                <!--                    android:id="@+id/textViewModify"-->
+                <!--                    android:layout_width="180dp"-->
+                <!--                    android:layout_height="wrap_content"-->
+                <!--                    android:focusable="false"-->
+                <!--                    android:focusableInTouchMode="false"-->
+                <!--                    android:text="Modify: " />-->
             </com.google.android.material.textfield.TextInputLayout>
 
             <androidx.constraintlayout.widget.Guideline
@@ -125,11 +152,11 @@
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardView"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
 
-        android:background="@drawable/ic_baseline_account_circle_black_24"
-        app:cardCornerRadius="50dp"
+        android:background="@drawable/ic_launcher_background"
+        app:cardCornerRadius="40dp"
         app:cardElevation="6dp"
         app:cardPreventCornerOverlap="false"
         app:layout_anchor="@+id/coordinator"
@@ -141,9 +168,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
-            app:layout_anchor="@+id/coordinator"
+            android:src="@drawable/ic_baseline_account_circle_black_24"
             app:layout_anchorGravity="start|top"
-            app:srcCompat="@drawable/ic_launcher_background"
             tools:ignore="VectorDrawableCompat" />
     </com.google.android.material.card.MaterialCardView>
 
@@ -151,9 +177,10 @@
         android:id="@+id/imageViewDeleteUser"
         android:layout_width="59dp"
         android:layout_height="26dp"
+        android:background="#2690A0AF"
+        android:backgroundTint="#2690A0AF"
         app:cardElevation="6dp"
         app:layout_anchor="@+id/coordinator"
-        android:background="#2690A0AF"
         app:layout_anchorGravity="start|bottom"
         tools:ignore="VectorDrawableCompat">
 
@@ -163,7 +190,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="Delete"
-            android:background="#2690A0AF"
             android:textColor="#000000" />
     </androidx.cardview.widget.CardView>
 
@@ -172,8 +198,9 @@
         android:layout_width="60dp"
         android:layout_height="26dp"
         android:layout_marginBottom="45dp"
-        app:cardElevation="6dp"
         android:background="#2690A0AF"
+        android:backgroundTint="#2690A0AF"
+        app:cardElevation="6dp"
         app:layout_anchor="@+id/coordinator"
         app:layout_anchorGravity="start|bottom"
         tools:ignore="VectorDrawableCompat">
@@ -183,7 +210,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="#2690A0AF"
             android:text="Edit"
             android:textColor="#000000"
             android:textSize="16sp" />

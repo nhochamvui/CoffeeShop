@@ -30,7 +30,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -44,13 +43,27 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -135,29 +148,50 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         userAdapter = new UserAdapter(UserManagementFragment.this.getContext(), userList, UserManagementFragment.this, this.getActivity());
         recyclerView.setLayoutManager(new GridLayoutManager(UserManagementFragment.this.getContext(),1));
         recyclerView.setAdapter(userAdapter);
-//        fetchDataIntoRecyclerView();
-
         return v;
     }
 
     private void fetchDataIntoRecyclerView() {
-        mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
-        valueEventListenerFetchUser = mDatabase.addValueEventListener(new ValueEventListener() {
+        userList = null;
+        final Request getRequest = MainActivity.httpRequestHelper.getGetRequest("/users", MainActivity.user.getAccessToken());
+        new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userList.clear();
-                User user = new User("", "", "", "", "", false, false, false);
-                Log.e("on DataChange","userlist size: "+userList.size());
-                for (DataSnapshot id : dataSnapshot.getChildren()) {
-                    user = id.getValue(User.class);
-                    userList.add(user);
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+            }
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                String json = null;
+                JSONObject message = null;
+                try {
+                    json = response.body().string();
+                    message = new JSONObject(json);
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
                 }
-                textViewCurrentUser.setText("User list: "+userList.size()+" users");
-                userAdapter.notifyDataSetChanged();
+                final String finalJson = json;
+                final JSONObject finalMessage = message;
+                UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!response.isSuccessful()) {
+                            try {
+                                Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+ finalMessage.getString("message"), Toast.LENGTH_SHORT).show();
+                            } catch (JSONException e) {
+                                Toast.makeText(UserManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            Gson gson = new Gson();
+                            Type listType = new TypeToken<ArrayList<User>>(){}.getType();
+                            userList = gson.fromJson(finalJson, listType);
+                            userAdapter.setItems(userList);
+                            textViewCurrentUser.setText("Users: "+userList.size()+" users");
+                            userAdapter.notifyDataSetChanged();
+                        }
+                    }
+                });
+
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
+
         });
     }
 
@@ -170,7 +204,12 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         floatingActionButtonAddUser.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addUser();
+                if(MainActivity.authorizeService.isAdmin()){
+                    addUser();
+                }
+                else{
+                    Toast.makeText(getContext(), "Permission is required!", Toast.LENGTH_LONG);
+                }
             }
         });
     }
@@ -191,7 +230,6 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                 return false;
             }
         });
-
         radioGroupAdd = dialog.findViewById(R.id.radio_group_add);
         radioGroupRemove = dialog.findViewById(R.id.radio_group_remove);
         radioGroupModify = dialog.findViewById(R.id.radio_group_modify);
@@ -224,14 +262,13 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                     radioButtonAdd = dialog.findViewById(radioGroupAdd.getCheckedRadioButtonId());
                     radioButtonRemove = dialog.findViewById(radioGroupRemove.getCheckedRadioButtonId());
                     radioButtonModify = dialog.findViewById(radioGroupModify.getCheckedRadioButtonId());
-                    uploadPicture();
+//                    uploadPicture();
                     dialog.dismiss();
                 }
             }
         });
     }
-    public void uploadPicture()
-    {
+    /*public void uploadPicture() {
         final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
         final User user = new User("", "", "", "", "", false, false, false);
         user.setUsername(editTextUserName.getText().toString());
@@ -291,9 +328,8 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
             DatabaseReference newUserRef = mDatabase.push();
             newUserRef.setValue(user);
         }
-    }
-    public void uploadPicture(final User userOriginal)
-    {
+    }*/
+    /*public void uploadPicture(final User userOriginal){
         final User user = new User("", "", "", "", "", false, false, false);
         user.setUsername(userOriginal.getUsername());
         user.setDisplayname(editTextUserName.getText().toString());
@@ -381,7 +417,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                 }
             });
         }
-    }
+    }*/
     public void choosePicture()
     {
         Intent intent = new Intent();
@@ -427,142 +463,87 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
     }
     @Override
     public void OnItemClick(int position) {
-        Toast.makeText(this.getContext(), ""+userList.get(position).getUsername(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this.getContext(), ""+userList.get(position).getName(), Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void OnSettingClick(int position) {
-        final Dialog dialog = new Dialog(this.getContext());
-        dialog.setContentView(R.layout.dialog_add_user);
-        dialog.show();
-        // xu ly khi nguoi dung nhan phim back -> remove img da chon
-        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
-                    removeTheLastestImgURI();
-                    dialog.dismiss();
-                    return true;
+        if(MainActivity.authorizeService.isAdmin() || MainActivity.authorizeService.getUser().getEmail().equals(userList.get(position).getEmail())){
+            final Dialog dialog = new Dialog(this.getContext());
+            dialog.setContentView(R.layout.dialog_add_user);
+            dialog.show();
+            // xu ly khi nguoi dung nhan phim back -> remove img da chon
+            dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
+                @Override
+                public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                    if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                        removeTheLastestImgURI();
+                        dialog.dismiss();
+                        return true;
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
-        radioGroupAdd = dialog.findViewById(R.id.radio_group_add);
-        //radioGroupAdd.clearCheck();
-        radioGroupRemove = dialog.findViewById(R.id.radio_group_remove);
-        //radioGroupRemove.clearCheck();
-        radioGroupModify = dialog.findViewById(R.id.radio_group_modify);
-        //radioGroupModify.clearCheck();
-        editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
-        editTextPassword = dialog.findViewById(R.id.editTextPassword_Add);
-        editTextRole = dialog.findViewById(R.id.editTextRole_Add);
-        editTextUserName.setText(userList.get(position).getDisplayname());
-        editTextPassword.setText("");
-        String[] Roles = new String[]{"Select Role", "Admin", "User"};
-        final List<String> plantsList = new ArrayList<>(Arrays.asList(Roles));
-        final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_text, plantsList);
-        spinnerArrayAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
-        editTextRole.setAdapter(spinnerArrayAdapter);
-        if(userList.get(position).getRole().equals("Admin"))
-            editTextRole.setSelection(1);
-        else
-            editTextRole.setSelection(2);
-        if (userList.get(position).getAdd())
-            radioGroupAdd.check(R.id.radio1);
-        else
-            radioGroupAdd.check(R.id.radio2);
-        if (userList.get(position).getRemove())
-            radioGroupRemove.check(R.id.radio3);
-        else
-            radioGroupRemove.check(R.id.radio4);
-        if (userList.get(position).getModify())
-            radioGroupModify.check(R.id.radio5);
-        else
-            radioGroupModify.check(R.id.radio6);
+            });
+            radioGroupAdd = dialog.findViewById(R.id.radio_group_add);
+            radioGroupRemove = dialog.findViewById(R.id.radio_group_remove);
+            radioGroupModify = dialog.findViewById(R.id.radio_group_modify);
+            editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
+            editTextPassword = dialog.findViewById(R.id.editTextPassword_Add);
+            editTextRole = dialog.findViewById(R.id.editTextRole_Add);
+            editTextUserName.setText(userList.get(position).getName());
+            editTextPassword.setText("");
+            String[] roles = new String[]{"Admin", "User", "Guest"};
+//        final List<String> plantsList = new ArrayList<>(Arrays.asList(Roles));
+            final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_text, roles);
+            spinnerArrayAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
+            editTextRole.setAdapter(spinnerArrayAdapter);
+            editTextRole.setSelection(0);
 
-        imageViewChooseAvatar = dialog.findViewById(R.id.imageViewChooseAvatar);
-        Glide.with(imageViewChooseAvatar.getContext())
-                .load(userList.get(position).getAvatar())
-                .centerCrop()
-                .error(R.drawable.ic_round_broken_image_24)
-                .placeholder(R.drawable.ic_baseline_image_24)
-                .transform(new RoundedCorners(10))
-                .into(imageViewChooseAvatar);
-        final User userOriginal = new User(userList.get(position).getUsername()
-                                    ,userList.get(position).getDisplayname()
-                                    ,userList.get(position).getRole()
-                                    ,userList.get(position).getPassword()
-                                    ,userList.get(position).getAvatar()
-                                    ,userList.get(position).getAdd()
-                                    ,userList.get(position).getModify()
-                                    ,userList.get(position).getRemove()
-                                    );
-        Button buttonConfirm = dialog.findViewById(R.id.buttonConfirm_Add);
-        buttonConfirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(editTextUserName.getText().equals("") || editTextRole.getSelectedItem().equals("Select Role"))
-                {
-                    Toast.makeText(getContext(), "User Name and Role are required!", Toast.LENGTH_SHORT).show();
+            imageViewChooseAvatar = dialog.findViewById(R.id.imageViewChooseAvatar);
+//        Glide.with(imageViewChooseAvatar.getContext())
+//                .load(userList.get(position).getAvatar())
+//                .centerCrop()
+//                .error(R.drawable.ic_round_broken_image_24)
+//                .placeholder(R.drawable.ic_baseline_image_24)
+//                .transform(new RoundedCorners(10))
+//                .into(imageViewChooseAvatar);
+            Button buttonConfirm = dialog.findViewById(R.id.buttonConfirm_Add);
+            buttonConfirm.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(editTextUserName.getText().equals(""))
+                    {
+                        Toast.makeText(getContext(), "User Name and Role are required!", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        User user = new User(editTextUserName.getText().toString(), "", editTextRole.getSelectedItem().toString(), "");
+//                    uploadPicture(userOriginal);
+                        dialog.dismiss();
+                    }
                 }
-                else {
-                    radioButtonAdd = dialog.findViewById(radioGroupAdd.getCheckedRadioButtonId());
-                    radioButtonRemove = dialog.findViewById(radioGroupRemove.getCheckedRadioButtonId());
-                    radioButtonModify = dialog.findViewById(radioGroupModify.getCheckedRadioButtonId());
-                    uploadPicture(userOriginal);
-                    dialog.dismiss();
-                }
-            }
-        });
-        imageViewChooseAvatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                choosePicture();
-            }
-        });
+            });
+//            imageViewChooseAvatar.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    choosePicture();
+//                }
+//            });
+        }
+        else{
+            Toast.makeText(getContext(), "Permission is required!", Toast.LENGTH_LONG).show();
+        }
+
     }
 
     @Override
     public void OnDeleteClick(int position) {
-        final String userNameCompare = userAdapter.getItem(position).getUsername();
 
-        new AlertDialog.Builder(getContext()).setTitle("Are you sure?").setMessage("This user will be deleted!")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
-                        mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                User user = new User("", "", "", "", "", false, false, false);
-                                for (DataSnapshot id : dataSnapshot.getChildren()) {
-                                    user = id.getValue(User.class);
-                                    if(user.getUsername().equals(userNameCompare)) {
-                                        mDatabase.child(id.getKey()).setValue(null);
-                                        Toast.makeText(getContext(), "User has been deleted!",Toast.LENGTH_SHORT);
-                                        break;
-                                    }
-                                }
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                            }
-                        });
-                    }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(getContext(), "Canceled!",Toast.LENGTH_SHORT);
-                        Log.e("cancel", "cancel");
-                    }
-                }).show();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mDatabase.removeEventListener(valueEventListenerFetchUser);
+//        mDatabase.removeEventListener(valueEventListenerFetchUser);
     }
 
     @Override
@@ -574,6 +555,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
     {
         imgUri = null;
     }
+
     public void sewerSelectDialog(){
         // setup the alert builder
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());

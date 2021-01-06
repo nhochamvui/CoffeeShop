@@ -52,7 +52,7 @@ public class CustomUserListAdapter extends BaseAdapter {
         Log.e("getView", "we are here");
         User user = this.userList.get(position);
         holder.textViewID.setText("Index: "+position);
-        holder.textViewUserName.setText("Name: "+user.getUsername());
+        holder.textViewUserName.setText("Name: "+user.getName());
         return convertView;
     }
     static class ViewHolder {

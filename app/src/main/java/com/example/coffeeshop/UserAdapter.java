@@ -13,11 +13,9 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import org.w3c.dom.Text;
 
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
     private Context mContext;
@@ -44,25 +42,15 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         holder.textViewAuthor.setText("");
         User user = userArrayList.get(position);
-        holder.textViewUserName.setText(user.getUsername());
-        holder.textViewDisplayName.setText(user.getDisplayname());
+        holder.textViewUserName.setText(user.getEmail());
+        holder.textViewDisplayName.setText(user.getName());
         holder.textViewRole.setText(user.getRole());
-        if (user.getAdd() == true)
-            holder.textViewAuthor.append("Add\n");
-        if (user.getModify() == true)
-            holder.textViewAuthor.append("Modify\n");
-        if (user.getRemove() == true)
-            holder.textViewAuthor.append("Remove\n");
-        holder.textViewAuthor.append("View");
-//        holder.textViewAdd.append(user.getAdd().toString());
-//        holder.textViewModify.append(user.getModify().toString());
-//        holder.textViewRemove.append(user.getRemove().toString());
-        Glide.with(holder.imageViewAvatar.getContext())
-                .load(user.getAvatar())
-                .circleCrop()
-                .error(R.drawable.ic_round_broken_image_24)
-                .placeholder(R.drawable.ic_baseline_image_24)
-                .into(holder.imageViewAvatar);
+//        Glide.with(holder.imageViewAvatar.getContext())
+//                .load(user.getAvatar())
+//                .circleCrop()
+//                .error(R.drawable.ic_round_broken_image_24)
+//                .placeholder(R.drawable.ic_baseline_image_24)
+//                .into(holder.imageViewAvatar);
     }
 
     @Override
@@ -74,16 +62,18 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
         return userArrayList.get(position);
     }
 
+    public void setItems(ArrayList<User> userList) {
+        this.userArrayList = userList;
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnLongClickListener {
         private TextView textViewUserName;
+        private TextView textViewDisplayName;
         private ImageView imageViewAvatar;
         private CardView imageViewUpdate;
         private CardView imageViewDelete;
         private TextView textViewRole;
         private TextView textViewAuthor;
-        private TextView textViewDisplayName;
-//        private TextView textViewRemove;
-//        private TextView textViewModify;
 
         OnClickListener onClickListener;
         // khai bao cac component
@@ -97,8 +87,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
             textViewRole = itemView.findViewById(R.id.textViewRole);
             textViewAuthor = itemView.findViewById(R.id.textViewAuthor);
             textViewDisplayName = itemView.findViewById(R.id.textViewDisplayName);
-//            textViewRemove = itemView.findViewById(R.id.textViewRemove);
-//            textViewModify = itemView.findViewById(R.id.textViewModify);
             imageViewUpdate.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -113,7 +101,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder>{
             });
             this.onClickListener = onClickListener;
             itemView.setOnClickListener(this);
-//            imageViewDelete.setOnClickListener(this);
         }
         @Override
         public void onClick(View v) {
