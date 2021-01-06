@@ -150,7 +150,6 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
 
     // load data from firebase and fetch to recycler view
     private void fetchDataIntoRecyclerView() {
-        sewerArrayList = null;
         final Request getRequest = httpRequestHelper.getGetRequest("/sewers", user.getAccessToken());
             new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
                 @Override
@@ -177,13 +176,19 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
             });
     }
     public void updateSewerAdapter(){
-        SewerManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                textViewNumberOfProduct.setText("Sewer list: "+sewerArrayList.size()+" sewers");
-                sewerAdapter.notifyDataSetChanged();
-            }
-        });
+        try {
+            SewerManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    textViewNumberOfProduct.setText("Sewer list: "+sewerArrayList.size()+" sewers");
+                    sewerAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+        catch (NullPointerException e){
+            Log.e("sewer fragment", "user change the layout too fast");
+        }
+
     }
 
     @Override

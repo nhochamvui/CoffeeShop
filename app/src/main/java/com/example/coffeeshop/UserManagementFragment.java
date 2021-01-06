@@ -36,6 +36,7 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -162,32 +163,28 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(UserManagementFragment.this.getContext(), "Failed to connect!", Toast.LENGTH_LONG);
+                    }});
             }
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
-                String json = null;
-                JSONObject message = null;
-                try {
-                    json = response.body().string();
-                    message = new JSONObject(json);
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
-                }
-                final String finalJson = json;
-                final JSONObject finalMessage = message;
+                final String json = response.body().string();
                 UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (!response.isSuccessful()) {
                             try {
-                                Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+ finalMessage.getString("message"), Toast.LENGTH_SHORT).show();
+                                JSONObject jsonObject = new JSONObject(json);
+                                Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+ jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
                             } catch (JSONException e) {
                                 Toast.makeText(UserManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
                             }
                         } else {
-                            Gson gson = new Gson();
                             Type listType = new TypeToken<ArrayList<User>>(){}.getType();
-                            userList = gson.fromJson(finalJson, listType);
+                            userList = new Gson().fromJson(json, listType);
                             userAdapter.setItems(userList);
                             textViewCurrentUser.setText("Users: "+userList.size()+" users");
                             userAdapter.notifyDataSetChanged();
@@ -217,13 +214,6 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                 }
             }
         });
-    }
-    public void choosePicture()
-    {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Choose Picture"), PICK_IMAGE_REQUEST);
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -422,28 +412,23 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
 
                             @Override
                             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
-                                JSONObject jsonObject = null;
-                                try {
-                                    jsonObject = new JSONObject(response.body().string());
-                                } catch (JSONException e) {
-                                    Log.e("JSONException", "user management: +"+e.getMessage());
-                                }
-                                final JSONObject finalJsonObject = jsonObject;
+                                final String json = response.body().string();
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         try {
                                             if (!response.isSuccessful()) {
-                                                Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+finalJsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                                                JSONObject jsonObject = new JSONObject(json);
+                                                Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+jsonObject.getString("message"), Toast.LENGTH_LONG).show();
                                             } else {
+                                                JSONObject jsonObject = new JSONObject(json);
                                                 dialog.dismiss();
-                                                Toast.makeText(UserManagementFragment.this.getContext(), "Successful: "+finalJsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                                                Toast.makeText(UserManagementFragment.this.getContext(), "Successful: "+jsonObject.getString("message"), Toast.LENGTH_LONG).show();
                                                 fetchDataIntoRecyclerView();
                                             }
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
-
                                     }
                                 });
                             }
@@ -459,7 +444,62 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
     }
 
     @Override
-    public void OnDeleteClick(int position) {
+    public void OnDeleteClick(final int position) {
+        new MaterialAlertDialogBuilder(getContext())
+                .setTitle("Delete")
+                .setMessage("Delete this user permanently?")
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Toast.makeText(getContext(), "Cancelled!", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        deleteUser(userList.get(position));
+                    }
+                })
+                .show();
+    }
+
+    private void deleteUser(User user){
+        final ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setTitle("Processing request...");
+        progressDialog.show();
+        HttpRequestHelper httpRequestHelper = new HttpRequestHelper(getResources().getString(R.string.server_address));
+        Request deleteRequest = httpRequestHelper.getDeleteRequest("/users", user.getEmail(), MainActivity.user.getAccessToken());
+        new OkHttpClient().newCall(deleteRequest).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(UserManagementFragment.this.getContext(), "Failed to connect!", Toast.LENGTH_LONG);
+                    }});
+            }
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            JSONObject message = new JSONObject(response.body().string());
+                            if (!response.isSuccessful()) {
+                                progressDialog.dismiss();
+                                Toast.makeText(UserManagementFragment.this.getContext(), "Error: " + message.getString("message"), Toast.LENGTH_SHORT).show();
+                            } else {
+                                progressDialog.dismiss();
+                                Toast.makeText(UserManagementFragment.this.getContext(), "Successful: " + message.getString("message"), Toast.LENGTH_SHORT).show();
+                                fetchDataIntoRecyclerView();
+                            }
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
 
     }
 
