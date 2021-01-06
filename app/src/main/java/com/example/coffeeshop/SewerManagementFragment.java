@@ -158,19 +158,17 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
                 }
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
-                    String json = null;
-                    try {
-                        json = response.body().string();
-                        int i = 0;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                     if (!response.isSuccessful()) {
-                        Toast.makeText(SewerManagementFragment.this.getContext(), "Error: "+json, Toast.LENGTH_SHORT).show();
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.body().string());
+                            Toast.makeText(SewerManagementFragment.this.getContext(), "Error: "+jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     } else {
-                        Gson gson = new Gson();
+                        String json = response.body().string();
                         Type listType = new TypeToken<ArrayList<Sewer>>(){}.getType();
-                        sewerArrayList = gson.fromJson(json, listType);
+                        sewerArrayList = new Gson().fromJson(json, listType);
                         sewerAdapter.setItems(sewerArrayList);
                         updateSewerAdapter();
                     }

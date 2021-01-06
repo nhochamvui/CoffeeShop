@@ -34,53 +34,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.google.android.material.slider.Slider
-        android:id="@+id/sliderRangeControl"
-        style="@style/Widget.MaterialComponents.Slider"
-        android:layout_width="116dp"
-        android:layout_height="84dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginLeft="50dp"
-        android:enabled="false"
-        android:rotation="-90"
-
-        android:rotationX="0"
-        android:rotationY="0"
-        android:stepSize="1.0"
-        android:value="9.0"
-        android:valueFrom="0.0"
-        android:valueTo="19.0"
-        app:haloColor="@color/button_full_state_color"
-        app:labelBehavior="floating"
-        app:layout_constraintBottom_toBottomOf="@+id/constraintLayout2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.414"
-        app:layout_constraintStart_toEndOf="@+id/constraintLayout2"
-        app:layout_constraintTop_toTopOf="@+id/constraintLayout2"
-        app:layout_constraintVertical_bias="0.504" />
-
-    <ImageButton
-        android:id="@+id/imageButtonDecreaseDistance"
-        android:layout_width="29dp"
-        android:layout_height="34dp"
-        android:contentDescription="TODO"
-        android:src="@drawable/ic_baseline_remove_24"
-        app:layout_constraintBottom_toBottomOf="@+id/editTextNumberControlDistance"
-        app:layout_constraintEnd_toStartOf="@+id/editTextNumberControlDistance"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/constraintLayout2"
-        app:layout_constraintTop_toTopOf="@+id/editTextNumberControlDistance"
-        app:layout_constraintVertical_bias="0.588" />
-
-    <ImageButton
-        android:id="@+id/imageButtonIncreaseDistance"
-        android:layout_width="33dp"
-        android:layout_height="37dp"
-        android:src="@drawable/ic_round_add_24"
-        app:layout_constraintBottom_toBottomOf="@+id/editTextNumberControlDistance"
-        app:layout_constraintStart_toEndOf="@+id/editTextNumberControlDistance"
-        app:layout_constraintTop_toTopOf="@+id/editTextNumberControlDistance" />
-
     <TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
@@ -92,22 +45,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/imageViewSewerDetailBackButton" />
-
-    <EditText
-        android:id="@+id/editTextNumberControlDistance"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:background="@drawable/edit_text_border"
-        android:gravity="center"
-        android:inputType="number"
-        android:text="0"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/sliderRangeControl"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/constraintLayout2"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
-        app:layout_constraintVertical_bias="0.243"
-        tools:ignore="Autofill" />
 
     <ImageView
         android:id="@+id/imageViewSewerDetailBackButton"
@@ -319,18 +256,6 @@
         </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/textViewSewerDistance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:gravity="end"
-        android:text="00"
-        app:layout_constraintBottom_toBottomOf="@+id/sliderRangeControl"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/sliderRangeControl" />
-
     <View
         android:id="@+id/divider4"
         android:layout_width="1dp"
@@ -345,57 +270,123 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout2"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginLeft="40dp"
         app:layout_constraintBottom_toBottomOf="@+id/divider4"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/divider4"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
         app:layout_constraintVertical_bias="0.5">
 
         <ImageButton
             android:id="@+id/imageViewButtonUp"
-            android:layout_width="50dp"
-            android:layout_height="56dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
             android:background="@drawable/ic_go_up"
-            app:layout_constraintEnd_toEndOf="@+id/imageViewButtonStop"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/imageViewButtonStop"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="@+id/sliderRangeControl"
+            app:layout_constraintStart_toStartOf="@+id/sliderRangeControl"
+            app:layout_constraintTop_toBottomOf="@+id/sliderRangeControl" />
 
         <ImageButton
             android:id="@+id/imageViewButtonStop"
-            android:layout_width="50dp"
-            android:layout_height="52dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@drawable/ic_stop"
-            app:layout_constraintBottom_toTopOf="@+id/imageViewButtonDown"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageViewButtonUp"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintEnd_toEndOf="@+id/imageViewButtonUp"
+            app:layout_constraintStart_toStartOf="@+id/imageViewButtonUp"
+            app:layout_constraintTop_toBottomOf="@+id/imageViewButtonUp" />
 
         <ImageButton
             android:id="@+id/imageViewButtonDown"
-            android:layout_width="51dp"
-            android:layout_height="57dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@drawable/ic_go_down"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/imageViewButtonStop"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/imageViewButtonStop"
+            app:layout_constraintTop_toBottomOf="@+id/imageViewButtonStop" />
+
+        <com.google.android.material.slider.Slider
+            android:id="@+id/sliderRangeControl"
+            style="@style/Widget.MaterialComponents.Slider"
+            android:layout_width="0dp"
+            android:layout_height="55dp"
+
+            android:layout_marginStart="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginRight="10dp"
+            android:enabled="false"
+            android:rotationX="0"
+            android:rotationY="0"
+            android:stepSize="1.0"
+            android:value="9.0"
+            android:valueFrom="0.0"
+            android:valueTo="19.0"
+            app:haloColor="@color/button_full_state_color"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewSewerDistance" />
+
+        <TextView
+            android:id="@+id/textViewSewerDistance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="end"
+            android:text="Current Distance: "
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/sliderRangeControl"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/sliderRangeControl"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/imageButtonIncreaseDistance"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/ic_round_add_24"
+            app:layout_constraintBottom_toBottomOf="@+id/editTextNumberControlDistance"
+            app:layout_constraintStart_toEndOf="@+id/editTextNumberControlDistance"
+            app:layout_constraintTop_toTopOf="@+id/editTextNumberControlDistance" />
+
+        <ImageButton
+            android:id="@+id/imageButtonDecreaseDistance"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:contentDescription="TODO"
+            android:src="@drawable/ic_baseline_remove_24"
+            app:layout_constraintBottom_toBottomOf="@+id/editTextNumberControlDistance"
+            app:layout_constraintEnd_toStartOf="@+id/editTextNumberControlDistance"
+            app:layout_constraintTop_toTopOf="@+id/editTextNumberControlDistance" />
+
+        <EditText
+            android:id="@+id/editTextNumberControlDistance"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/edit_text_border"
+            android:gravity="center"
+            android:inputType="number"
+            android:text="0"
+            app:layout_constraintEnd_toEndOf="@+id/imageViewButtonDown"
+            app:layout_constraintStart_toStartOf="@+id/imageViewButtonDown"
+            app:layout_constraintTop_toBottomOf="@+id/imageViewButtonDown"
+            tools:ignore="Autofill" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:id="@+id/textViewControlMode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="4dp"
         android:text="Mode: "
         android:textColor="#000000"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
         app:layout_constraintEnd_toEndOf="@+id/constraintLayout2"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.049"
         app:layout_constraintStart_toStartOf="@+id/constraintLayout2" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

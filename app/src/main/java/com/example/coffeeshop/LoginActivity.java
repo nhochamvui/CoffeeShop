@@ -16,10 +16,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.google.firebase.database.DatabaseReference;
 import com.google.gson.Gson;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.security.MessageDigest;
@@ -142,7 +145,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         loadingBar.dismiss();
-                        Toast.makeText(LoginActivity.this, "Failed to connect to the server!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(LoginActivity.this, "Failed to connect!", Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -153,17 +156,17 @@ public class LoginActivity extends AppCompatActivity {
                     public void run() {
                         if (!response.isSuccessful()) {
                             try {
-                                Toast.makeText(LoginActivity.this, "Error: "+response.body().string(), Toast.LENGTH_SHORT).show();
-                            } catch (IOException e) {
+                                JSONObject jsonObject = new JSONObject(response.body().string());
+                                Toast.makeText(LoginActivity.this, "Error: "+jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                            } catch (IOException | JSONException e) {
                                 e.printStackTrace();
                             }
                             loadingBar.dismiss();
                         } else {
-                            Gson gson = new Gson();
                             User user = null;
                             try {
                                 String json = response.body().string();
-                                user = gson.fromJson(json, User.class);
+                                user = new Gson().fromJson(json, User.class);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }

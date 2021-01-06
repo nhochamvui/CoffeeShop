@@ -173,7 +173,7 @@ public class AccountManagementFragment extends Fragment {
         radioGroupModify = dialog.findViewById(R.id.radio_group_modify);
         //radioGroupModify.clearCheck();
         editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
-        editTextPassword = dialog.findViewById(R.id.editTextPassword_Add);
+        editTextPassword = dialog.findViewById(R.id.editTextUserPassword);
         editTextRole = dialog.findViewById(R.id.editTextRole_Add);
 //        editTextUserName.setText(user.getDisplayname());
         editTextPassword.setText("");

@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -56,7 +59,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import okhttp3.Call;
@@ -213,28 +218,14 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
             }
         });
     }
-    public void addUser()
-    {
+    public void addUser() {
         final Dialog dialog = new Dialog(this.getContext());
         dialog.setContentView(R.layout.dialog_add_user);
         dialog.show();
         // xu ly khi nguoi dung nhan phim back -> xoa img da chon
-        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
-                    removeTheLastestImgURI();
-                    dialog.dismiss();
-                    return true;
-                }
-                return false;
-            }
-        });
-        radioGroupAdd = dialog.findViewById(R.id.radio_group_add);
-        radioGroupRemove = dialog.findViewById(R.id.radio_group_remove);
-        radioGroupModify = dialog.findViewById(R.id.radio_group_modify);
+
         editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
-        editTextPassword = dialog.findViewById(R.id.editTextPassword_Add);
+        editTextPassword = dialog.findViewById(R.id.editTextUserPassword);
         editTextRole = dialog.findViewById(R.id.editTextRole_Add);
         String[] Roles = new String[]{"Select Role", "Admin", "User"};
         final List<String> plantsList = new ArrayList<>(Arrays.asList(Roles));
@@ -242,13 +233,6 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         spinnerArrayAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
         editTextRole.setAdapter(spinnerArrayAdapter);
         editTextRole.setSelection(0);
-        imageViewChooseAvatar = dialog.findViewById(R.id.imageViewChooseAvatar);
-        imageViewChooseAvatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                choosePicture();
-            }
-        });
         buttonConfirm = dialog.findViewById(R.id.buttonConfirm_Add);
         buttonConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -259,165 +243,12 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                     Toast.makeText(getContext(), "Please fill out the form!", Toast.LENGTH_SHORT).show();
                 }
                 else {
-                    radioButtonAdd = dialog.findViewById(radioGroupAdd.getCheckedRadioButtonId());
-                    radioButtonRemove = dialog.findViewById(radioGroupRemove.getCheckedRadioButtonId());
-                    radioButtonModify = dialog.findViewById(radioGroupModify.getCheckedRadioButtonId());
-//                    uploadPicture();
+
                     dialog.dismiss();
                 }
             }
         });
     }
-    /*public void uploadPicture() {
-        final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
-        final User user = new User("", "", "", "", "", false, false, false);
-        user.setUsername(editTextUserName.getText().toString());
-        user.setRole(editTextRole.getSelectedItem().toString());
-        user.setPassword(hash(editTextPassword.getText().toString()));
-        user.setAdd(Boolean.parseBoolean(radioButtonAdd.getText().toString()));
-        user.setRemove(Boolean.parseBoolean(radioButtonRemove.getText().toString()));
-        user.setModify(Boolean.parseBoolean(radioButtonModify.getText().toString()));
-        // set default avatar for user
-        user.setAvatar("https://firebasestorage.googleapis.com/v0/b/tictactoe-c6001.appspot.com/o/avatars%2Fuser-default.png?alt=media&token=2b821695-3438-48cf-ad22-c530c75d991d");
-        if(imgUri!=null)
-        {
-            final ProgressDialog progressDialog= new ProgressDialog(getContext());
-            progressDialog.show();
-            progressDialog.setTitle("Creating new user");
-
-            final FirebaseStorage storage = FirebaseStorage.getInstance();
-            final StorageReference storageReference = storage.getReference().child("avatars/"+ UUID.randomUUID().toString());
-            final UploadTask uploadTask = storageReference.putFile(imgUri);
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
-                    progressDialog.dismiss();
-                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            Log.e("download url","got: "+uri.toString());
-
-                            //push new
-                            user.setAvatar(uri.toString());
-                            DatabaseReference newUserRef = mDatabase.push();
-                            newUserRef.setValue(user);
-
-                            removeTheLastestImgURI();
-                            Toast.makeText(getContext(),"Create new user successfully!",Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    progressDialog.dismiss();
-                    //push new
-                    DatabaseReference newUserRef = mDatabase.push();
-                    newUserRef.setValue(user);
-
-                    removeTheLastestImgURI();
-                    Toast.makeText(getContext(), "Upload avatar fail!", Toast.LENGTH_LONG).show();
-                }
-            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                }
-            });
-        }
-        else {
-            DatabaseReference newUserRef = mDatabase.push();
-            newUserRef.setValue(user);
-        }
-    }*/
-    /*public void uploadPicture(final User userOriginal){
-        final User user = new User("", "", "", "", "", false, false, false);
-        user.setUsername(userOriginal.getUsername());
-        user.setDisplayname(editTextUserName.getText().toString());
-        user.setRole(editTextRole.getSelectedItem().toString());
-        if(editTextPassword.getText().toString().equals(""))// password field is blank
-            user.setPassword(userOriginal.getPassword());
-        else
-            user.setPassword(hash(editTextPassword.getText().toString()));
-        //set default avatar
-        user.setAvatar(userOriginal.getAvatar());
-        user.setAdd(Boolean.parseBoolean(radioButtonAdd.getText().toString()));
-        user.setRemove(Boolean.parseBoolean(radioButtonRemove.getText().toString()));
-        user.setModify(Boolean.parseBoolean(radioButtonModify.getText().toString()));
-        if(imgUri!=null)//save user when uploading new avatar
-        {
-            final ProgressDialog progressDialog= new ProgressDialog(getContext());
-            progressDialog.show();
-            final FirebaseStorage storage = FirebaseStorage.getInstance();
-            final StorageReference storageReference = storage.getReference().child("avatars/"+ UUID.randomUUID().toString());
-            final UploadTask uploadTask = storageReference.putFile(imgUri);
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
-                    progressDialog.dismiss();
-                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(final Uri uri) {
-                            Log.e("download url","got: "+uri.toString());
-                            final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
-                            mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    for (DataSnapshot id : dataSnapshot.getChildren()) {
-                                        if (id.child("username").getValue().equals(userOriginal.getUsername()))
-                                        {
-                                            user.setAvatar(uri.toString());
-                                            Log.e("edit user when uri", "userOriginal: "+userOriginal.getUsername()+" -> "+editTextUserName.getText().toString());
-                                            mDatabase.child(id.getKey()).setValue(user);
-                                            removeTheLastestImgURI();
-                                            break;
-                                        }
-                                    }
-                                }
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    removeTheLastestImgURI();
-                                }
-                            });
-                        }
-                    });
-
-                    Toast.makeText(getContext(),"Uploaded",Toast.LENGTH_LONG).show();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    progressDialog.dismiss();
-                    removeTheLastestImgURI();
-                    Toast.makeText(getContext(), "Upload Failed!", Toast.LENGTH_LONG).show();
-                }
-            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-
-                }
-            });
-        }
-        else// save user when no uploading avatar
-        {
-            final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
-            mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot id : dataSnapshot.getChildren()) {
-                        if (id.child("username").getValue().equals(userOriginal.getUsername()))
-                        {
-                            Log.e("edit user when uri null", "userOriginal: "+userOriginal.getUsername()+" -> "+editTextUserName.getText().toString() +" | "+user.getAvatar());
-                            mDatabase.child(id.getKey()).setValue(user);
-                            break;
-                        }
-                    }
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                }
-            });
-        }
-    }*/
     public void choosePicture()
     {
         Intent intent = new Intent();
@@ -469,8 +300,10 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
     @Override
     public void OnSettingClick(int position) {
         if(MainActivity.authorizeService.isAdmin() || MainActivity.authorizeService.getUser().getEmail().equals(userList.get(position).getEmail())){
+            final User user = userList.get(position);
             final Dialog dialog = new Dialog(this.getContext());
             dialog.setContentView(R.layout.dialog_add_user);
+            dialog.setTitle("Edit User");
             dialog.show();
             // xu ly khi nguoi dung nhan phim back -> remove img da chon
             dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
@@ -484,50 +317,91 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                     return false;
                 }
             });
+            final EditText editTextEmail_Add, editTextUserCity, editTextUserDistrict;
             radioGroupAdd = dialog.findViewById(R.id.radio_group_add);
             radioGroupRemove = dialog.findViewById(R.id.radio_group_remove);
             radioGroupModify = dialog.findViewById(R.id.radio_group_modify);
             editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
-            editTextPassword = dialog.findViewById(R.id.editTextPassword_Add);
+            editTextPassword = dialog.findViewById(R.id.editTextUserPassword);
             editTextRole = dialog.findViewById(R.id.editTextRole_Add);
-            editTextUserName.setText(userList.get(position).getName());
-            editTextPassword.setText("");
+            editTextUserCity = dialog.findViewById(R.id.editTextUserCity);
+            editTextUserDistrict = dialog.findViewById(R.id.editTextUserDistrict);
+            imageViewChooseAvatar = dialog.findViewById(R.id.imageViewChooseAvatar);
+            editTextEmail_Add = dialog.findViewById(R.id.editTextEmail_Add);
+
+            editTextEmail_Add.setText(user.getEmail());
+            editTextEmail_Add.setEnabled(false);
+
             String[] roles = new String[]{"Admin", "User", "Guest"};
 //        final List<String> plantsList = new ArrayList<>(Arrays.asList(Roles));
             final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_text, roles);
             spinnerArrayAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
             editTextRole.setAdapter(spinnerArrayAdapter);
-            editTextRole.setSelection(0);
+            //set default value
+            editTextUserName.setText(user.getName());
+            editTextUserCity.setText(user.getLocation().get("city"));
+            editTextUserDistrict.setText(user.getLocation().get("district"));
+            editTextPassword.setText("");
+            editTextRole.setSelection(user.getRole().equals(roles[0]) ? 0 : (user.getRole().equals(roles[1]) ? 1 : 2));
 
-            imageViewChooseAvatar = dialog.findViewById(R.id.imageViewChooseAvatar);
-//        Glide.with(imageViewChooseAvatar.getContext())
-//                .load(userList.get(position).getAvatar())
-//                .centerCrop()
-//                .error(R.drawable.ic_round_broken_image_24)
-//                .placeholder(R.drawable.ic_baseline_image_24)
-//                .transform(new RoundedCorners(10))
-//                .into(imageViewChooseAvatar);
             Button buttonConfirm = dialog.findViewById(R.id.buttonConfirm_Add);
             buttonConfirm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(editTextUserName.getText().equals(""))
-                    {
-                        Toast.makeText(getContext(), "User Name and Role are required!", Toast.LENGTH_SHORT).show();
+                    if(editTextUserName.getText().toString().equals("")
+                            || editTextUserCity.getText().toString().equals("")
+                            || editTextUserDistrict.getText().toString().equals("")){
+                        Toast.makeText(getContext(), "Please fill out the form!", Toast.LENGTH_SHORT).show();
                     }
                     else {
-                        User user = new User(editTextUserName.getText().toString(), "", editTextRole.getSelectedItem().toString(), "");
-//                    uploadPicture(userOriginal);
-                        dialog.dismiss();
+                        Map<String, String> location = new HashMap<>();
+                        location.put("city", editTextUserCity.getText().toString());
+                        location.put("district", editTextUserDistrict.getText().toString());
+                        User editUser = new User(editTextUserName.getText().toString()
+                                ,editTextEmail_Add.getText().toString()
+                                ,editTextRole.getSelectedItem().toString()
+                                ,location);
+                        if(!editTextPassword.getText().toString().equals("")){
+                            editUser.setPassword(editTextPassword.getText().toString());
+                        }
+                        Request editRequest = MainActivity.httpRequestHelper.getEditRequest("/users", editUser.getEmail(), new Gson().toJson(editUser), MainActivity.user.getAccessToken());
+                        new OkHttpClient().newCall(editRequest).enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+
+                            }
+
+                            @Override
+                            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                                JSONObject jsonObject = null;
+                                try {
+                                    jsonObject = new JSONObject(response.body().string());
+                                } catch (JSONException e) {
+                                    Log.e("JSONException", "user management: +"+e.getMessage());
+                                }
+                                final JSONObject finalJsonObject = jsonObject;
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            if (!response.isSuccessful()) {
+                                                Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+finalJsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                                            } else {
+                                                dialog.dismiss();
+                                                Toast.makeText(UserManagementFragment.this.getContext(), "Successful: "+finalJsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                                                fetchDataIntoRecyclerView();
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                    }
+                                });
+                            }
+                        });
                     }
                 }
             });
-//            imageViewChooseAvatar.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    choosePicture();
-//                }
-//            });
         }
         else{
             Toast.makeText(getContext(), "Permission is required!", Toast.LENGTH_LONG).show();

@@ -132,15 +132,6 @@ public class ScheduleManagementFragment extends Fragment implements ScheduleAdap
         recyclerView = v.findViewById(R.id.recyclerViewScheduleManagement);
         scheduleArrayList = new ArrayList<Schedule>();
         textViewNumberOfSchedule = v.findViewById(R.id.textViewNumberOfSchedule);
-        floatingActionButtonAddSchedule = v.findViewById(R.id.floatingActionButtonAddSchedule);
-        floatingActionButtonAddSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), SewerCreateActivity.class);
-                intent.putExtra("User", user);
-                ScheduleManagementFragment.this.startActivity(intent);
-            }
-        });
     }
 
     // load data from firebase and fetch to recycler view
