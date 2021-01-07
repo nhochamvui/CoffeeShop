@@ -176,7 +176,7 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
             });
     }
     public void updateSewerAdapter(){
-        try {
+        if(SewerManagementFragment.this.getActivity() != null){
             SewerManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -185,10 +185,6 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
                 }
             });
         }
-        catch (NullPointerException e){
-            Log.e("sewer fragment", "user change the layout too fast");
-        }
-
     }
 
     @Override
@@ -225,7 +221,7 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
         bottomSheetDialog.setDismissWithAnimation(true);
         final View bottomSheetView = LayoutInflater.from(this.getContext()).inflate(R.layout.bottom_sheet_menu, (LinearLayout)this.getActivity().findViewById(R.id.bottomSheetContainer));
 
-        bottomSheetView.findViewById(R.id.bottomSheetInfoOption).setOnTouchListener(new View.OnTouchListener() {
+        /*bottomSheetView.findViewById(R.id.bottomSheetInfoOption).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
@@ -243,7 +239,7 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
                 }
                 return false;
             }
-        });
+        });*/
         bottomSheetView.findViewById(R.id.bottomSheetEditOption).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {

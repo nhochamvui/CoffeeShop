@@ -146,27 +146,18 @@ public class ScheduleManagementFragment extends Fragment implements ScheduleAdap
             }
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
-                JSONObject message = null;
-                String json = null;
-                try {
-                    json = response.body().string();
-                    message = new JSONObject(json);
-                } catch (JSONException e) {
-                    Log.e("scheduleFetch", "error while convert from json");
-                }
-                final JSONObject finalMessage = message;
-                final String finalJson = json;
+                final String json = response.body().string();
                 if(ScheduleManagementFragment.this.getActivity() != null){
                     ScheduleManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             try {
                                 if (!response.isSuccessful()) {
-                                    Toast.makeText(ScheduleManagementFragment.this.getContext(), "Error: "+ finalMessage.getString("message"), Toast.LENGTH_SHORT).show();
+                                    JSONObject jsonObject = new JSONObject(json);
+                                    Toast.makeText(ScheduleManagementFragment.this.getContext(), "Error: "+ jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Gson gson = new Gson();
                                     Type listType = new TypeToken<ArrayList<Schedule>>(){}.getType();
-                                    scheduleArrayList = gson.fromJson(finalJson, listType);
+                                    scheduleArrayList = new Gson().fromJson(json, listType);
                                     scheduleAdapter.setItems(scheduleArrayList);
                                     scheduleAdapter.notifyDataSetChanged();
                                 }

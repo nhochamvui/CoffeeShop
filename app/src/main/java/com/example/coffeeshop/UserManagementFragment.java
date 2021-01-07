@@ -164,11 +164,14 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(UserManagementFragment.this.getContext(), "Failed to connect!", Toast.LENGTH_LONG);
-                    }});
+                if(UserManagementFragment.this.getActivity() != null){
+                    UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(UserManagementFragment.this.getContext(), "Failed to connect!", Toast.LENGTH_LONG);
+                        }
+                    });
+                }
             }
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {

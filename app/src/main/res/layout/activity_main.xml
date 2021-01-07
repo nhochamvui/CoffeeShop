@@ -100,8 +100,8 @@
         android:contentDescription="TODO"
         android:src="@drawable/ic_round_home_24"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.05"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/textViewDisplayName"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/reflectColor" />
 

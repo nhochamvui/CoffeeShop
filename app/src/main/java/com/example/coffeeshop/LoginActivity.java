@@ -85,6 +85,9 @@ public class LoginActivity extends AppCompatActivity {
     public void loadUserLogin() {
         setupLoadingBar();
         sharedPreferences = this.getSharedPreferences("remember login", Context.MODE_PRIVATE);
+        if(sharedPreferences.getInt("rememberMe", 0) == 1){
+            checkBoxRememberme.setChecked(true);
+        }
         if(!sharedPreferences.getString("username","").equals(""))
         {
             loadingBar.show();
