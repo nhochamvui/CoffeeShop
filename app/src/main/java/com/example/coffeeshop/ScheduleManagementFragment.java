@@ -142,7 +142,14 @@ public class ScheduleManagementFragment extends Fragment implements ScheduleAdap
         new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Log.e("onFailure", "err: "+e.getMessage());
+                if(ScheduleManagementFragment.this.getActivity() != null){
+                    ScheduleManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getContext(), "Failed to connect!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
