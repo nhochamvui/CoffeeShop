@@ -30,6 +30,15 @@ public class HttpRequestHelper {
             return request;
     }
 
+    public Request getGetRequest(String controller, String objectId, String accessToken){
+        Request request = new Request.Builder()
+                .url(BASE_URL + controller + "/" + objectId)
+                .get()
+                .addHeader("Authorization", "Bearer "+ accessToken)
+                .build();
+        return request;
+    }
+
     public Request getDeleteRequest(String controller, String objectId, String accessToken){
         Request request = new Request.Builder()
                 .url(BASE_URL + controller + "/" + objectId)

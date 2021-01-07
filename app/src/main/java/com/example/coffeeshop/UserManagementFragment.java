@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -172,26 +173,27 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                 final String json = response.body().string();
-                UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!response.isSuccessful()) {
-                            try {
-                                JSONObject jsonObject = new JSONObject(json);
-                                Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+ jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
-                            } catch (JSONException e) {
-                                Toast.makeText(UserManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
+                if(getActivity() != null){
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!response.isSuccessful()) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(json);
+                                    Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+ jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                } catch (JSONException e) {
+                                    Toast.makeText(UserManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Type listType = new TypeToken<ArrayList<User>>(){}.getType();
+                                userList = new Gson().fromJson(json, listType);
+                                userAdapter.setItems(userList);
+                                textViewCurrentUser.setText("Users: "+userList.size()+" users");
+                                userAdapter.notifyDataSetChanged();
                             }
-                        } else {
-                            Type listType = new TypeToken<ArrayList<User>>(){}.getType();
-                            userList = new Gson().fromJson(json, listType);
-                            userAdapter.setItems(userList);
-                            textViewCurrentUser.setText("Users: "+userList.size()+" users");
-                            userAdapter.notifyDataSetChanged();
                         }
-                    }
-                });
-
+                    });
+                }
             }
 
         });
@@ -261,20 +263,78 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         dialog.setContentView(R.layout.dialog_add_user);
         dialog.show();
         // xu ly khi nguoi dung nhan phim back -> xoa img da chon
-        final EditText editTextEmail_Add, editTextUserCity, editTextUserDistrict;
+        final EditText editTextEmail_Add;
+        final Spinner editTextUserCity, editTextUserDistrict;
         editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
         editTextPassword = dialog.findViewById(R.id.editTextUserPassword);
         editTextRole = dialog.findViewById(R.id.editTextRole_Add);
         editTextEmail_Add = dialog.findViewById(R.id.editTextEmail_Add);
-        editTextUserCity = dialog.findViewById(R.id.editTextUserCity);
-        editTextUserDistrict = dialog.findViewById(R.id.editTextUserDistrict);
+        editTextUserCity = dialog.findViewById(R.id.editTextCity);
+        editTextUserDistrict = dialog.findViewById(R.id.editTextDistrict);
 
         String[] Roles = new String[]{"Select Role", "Admin", "User"};
+        final String[] cities = new String[]{"Select City", "Can Tho", "Sai Gon", "Bac Lieu", "Ben Tre"};
+        final List<String> districts = new ArrayList<>();
         final List<String> plantsList = new ArrayList<>(Arrays.asList(Roles));
         final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_text, plantsList);
+        ArrayAdapter<String> spinnerCityAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_text, cities);
+        final ArrayAdapter<String> spinnerDistrictAdapter = new ArrayAdapter<>(getActivity(),R.layout.spinner_text, districts);
+        spinnerCityAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
+        spinnerDistrictAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
         spinnerArrayAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
+        editTextUserCity.setAdapter(spinnerCityAdapter);
+        editTextUserDistrict.setAdapter(spinnerDistrictAdapter);
         editTextRole.setAdapter(spinnerArrayAdapter);
+        editTextUserCity.setSelection(0);
         editTextRole.setSelection(0);
+        editTextUserCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(position!=0){
+                    Request getRequest = MainActivity.httpRequestHelper.getGetRequest("/locations", cities[position], MainActivity.user.getAccessToken());
+                    new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(UserManagementFragment.this.getContext(), "Failed to connect!", Toast.LENGTH_LONG).show();
+                                }});
+                        }
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                            final String json = response.body().string();
+                            if(getActivity() != null){
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (!response.isSuccessful()) {
+                                            try {
+                                                JSONObject jsonObject = new JSONObject(json);
+                                                Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+ jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                            } catch (JSONException e) {
+                                                Toast.makeText(UserManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
+                                            }
+                                        } else {
+                                            Type listType = new TypeToken<ArrayList<String>>(){}.getType();
+                                            spinnerDistrictAdapter.clear();
+                                            spinnerDistrictAdapter.addAll((ArrayList<String>)new Gson().fromJson(json, listType));
+                                            spinnerDistrictAdapter.notifyDataSetChanged();
+                                        }
+                                    }
+                                });
+                            }
+                        }
+
+                    });
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         buttonConfirm = dialog.findViewById(R.id.buttonConfirm_Add);
         buttonConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -283,14 +343,14 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                         || editTextRole.getSelectedItem().toString().equals("Select Role")
                         || editTextUserName.getText().toString().equals("")
                         || editTextEmail_Add.getText().toString().equals("")
-                        || editTextUserCity.getText().toString().equals("")
-                        || editTextUserDistrict.getText().toString().equals("")) {
+                        || editTextUserCity.getSelectedItem().toString().equals("")
+                        || editTextUserDistrict.getSelectedItem().toString().equals("")) {
                     Toast.makeText(getContext(), "Please fill out the form!", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     Map<String, String> location = new HashMap<>();
-                    location.put("city", editTextUserCity.getText().toString());
-                    location.put("district", editTextUserDistrict.getText().toString());
+                    location.put("city", editTextUserCity.getSelectedItem().toString());
+                    location.put("district", editTextUserDistrict.getSelectedItem().toString());
                     User user = new User(editTextUserName.getText().toString()
                             ,editTextEmail_Add.getText().toString()
                             ,editTextRole.getSelectedItem().toString()
@@ -356,15 +416,16 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                     return false;
                 }
             });
-            final EditText editTextEmail_Add, editTextUserCity, editTextUserDistrict;
+            final EditText editTextEmail_Add;
+            final Spinner editTextUserCity, editTextUserDistrict;
             radioGroupAdd = dialog.findViewById(R.id.radio_group_add);
             radioGroupRemove = dialog.findViewById(R.id.radio_group_remove);
             radioGroupModify = dialog.findViewById(R.id.radio_group_modify);
             editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
             editTextPassword = dialog.findViewById(R.id.editTextUserPassword);
             editTextRole = dialog.findViewById(R.id.editTextRole_Add);
-            editTextUserCity = dialog.findViewById(R.id.editTextUserCity);
-            editTextUserDistrict = dialog.findViewById(R.id.editTextUserDistrict);
+            editTextUserCity = dialog.findViewById(R.id.editTextCity);
+            editTextUserDistrict = dialog.findViewById(R.id.editTextDistrict);
             imageViewChooseAvatar = dialog.findViewById(R.id.imageViewChooseAvatar);
             editTextEmail_Add = dialog.findViewById(R.id.editTextEmail_Add);
 
@@ -372,30 +433,129 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
             editTextEmail_Add.setEnabled(false);
 
             String[] roles = new String[]{"Admin", "User", "Guest"};
-//        final List<String> plantsList = new ArrayList<>(Arrays.asList(Roles));
+            final Spinner editTextCity, editTextDistrict;
+            editTextCity = dialog.findViewById(R.id.editTextCity);
+            editTextDistrict = dialog.findViewById(R.id.editTextDistrict);
+
             final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_text, roles);
+            String[] city = {"Can Tho", "Sai Gon", "Bac Lieu", "Ben Tre"};
+            final List<String> cities = new ArrayList<>(Arrays.asList(city));
+            final List<String> districts = new ArrayList<>();
+
             spinnerArrayAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
+            ArrayAdapter<String> spinnerCityAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_text, cities);
+            final ArrayAdapter<String> spinnerDistrictAdapter = new ArrayAdapter<>(getActivity(),R.layout.spinner_text, districts);
+
+            editTextCity.setAdapter(spinnerCityAdapter);
+            editTextDistrict.setAdapter(spinnerDistrictAdapter);
             editTextRole.setAdapter(spinnerArrayAdapter);
+
             //set default value
             editTextUserName.setText(user.getName());
-            editTextUserCity.setText(user.getLocation().get("city"));
-            editTextUserDistrict.setText(user.getLocation().get("district"));
+            editTextCity.setSelection(cities.indexOf(user.getLocation().get("city")));
+
+            Request getRequest = MainActivity.httpRequestHelper.getGetRequest("/locations", editTextCity.getSelectedItem().toString(), MainActivity.user.getAccessToken());
+            new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(UserManagementFragment.this.getContext(), "Failed to connect!", Toast.LENGTH_LONG).show();
+                        }});
+                }
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                    final String json = response.body().string();
+                    if(getActivity() != null){
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (!response.isSuccessful()) {
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(json);
+                                        Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+ jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                    } catch (JSONException e) {
+                                        Toast.makeText(UserManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
+                                    }
+                                } else {
+                                    Type listType = new TypeToken<ArrayList<String>>(){}.getType();
+                                    districts.clear();
+                                    districts.addAll((ArrayList<String>)new Gson().fromJson(json, listType));
+                                    spinnerDistrictAdapter.notifyDataSetChanged();
+                                    editTextDistrict.setSelection(districts.indexOf(user.getLocation().get("district")));
+                                }
+                            }
+                        });
+                    }
+                }
+
+            });
+
             editTextPassword.setText("");
             editTextRole.setSelection(user.getRole().equals(roles[0]) ? 0 : (user.getRole().equals(roles[1]) ? 1 : 2));
+
+            editTextCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if(position!=0){
+                        Request getRequest = MainActivity.httpRequestHelper.getGetRequest("/locations", cities.get(position), MainActivity.user.getAccessToken());
+                        new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                                UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(UserManagementFragment.this.getContext(), "Failed to connect!", Toast.LENGTH_LONG).show();
+                                    }});
+                            }
+                            @Override
+                            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                                final String json = response.body().string();
+                                if(getActivity() != null){
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (!response.isSuccessful()) {
+                                                try {
+                                                    JSONObject jsonObject = new JSONObject(json);
+                                                    Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+ jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                                } catch (JSONException e) {
+                                                    Toast.makeText(UserManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
+                                                }
+                                            } else {
+                                                Type listType = new TypeToken<ArrayList<String>>(){}.getType();
+                                                districts.clear();
+                                                districts.addAll((ArrayList<String>)new Gson().fromJson(json, listType));
+                                                spinnerDistrictAdapter.notifyDataSetChanged();
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+
+                        });
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
 
             Button buttonConfirm = dialog.findViewById(R.id.buttonConfirm_Add);
             buttonConfirm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if(editTextUserName.getText().toString().equals("")
-                            || editTextUserCity.getText().toString().equals("")
-                            || editTextUserDistrict.getText().toString().equals("")){
+                            || editTextCity.getSelectedItem().toString().equals("")
+                            || editTextDistrict.getSelectedItem().toString().equals("")){
                         Toast.makeText(getContext(), "Please fill out the form!", Toast.LENGTH_SHORT).show();
                     }
                     else {
                         Map<String, String> location = new HashMap<>();
-                        location.put("city", editTextUserCity.getText().toString());
-                        location.put("district", editTextUserDistrict.getText().toString());
+                        location.put("city", editTextCity.getSelectedItem().toString());
+                        location.put("district", editTextDistrict.getSelectedItem().toString());
                         User editUser = new User(editTextUserName.getText().toString()
                                 ,editTextEmail_Add.getText().toString()
                                 ,editTextRole.getSelectedItem().toString()
@@ -407,7 +567,12 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                         new OkHttpClient().newCall(editRequest).enqueue(new Callback() {
                             @Override
                             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getContext(), "Failed to connect!", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                             }
 
                             @Override

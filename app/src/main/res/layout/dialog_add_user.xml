@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/buttonConfirm_"
-    android:layout_width="300dp"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <EditText
         android:id="@+id/editTextEmail_Add"
@@ -25,7 +25,6 @@
         android:layout_width="70dp"
         android:layout_height="60dp"
 
-        android:layout_marginTop="10dp"
         android:background="#00FFFFFF"
         android:clickable="true"
         app:layout_constraintEnd_toEndOf="parent"
@@ -70,10 +69,9 @@
         android:layout_weight=".28"
         android:background="@drawable/spinner_background"
         android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="@+id/editTextUserDistrict"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/editTextUserDistrict"
-        app:layout_constraintTop_toBottomOf="@+id/editTextUserDistrict">
+        app:layout_constraintEnd_toEndOf="@+id/relativeSpinner2"
+        app:layout_constraintStart_toStartOf="@+id/relativeSpinner2"
+        app:layout_constraintTop_toBottomOf="@+id/relativeSpinner2">
 
         <Spinner
             android:id="@+id/editTextRole_Add"
@@ -95,33 +93,6 @@
             android:src="@drawable/ic_baseline_arrow_drop_down_24" />
 
     </RelativeLayout>
-
-    <EditText
-        android:id="@+id/editTextUserCity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:ems="8"
-        android:hint="City"
-        android:inputType="textPersonName"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/editTextUserPassword"
-        app:layout_constraintStart_toStartOf="@+id/editTextUserPassword"
-        app:layout_constraintTop_toBottomOf="@+id/editTextUserPassword" />
-
-    <EditText
-        android:id="@+id/editTextUserDistrict"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:ems="8"
-        android:hint="District"
-        android:inputType="textPersonName"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="@+id/editTextUserCity"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/editTextUserCity"
-        app:layout_constraintTop_toBottomOf="@+id/editTextUserCity" />
 
     <TextView
         android:id="@+id/textViewAdd"
@@ -273,14 +244,14 @@
         android:id="@+id/buttonConfirm_Add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="8dp"
         android:text="Confirm"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/relativeSpinner"
         app:layout_constraintStart_toStartOf="@+id/relativeSpinner"
         app:layout_constraintTop_toBottomOf="@+id/relativeSpinner"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
         android:id="@+id/imageView"
@@ -325,9 +296,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
-        app:layout_constraintBottom_toBottomOf="@+id/editTextUserDistrict"
-        app:layout_constraintEnd_toStartOf="@+id/editTextUserDistrict"
-        app:layout_constraintTop_toTopOf="@+id/editTextUserDistrict"
+        app:layout_constraintBottom_toBottomOf="@+id/relativeSpinner2"
+        app:layout_constraintEnd_toStartOf="@+id/relativeSpinner2"
+        app:layout_constraintTop_toTopOf="@+id/relativeSpinner2"
         app:srcCompat="@drawable/ic_baseline_location2_on_24"
         tools:ignore="VectorDrawableCompat" />
 
@@ -337,9 +308,9 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
         android:layout_marginRight="10dp"
-        app:layout_constraintBottom_toBottomOf="@+id/editTextUserCity"
-        app:layout_constraintEnd_toStartOf="@+id/editTextUserCity"
-        app:layout_constraintTop_toTopOf="@+id/editTextUserCity"
+        app:layout_constraintBottom_toBottomOf="@+id/relativeSpinner3"
+        app:layout_constraintEnd_toStartOf="@+id/relativeSpinner3"
+        app:layout_constraintTop_toTopOf="@+id/relativeSpinner3"
         app:srcCompat="@drawable/ic_baseline_location2_on_24"
         tools:ignore="VectorDrawableCompat" />
 
@@ -352,7 +323,74 @@
         app:layout_constraintBottom_toBottomOf="@+id/relativeSpinner"
         app:layout_constraintEnd_toStartOf="@+id/relativeSpinner"
         app:layout_constraintTop_toTopOf="@+id/relativeSpinner"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/ic_outline_verified_user_24"
         tools:ignore="VectorDrawableCompat" />
+
+    <RelativeLayout
+        android:id="@+id/relativeSpinner3"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_weight=".28"
+        android:background="@drawable/spinner_background"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="@+id/editTextUserPassword"
+        app:layout_constraintStart_toStartOf="@+id/editTextUserPassword"
+        app:layout_constraintTop_toBottomOf="@+id/editTextUserPassword">
+
+        <Spinner
+            android:id="@+id/editTextCity"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:spinnerMode="dropdown" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_baseline_arrow_drop_down_24" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeSpinner2"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_weight=".28"
+        android:background="@drawable/spinner_background"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="@+id/relativeSpinner3"
+        app:layout_constraintStart_toStartOf="@+id/relativeSpinner3"
+        app:layout_constraintTop_toBottomOf="@+id/relativeSpinner3">
+
+        <Spinner
+            android:id="@+id/editTextDistrict"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:spinnerMode="dropdown" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_baseline_arrow_drop_down_24" />
+
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

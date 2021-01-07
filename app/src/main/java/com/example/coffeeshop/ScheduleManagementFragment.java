@@ -156,24 +156,26 @@ public class ScheduleManagementFragment extends Fragment implements ScheduleAdap
                 }
                 final JSONObject finalMessage = message;
                 final String finalJson = json;
-                ScheduleManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            if (!response.isSuccessful()) {
-                                Toast.makeText(ScheduleManagementFragment.this.getContext(), "Error: "+ finalMessage.getString("message"), Toast.LENGTH_SHORT).show();
-                            } else {
-                                Gson gson = new Gson();
-                                Type listType = new TypeToken<ArrayList<Schedule>>(){}.getType();
-                                scheduleArrayList = gson.fromJson(finalJson, listType);
-                                scheduleAdapter.setItems(scheduleArrayList);
-                                scheduleAdapter.notifyDataSetChanged();
+                if(ScheduleManagementFragment.this.getActivity() != null){
+                    ScheduleManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                if (!response.isSuccessful()) {
+                                    Toast.makeText(ScheduleManagementFragment.this.getContext(), "Error: "+ finalMessage.getString("message"), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Gson gson = new Gson();
+                                    Type listType = new TypeToken<ArrayList<Schedule>>(){}.getType();
+                                    scheduleArrayList = gson.fromJson(finalJson, listType);
+                                    scheduleAdapter.setItems(scheduleArrayList);
+                                    scheduleAdapter.notifyDataSetChanged();
+                                }
+                            } catch (JSONException e) {
+                                Toast.makeText(ScheduleManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
                             }
-                        } catch (JSONException e) {
-                            Toast.makeText(ScheduleManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
                         }
-                    }
-                });
+                    });
+                }
             }
         });
 
