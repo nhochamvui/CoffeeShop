@@ -12,3 +12,5 @@
 /captures
 .externalNativeBuild
 .cxx
+app/src/main/java/com/example/coffeeshop/MainActivity2.java
+app/src/main/res/layout/activity_main2.xml

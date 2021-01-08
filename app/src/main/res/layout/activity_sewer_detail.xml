@@ -198,7 +198,6 @@
                     android:id="@+id/textViewSocketStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="19dp"
-                    android:text="Connection Timeout"
                     android:textSize="13sp"
                     app:layout_constraintBottom_toBottomOf="@+id/textView17"
                     app:layout_constraintEnd_toEndOf="@+id/textViewMyMqttStatus"
