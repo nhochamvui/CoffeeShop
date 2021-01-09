@@ -150,7 +150,6 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
 
     // load data from firebase and fetch to recycler view
     private void fetchDataIntoRecyclerView() {
-        sewerArrayList = null;
         final Request getRequest = httpRequestHelper.getGetRequest("/sewers", user.getAccessToken());
             new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
                 @Override
@@ -158,19 +157,17 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
                 }
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
-                    String json = null;
-                    try {
-                        json = response.body().string();
-                        int i = 0;
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
                     if (!response.isSuccessful()) {
-                        Toast.makeText(SewerManagementFragment.this.getContext(), "Error: "+json, Toast.LENGTH_SHORT).show();
+                        try {
+                            JSONObject jsonObject = new JSONObject(response.body().string());
+                            Toast.makeText(SewerManagementFragment.this.getContext(), "Error: "+jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     } else {
-                        Gson gson = new Gson();
+                        String json = response.body().string();
                         Type listType = new TypeToken<ArrayList<Sewer>>(){}.getType();
-                        sewerArrayList = gson.fromJson(json, listType);
+                        sewerArrayList = new Gson().fromJson(json, listType);
                         sewerAdapter.setItems(sewerArrayList);
                         updateSewerAdapter();
                     }
@@ -179,13 +176,15 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
             });
     }
     public void updateSewerAdapter(){
-        SewerManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                textViewNumberOfProduct.setText("Sewer list: "+sewerArrayList.size()+" sewers");
-                sewerAdapter.notifyDataSetChanged();
-            }
-        });
+        if(SewerManagementFragment.this.getActivity() != null){
+            SewerManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    textViewNumberOfProduct.setText("Sewer list: "+sewerArrayList.size()+" sewers");
+                    sewerAdapter.notifyDataSetChanged();
+                }
+            });
+        }
     }
 
     @Override
@@ -222,7 +221,7 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
         bottomSheetDialog.setDismissWithAnimation(true);
         final View bottomSheetView = LayoutInflater.from(this.getContext()).inflate(R.layout.bottom_sheet_menu, (LinearLayout)this.getActivity().findViewById(R.id.bottomSheetContainer));
 
-        bottomSheetView.findViewById(R.id.bottomSheetInfoOption).setOnTouchListener(new View.OnTouchListener() {
+        /*bottomSheetView.findViewById(R.id.bottomSheetInfoOption).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
@@ -240,7 +239,7 @@ public class SewerManagementFragment extends Fragment implements SewerAdapter.Se
                 }
                 return false;
             }
-        });
+        });*/
         bottomSheetView.findViewById(R.id.bottomSheetEditOption).setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {

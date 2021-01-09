@@ -3,21 +3,33 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/buttonConfirm_"
-    android:layout_width="300dp"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/editTextEmail_Add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:ems="8"
+        android:hint="Email"
+        android:inputType="textPersonName"
+        android:textColor="#090909"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewChooseAvatar"
+        app:layout_constraintStart_toStartOf="@+id/imageViewChooseAvatar"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewChooseAvatar" />
 
     <ImageView
         android:id="@+id/imageViewChooseAvatar"
-        android:layout_width="94dp"
-        android:layout_height="86dp"
+        android:layout_width="70dp"
+        android:layout_height="60dp"
 
         android:background="#00FFFFFF"
         android:clickable="true"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.087"
         app:srcCompat="@drawable/ic_baseline_account_circle_black_24"
         tools:ignore="VectorDrawableCompat"
         tools:srcCompat="@drawable/ic_baseline_account_circle_black_24" />
@@ -26,27 +38,40 @@
         android:id="@+id/editTextUserName_Add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
         android:ems="8"
         android:hint="Display Name"
         android:inputType="textPersonName"
         android:textColor="#090909"
         android:textSize="16sp"
-        app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/imageViewChooseAvatar" />
+        app:layout_constraintEnd_toEndOf="@+id/editTextEmail_Add"
+        app:layout_constraintStart_toStartOf="@+id/editTextEmail_Add"
+        app:layout_constraintTop_toBottomOf="@+id/editTextEmail_Add" />
+
+    <EditText
+        android:id="@+id/editTextUserPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:ems="8"
+        android:hint="Password"
+        android:inputType="textPersonName"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/editTextUserName_Add"
+        app:layout_constraintStart_toStartOf="@+id/editTextUserName_Add"
+        app:layout_constraintTop_toBottomOf="@+id/editTextUserName_Add" />
 
     <RelativeLayout
         android:id="@+id/relativeSpinner"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="39dp"
+        android:layout_marginTop="10dp"
         android:layout_weight=".28"
         android:background="@drawable/spinner_background"
         android:orientation="horizontal"
-        app:layout_constraintStart_toEndOf="@+id/imageView3"
-        app:layout_constraintTop_toBottomOf="@+id/editTextPassword_Add">
+        app:layout_constraintEnd_toEndOf="@+id/relativeSpinner2"
+        app:layout_constraintStart_toStartOf="@+id/relativeSpinner2"
+        app:layout_constraintTop_toBottomOf="@+id/relativeSpinner2">
 
         <Spinner
             android:id="@+id/editTextRole_Add"
@@ -69,34 +94,22 @@
 
     </RelativeLayout>
 
-    <EditText
-        android:id="@+id/editTextPassword_Add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:ems="8"
-        android:hint="Password"
-        android:inputType="textPersonName"
-        android:textSize="16sp"
-        android:layout_marginLeft="10dp"
-        app:layout_constraintStart_toEndOf="@+id/imageView2"
-        app:layout_constraintTop_toBottomOf="@+id/editTextUserName_Add" />
-
     <TextView
         android:id="@+id/textViewAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"
+        android:layout_marginLeft="60dp"
         android:layout_marginTop="20dp"
         android:backgroundTint="#FFFFFF"
         android:fontFamily="sans-serif"
         android:text="Add"
         android:textAllCaps="false"
         android:textColor="#A5A5A5"
+        android:visibility="gone"
         app:iconTint="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/relativeSpinner"
-        android:layout_marginLeft="60dp" />
+        app:layout_constraintTop_toBottomOf="@id/relativeSpinner" />
 
     <RadioGroup
         android:id="@+id/radio_group_add"
@@ -105,6 +118,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginRight="47dp"
         android:orientation="horizontal"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/relativeSpinner">
 
@@ -112,11 +126,11 @@
             android:id="@+id/radio1"
             android:layout_width="0dp"
             android:layout_height="20dp"
-            android:textColor="#A5A5A5"
             android:layout_weight="1"
             android:scaleX="0.8"
             android:scaleY="0.8"
-            android:text="true" />
+            android:text="true"
+            android:textColor="#A5A5A5" />
 
         <RadioButton
             android:id="@+id/radio2"
@@ -124,10 +138,10 @@
             android:layout_height="20dp"
             android:layout_weight="1"
             android:checked="true"
-            android:textColor="#A5A5A5"
             android:scaleX="0.8"
             android:scaleY="0.8"
-            android:text="false" />
+            android:text="false"
+            android:textColor="#A5A5A5" />
     </RadioGroup>
 
     <TextView
@@ -135,15 +149,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"
+        android:layout_marginLeft="60dp"
         android:backgroundTint="#FFFFFF"
         android:fontFamily="sans-serif"
         android:text="Remove"
         android:textAllCaps="false"
         android:textColor="#A5A5A5"
+        android:visibility="gone"
         app:iconTint="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewAdd"
-        android:layout_marginLeft="60dp" />
+        app:layout_constraintTop_toBottomOf="@id/textViewAdd" />
 
     <RadioGroup
         android:id="@+id/radio_group_remove"
@@ -151,6 +166,7 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="47dp"
         android:orientation="horizontal"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radio_group_add">
 
@@ -160,9 +176,9 @@
             android:layout_height="20dp"
             android:layout_weight="1"
             android:scaleX="0.8"
-            android:textColor="#A5A5A5"
             android:scaleY="0.8"
-            android:text="true" />
+            android:text="true"
+            android:textColor="#A5A5A5" />
 
         <RadioButton
             android:id="@+id/radio4"
@@ -171,9 +187,9 @@
             android:layout_weight="1"
             android:checked="true"
             android:scaleX="0.8"
-            android:textColor="#A5A5A5"
             android:scaleY="0.8"
-            android:text="false" />
+            android:text="false"
+            android:textColor="#A5A5A5" />
     </RadioGroup>
 
     <TextView
@@ -181,15 +197,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"
+        android:layout_marginLeft="60dp"
         android:backgroundTint="#FFFFFF"
         android:fontFamily="sans-serif"
         android:text="Modify"
         android:textAllCaps="false"
         android:textColor="#A5A5A5"
+        android:visibility="gone"
         app:iconTint="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewRemove"
-        android:layout_marginLeft="60dp" />
+        app:layout_constraintTop_toBottomOf="@id/textViewRemove" />
 
     <RadioGroup
         android:id="@+id/radio_group_modify"
@@ -197,6 +214,7 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="47dp"
         android:orientation="horizontal"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/radio_group_remove">
 
@@ -205,70 +223,174 @@
             android:layout_width="0dp"
             android:layout_height="20dp"
             android:layout_weight="1"
-            android:textColor="#A5A5A5"
             android:scaleX="0.8"
             android:scaleY="0.8"
-            android:text="true" />
+            android:text="true"
+            android:textColor="#A5A5A5" />
 
         <RadioButton
             android:id="@+id/radio6"
             android:layout_width="0dp"
             android:layout_height="20dp"
-            android:textColor="#A5A5A5"
             android:layout_weight="1"
             android:checked="true"
             android:scaleX="0.8"
             android:scaleY="0.8"
-            android:text="false" />
+            android:text="false"
+            android:textColor="#A5A5A5" />
     </RadioGroup>
 
     <Button
         android:id="@+id/buttonConfirm_Add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="70dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="8dp"
         android:text="Confirm"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.485"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textViewAdd"
-        app:layout_constraintVertical_bias="0.92" />
+        app:layout_constraintEnd_toEndOf="@+id/relativeSpinner"
+        app:layout_constraintStart_toStartOf="@+id/relativeSpinner"
+        app:layout_constraintTop_toBottomOf="@+id/relativeSpinner"
+        app:layout_constraintVertical_bias="0.0" />
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="152dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/editTextUserName_Add"
+        app:layout_constraintEnd_toStartOf="@+id/editTextUserName_Add"
+        app:layout_constraintTop_toTopOf="@+id/editTextUserName_Add"
         app:srcCompat="@drawable/ic_outline_person_24"
+        tools:ignore="VectorDrawableCompat" />
+
+    <ImageView
+        android:id="@+id/imageView13"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/editTextEmail_Add"
+        app:layout_constraintEnd_toStartOf="@+id/editTextEmail_Add"
+        app:layout_constraintTop_toTopOf="@+id/editTextEmail_Add"
+        app:srcCompat="@drawable/ic_baseline_alternate_email_24"
         tools:ignore="VectorDrawableCompat" />
 
     <ImageView
         android:id="@+id/imageView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="48dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/editTextUserPassword"
+        app:layout_constraintEnd_toStartOf="@+id/editTextUserPassword"
+        app:layout_constraintTop_toTopOf="@+id/editTextUserPassword"
+        app:layout_constraintVertical_bias="0.375"
         app:srcCompat="@drawable/ic_outline_lock_24"
+        tools:ignore="VectorDrawableCompat" />
+
+    <ImageView
+        android:id="@+id/imageView3221"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/relativeSpinner2"
+        app:layout_constraintEnd_toStartOf="@+id/relativeSpinner2"
+        app:layout_constraintTop_toTopOf="@+id/relativeSpinner2"
+        app:srcCompat="@drawable/ic_baseline_location2_on_24"
         tools:ignore="VectorDrawableCompat" />
 
     <ImageView
         android:id="@+id/imageView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="48dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView2"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/relativeSpinner3"
+        app:layout_constraintEnd_toStartOf="@+id/relativeSpinner3"
+        app:layout_constraintTop_toTopOf="@+id/relativeSpinner3"
+        app:srcCompat="@drawable/ic_baseline_location2_on_24"
+        tools:ignore="VectorDrawableCompat" />
+
+    <ImageView
+        android:id="@+id/imageView14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        app:layout_constraintBottom_toBottomOf="@+id/relativeSpinner"
+        app:layout_constraintEnd_toStartOf="@+id/relativeSpinner"
+        app:layout_constraintTop_toTopOf="@+id/relativeSpinner"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/ic_outline_verified_user_24"
         tools:ignore="VectorDrawableCompat" />
+
+    <RelativeLayout
+        android:id="@+id/relativeSpinner3"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_weight=".28"
+        android:background="@drawable/spinner_background"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="@+id/editTextUserPassword"
+        app:layout_constraintStart_toStartOf="@+id/editTextUserPassword"
+        app:layout_constraintTop_toBottomOf="@+id/editTextUserPassword">
+
+        <Spinner
+            android:id="@+id/editTextCity"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:spinnerMode="dropdown" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_baseline_arrow_drop_down_24" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeSpinner2"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_weight=".28"
+        android:background="@drawable/spinner_background"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="@+id/relativeSpinner3"
+        app:layout_constraintStart_toStartOf="@+id/relativeSpinner3"
+        app:layout_constraintTop_toBottomOf="@+id/relativeSpinner3">
+
+        <Spinner
+            android:id="@+id/editTextDistrict"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:layout_marginLeft="5dp"
+            android:background="@android:color/transparent"
+            android:gravity="center"
+            android:spinnerMode="dropdown" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_baseline_arrow_drop_down_24" />
+
+    </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

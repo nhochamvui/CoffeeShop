@@ -4,6 +4,8 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,8 +34,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -56,7 +61,9 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import okhttp3.Call;
@@ -157,39 +164,39 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                if(UserManagementFragment.this.getActivity() != null){
+                    UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(UserManagementFragment.this.getContext(), "Failed to connect!", Toast.LENGTH_LONG);
+                        }
+                    });
+                }
             }
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
-                String json = null;
-                JSONObject message = null;
-                try {
-                    json = response.body().string();
-                    message = new JSONObject(json);
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
-                }
-                final String finalJson = json;
-                final JSONObject finalMessage = message;
-                UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (!response.isSuccessful()) {
-                            try {
-                                Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+ finalMessage.getString("message"), Toast.LENGTH_SHORT).show();
-                            } catch (JSONException e) {
-                                Toast.makeText(UserManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
+                final String json = response.body().string();
+                if(getActivity() != null){
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (!response.isSuccessful()) {
+                                try {
+                                    JSONObject jsonObject = new JSONObject(json);
+                                    Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+ jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                } catch (JSONException e) {
+                                    Toast.makeText(UserManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Type listType = new TypeToken<ArrayList<User>>(){}.getType();
+                                userList = new Gson().fromJson(json, listType);
+                                userAdapter.setItems(userList);
+                                textViewCurrentUser.setText("Users: "+userList.size()+" users");
+                                userAdapter.notifyDataSetChanged();
                             }
-                        } else {
-                            Gson gson = new Gson();
-                            Type listType = new TypeToken<ArrayList<User>>(){}.getType();
-                            userList = gson.fromJson(finalJson, listType);
-                            userAdapter.setItems(userList);
-                            textViewCurrentUser.setText("Users: "+userList.size()+" users");
-                            userAdapter.notifyDataSetChanged();
                         }
-                    }
-                });
-
+                    });
+                }
             }
 
         });
@@ -212,218 +219,6 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                 }
             }
         });
-    }
-    public void addUser()
-    {
-        final Dialog dialog = new Dialog(this.getContext());
-        dialog.setContentView(R.layout.dialog_add_user);
-        dialog.show();
-        // xu ly khi nguoi dung nhan phim back -> xoa img da chon
-        dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
-            @Override
-            public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-                if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
-                    removeTheLastestImgURI();
-                    dialog.dismiss();
-                    return true;
-                }
-                return false;
-            }
-        });
-        radioGroupAdd = dialog.findViewById(R.id.radio_group_add);
-        radioGroupRemove = dialog.findViewById(R.id.radio_group_remove);
-        radioGroupModify = dialog.findViewById(R.id.radio_group_modify);
-        editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
-        editTextPassword = dialog.findViewById(R.id.editTextPassword_Add);
-        editTextRole = dialog.findViewById(R.id.editTextRole_Add);
-        String[] Roles = new String[]{"Select Role", "Admin", "User"};
-        final List<String> plantsList = new ArrayList<>(Arrays.asList(Roles));
-        final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_text, plantsList);
-        spinnerArrayAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
-        editTextRole.setAdapter(spinnerArrayAdapter);
-        editTextRole.setSelection(0);
-        imageViewChooseAvatar = dialog.findViewById(R.id.imageViewChooseAvatar);
-        imageViewChooseAvatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                choosePicture();
-            }
-        });
-        buttonConfirm = dialog.findViewById(R.id.buttonConfirm_Add);
-        buttonConfirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(editTextPassword.getText().toString().equals("")
-                        || editTextRole.getSelectedItem().toString().equals("Select Role")
-                        || editTextUserName.getText().toString().equals("")) {
-                    Toast.makeText(getContext(), "Please fill out the form!", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    radioButtonAdd = dialog.findViewById(radioGroupAdd.getCheckedRadioButtonId());
-                    radioButtonRemove = dialog.findViewById(radioGroupRemove.getCheckedRadioButtonId());
-                    radioButtonModify = dialog.findViewById(radioGroupModify.getCheckedRadioButtonId());
-//                    uploadPicture();
-                    dialog.dismiss();
-                }
-            }
-        });
-    }
-    /*public void uploadPicture() {
-        final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
-        final User user = new User("", "", "", "", "", false, false, false);
-        user.setUsername(editTextUserName.getText().toString());
-        user.setRole(editTextRole.getSelectedItem().toString());
-        user.setPassword(hash(editTextPassword.getText().toString()));
-        user.setAdd(Boolean.parseBoolean(radioButtonAdd.getText().toString()));
-        user.setRemove(Boolean.parseBoolean(radioButtonRemove.getText().toString()));
-        user.setModify(Boolean.parseBoolean(radioButtonModify.getText().toString()));
-        // set default avatar for user
-        user.setAvatar("https://firebasestorage.googleapis.com/v0/b/tictactoe-c6001.appspot.com/o/avatars%2Fuser-default.png?alt=media&token=2b821695-3438-48cf-ad22-c530c75d991d");
-        if(imgUri!=null)
-        {
-            final ProgressDialog progressDialog= new ProgressDialog(getContext());
-            progressDialog.show();
-            progressDialog.setTitle("Creating new user");
-
-            final FirebaseStorage storage = FirebaseStorage.getInstance();
-            final StorageReference storageReference = storage.getReference().child("avatars/"+ UUID.randomUUID().toString());
-            final UploadTask uploadTask = storageReference.putFile(imgUri);
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
-                    progressDialog.dismiss();
-                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            Log.e("download url","got: "+uri.toString());
-
-                            //push new
-                            user.setAvatar(uri.toString());
-                            DatabaseReference newUserRef = mDatabase.push();
-                            newUserRef.setValue(user);
-
-                            removeTheLastestImgURI();
-                            Toast.makeText(getContext(),"Create new user successfully!",Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    progressDialog.dismiss();
-                    //push new
-                    DatabaseReference newUserRef = mDatabase.push();
-                    newUserRef.setValue(user);
-
-                    removeTheLastestImgURI();
-                    Toast.makeText(getContext(), "Upload avatar fail!", Toast.LENGTH_LONG).show();
-                }
-            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                }
-            });
-        }
-        else {
-            DatabaseReference newUserRef = mDatabase.push();
-            newUserRef.setValue(user);
-        }
-    }*/
-    /*public void uploadPicture(final User userOriginal){
-        final User user = new User("", "", "", "", "", false, false, false);
-        user.setUsername(userOriginal.getUsername());
-        user.setDisplayname(editTextUserName.getText().toString());
-        user.setRole(editTextRole.getSelectedItem().toString());
-        if(editTextPassword.getText().toString().equals(""))// password field is blank
-            user.setPassword(userOriginal.getPassword());
-        else
-            user.setPassword(hash(editTextPassword.getText().toString()));
-        //set default avatar
-        user.setAvatar(userOriginal.getAvatar());
-        user.setAdd(Boolean.parseBoolean(radioButtonAdd.getText().toString()));
-        user.setRemove(Boolean.parseBoolean(radioButtonRemove.getText().toString()));
-        user.setModify(Boolean.parseBoolean(radioButtonModify.getText().toString()));
-        if(imgUri!=null)//save user when uploading new avatar
-        {
-            final ProgressDialog progressDialog= new ProgressDialog(getContext());
-            progressDialog.show();
-            final FirebaseStorage storage = FirebaseStorage.getInstance();
-            final StorageReference storageReference = storage.getReference().child("avatars/"+ UUID.randomUUID().toString());
-            final UploadTask uploadTask = storageReference.putFile(imgUri);
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(final UploadTask.TaskSnapshot taskSnapshot) {
-                    progressDialog.dismiss();
-                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(final Uri uri) {
-                            Log.e("download url","got: "+uri.toString());
-                            final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
-                            mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    for (DataSnapshot id : dataSnapshot.getChildren()) {
-                                        if (id.child("username").getValue().equals(userOriginal.getUsername()))
-                                        {
-                                            user.setAvatar(uri.toString());
-                                            Log.e("edit user when uri", "userOriginal: "+userOriginal.getUsername()+" -> "+editTextUserName.getText().toString());
-                                            mDatabase.child(id.getKey()).setValue(user);
-                                            removeTheLastestImgURI();
-                                            break;
-                                        }
-                                    }
-                                }
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    removeTheLastestImgURI();
-                                }
-                            });
-                        }
-                    });
-
-                    Toast.makeText(getContext(),"Uploaded",Toast.LENGTH_LONG).show();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    progressDialog.dismiss();
-                    removeTheLastestImgURI();
-                    Toast.makeText(getContext(), "Upload Failed!", Toast.LENGTH_LONG).show();
-                }
-            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-
-                }
-            });
-        }
-        else// save user when no uploading avatar
-        {
-            final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference().child("users");
-            mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot id : dataSnapshot.getChildren()) {
-                        if (id.child("username").getValue().equals(userOriginal.getUsername()))
-                        {
-                            Log.e("edit user when uri null", "userOriginal: "+userOriginal.getUsername()+" -> "+editTextUserName.getText().toString() +" | "+user.getAvatar());
-                            mDatabase.child(id.getKey()).setValue(user);
-                            break;
-                        }
-                    }
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                }
-            });
-        }
-    }*/
-    public void choosePicture()
-    {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Choose Picture"), PICK_IMAGE_REQUEST);
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -466,11 +261,151 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         Toast.makeText(this.getContext(), ""+userList.get(position).getName(), Toast.LENGTH_LONG).show();
     }
 
+    public void addUser() {
+        final Dialog dialog = new Dialog(this.getContext());
+        dialog.setContentView(R.layout.dialog_add_user);
+        dialog.show();
+        // xu ly khi nguoi dung nhan phim back -> xoa img da chon
+        final EditText editTextEmail_Add;
+        final Spinner editTextUserCity, editTextUserDistrict;
+        editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
+        editTextPassword = dialog.findViewById(R.id.editTextUserPassword);
+        editTextRole = dialog.findViewById(R.id.editTextRole_Add);
+        editTextEmail_Add = dialog.findViewById(R.id.editTextEmail_Add);
+        editTextUserCity = dialog.findViewById(R.id.editTextCity);
+        editTextUserDistrict = dialog.findViewById(R.id.editTextDistrict);
+
+        String[] Roles = new String[]{"Select Role", "Admin", "User"};
+        final String[] cities = new String[]{"Select City", "Can Tho", "Sai Gon", "Bac Lieu", "Ben Tre"};
+        final List<String> districts = new ArrayList<>();
+        final List<String> plantsList = new ArrayList<>(Arrays.asList(Roles));
+        final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_text, plantsList);
+        ArrayAdapter<String> spinnerCityAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_text, cities);
+        final ArrayAdapter<String> spinnerDistrictAdapter = new ArrayAdapter<>(getActivity(),R.layout.spinner_text, districts);
+        spinnerCityAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
+        spinnerDistrictAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
+        spinnerArrayAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
+        editTextUserCity.setAdapter(spinnerCityAdapter);
+        editTextUserDistrict.setAdapter(spinnerDistrictAdapter);
+        editTextRole.setAdapter(spinnerArrayAdapter);
+        editTextUserCity.setSelection(0);
+        editTextRole.setSelection(0);
+        editTextUserCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(position!=0){
+                    Request getRequest = MainActivity.httpRequestHelper.getGetRequest("/locations", cities[position], MainActivity.user.getAccessToken());
+                    new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(UserManagementFragment.this.getContext(), "Failed to connect!", Toast.LENGTH_LONG).show();
+                                }});
+                        }
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                            final String json = response.body().string();
+                            if(getActivity() != null){
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (!response.isSuccessful()) {
+                                            try {
+                                                JSONObject jsonObject = new JSONObject(json);
+                                                Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+ jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                            } catch (JSONException e) {
+                                                Toast.makeText(UserManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
+                                            }
+                                        } else {
+                                            Type listType = new TypeToken<ArrayList<String>>(){}.getType();
+                                            spinnerDistrictAdapter.clear();
+                                            spinnerDistrictAdapter.addAll((ArrayList<String>)new Gson().fromJson(json, listType));
+                                            spinnerDistrictAdapter.notifyDataSetChanged();
+                                        }
+                                    }
+                                });
+                            }
+                        }
+
+                    });
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        buttonConfirm = dialog.findViewById(R.id.buttonConfirm_Add);
+        buttonConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(editTextPassword.getText().toString().equals("")
+                        || editTextRole.getSelectedItem().toString().equals("Select Role")
+                        || editTextUserName.getText().toString().equals("")
+                        || editTextEmail_Add.getText().toString().equals("")
+                        || editTextUserCity.getSelectedItem().toString().equals("")
+                        || editTextUserDistrict.getSelectedItem().toString().equals("")) {
+                    Toast.makeText(getContext(), "Please fill out the form!", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Map<String, String> location = new HashMap<>();
+                    location.put("city", editTextUserCity.getSelectedItem().toString());
+                    location.put("district", editTextUserDistrict.getSelectedItem().toString());
+                    User user = new User(editTextUserName.getText().toString()
+                            ,editTextEmail_Add.getText().toString()
+                            ,editTextRole.getSelectedItem().toString()
+                            ,editTextPassword.getText().toString()
+                            ,location);
+                    Request postRequest = MainActivity.httpRequestHelper.getPostRequest("/users", new Gson().toJson(user), MainActivity.user.getAccessToken());
+                    new OkHttpClient().newCall(postRequest).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(UserManagementFragment.this.getContext(), "Failed to connect!", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        if (!response.isSuccessful()) {
+                                            JSONObject jsonObject = new JSONObject(response.body().string());
+                                            Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+jsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                                        } else {
+                                            JSONObject jsonObject = new JSONObject(response.body().string());
+                                            dialog.dismiss();
+                                            Toast.makeText(UserManagementFragment.this.getContext(), "Successful: "+jsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                                            fetchDataIntoRecyclerView();
+                                        }
+                                    } catch (JSONException | IOException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    }
+
     @Override
     public void OnSettingClick(int position) {
         if(MainActivity.authorizeService.isAdmin() || MainActivity.authorizeService.getUser().getEmail().equals(userList.get(position).getEmail())){
+            final User user = userList.get(position);
             final Dialog dialog = new Dialog(this.getContext());
             dialog.setContentView(R.layout.dialog_add_user);
+            dialog.setTitle("Edit User");
             dialog.show();
             // xu ly khi nguoi dung nhan phim back -> remove img da chon
             dialog.setOnKeyListener(new DialogInterface.OnKeyListener() {
@@ -484,50 +419,191 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                     return false;
                 }
             });
+            final EditText editTextEmail_Add;
+            final Spinner editTextUserCity, editTextUserDistrict;
             radioGroupAdd = dialog.findViewById(R.id.radio_group_add);
             radioGroupRemove = dialog.findViewById(R.id.radio_group_remove);
             radioGroupModify = dialog.findViewById(R.id.radio_group_modify);
             editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
-            editTextPassword = dialog.findViewById(R.id.editTextPassword_Add);
+            editTextPassword = dialog.findViewById(R.id.editTextUserPassword);
             editTextRole = dialog.findViewById(R.id.editTextRole_Add);
-            editTextUserName.setText(userList.get(position).getName());
-            editTextPassword.setText("");
-            String[] roles = new String[]{"Admin", "User", "Guest"};
-//        final List<String> plantsList = new ArrayList<>(Arrays.asList(Roles));
-            final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_text, roles);
-            spinnerArrayAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
-            editTextRole.setAdapter(spinnerArrayAdapter);
-            editTextRole.setSelection(0);
-
+            editTextUserCity = dialog.findViewById(R.id.editTextCity);
+            editTextUserDistrict = dialog.findViewById(R.id.editTextDistrict);
             imageViewChooseAvatar = dialog.findViewById(R.id.imageViewChooseAvatar);
-//        Glide.with(imageViewChooseAvatar.getContext())
-//                .load(userList.get(position).getAvatar())
-//                .centerCrop()
-//                .error(R.drawable.ic_round_broken_image_24)
-//                .placeholder(R.drawable.ic_baseline_image_24)
-//                .transform(new RoundedCorners(10))
-//                .into(imageViewChooseAvatar);
+            editTextEmail_Add = dialog.findViewById(R.id.editTextEmail_Add);
+
+            editTextEmail_Add.setText(user.getEmail());
+            editTextEmail_Add.setEnabled(false);
+
+            String[] roles = new String[]{"Admin", "User", "Guest"};
+            final Spinner editTextCity, editTextDistrict;
+            editTextCity = dialog.findViewById(R.id.editTextCity);
+            editTextDistrict = dialog.findViewById(R.id.editTextDistrict);
+
+            final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_text, roles);
+            String[] city = {"Can Tho", "Sai Gon", "Bac Lieu", "Ben Tre"};
+            final List<String> cities = new ArrayList<>(Arrays.asList(city));
+            final List<String> districts = new ArrayList<>();
+
+            spinnerArrayAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
+            ArrayAdapter<String> spinnerCityAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_text, cities);
+            final ArrayAdapter<String> spinnerDistrictAdapter = new ArrayAdapter<>(getActivity(),R.layout.spinner_text, districts);
+
+            editTextCity.setAdapter(spinnerCityAdapter);
+            editTextDistrict.setAdapter(spinnerDistrictAdapter);
+            editTextRole.setAdapter(spinnerArrayAdapter);
+
+            //set default value
+            editTextUserName.setText(user.getName());
+            editTextCity.setSelection(cities.indexOf(user.getLocation().get("city")));
+
+            Request getRequest = MainActivity.httpRequestHelper.getGetRequest("/locations", editTextCity.getSelectedItem().toString(), MainActivity.user.getAccessToken());
+            new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(UserManagementFragment.this.getContext(), "Failed to connect!", Toast.LENGTH_LONG).show();
+                        }});
+                }
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                    final String json = response.body().string();
+                    if(getActivity() != null){
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (!response.isSuccessful()) {
+                                    try {
+                                        JSONObject jsonObject = new JSONObject(json);
+                                        Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+ jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                    } catch (JSONException e) {
+                                        Toast.makeText(UserManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
+                                    }
+                                } else {
+                                    Type listType = new TypeToken<ArrayList<String>>(){}.getType();
+                                    districts.clear();
+                                    districts.addAll((ArrayList<String>)new Gson().fromJson(json, listType));
+                                    spinnerDistrictAdapter.notifyDataSetChanged();
+                                    editTextDistrict.setSelection(districts.indexOf(user.getLocation().get("district")));
+                                }
+                            }
+                        });
+                    }
+                }
+
+            });
+
+            editTextPassword.setText("");
+            editTextRole.setSelection(user.getRole().equals(roles[0]) ? 0 : (user.getRole().equals(roles[1]) ? 1 : 2));
+
+            editTextCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    if(position!=0){
+                        Request getRequest = MainActivity.httpRequestHelper.getGetRequest("/locations", cities.get(position), MainActivity.user.getAccessToken());
+                        new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                                UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(UserManagementFragment.this.getContext(), "Failed to connect!", Toast.LENGTH_LONG).show();
+                                    }});
+                            }
+                            @Override
+                            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                                final String json = response.body().string();
+                                if(getActivity() != null){
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            if (!response.isSuccessful()) {
+                                                try {
+                                                    JSONObject jsonObject = new JSONObject(json);
+                                                    Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+ jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                                } catch (JSONException e) {
+                                                    Toast.makeText(UserManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
+                                                }
+                                            } else {
+                                                Type listType = new TypeToken<ArrayList<String>>(){}.getType();
+                                                districts.clear();
+                                                districts.addAll((ArrayList<String>)new Gson().fromJson(json, listType));
+                                                spinnerDistrictAdapter.notifyDataSetChanged();
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+
+                        });
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
+                }
+            });
+
             Button buttonConfirm = dialog.findViewById(R.id.buttonConfirm_Add);
             buttonConfirm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(editTextUserName.getText().equals(""))
-                    {
-                        Toast.makeText(getContext(), "User Name and Role are required!", Toast.LENGTH_SHORT).show();
+                    if(editTextUserName.getText().toString().equals("")
+                            || editTextCity.getSelectedItem().toString().equals("")
+                            || editTextDistrict.getSelectedItem().toString().equals("")){
+                        Toast.makeText(getContext(), "Please fill out the form!", Toast.LENGTH_SHORT).show();
                     }
                     else {
-                        User user = new User(editTextUserName.getText().toString(), "", editTextRole.getSelectedItem().toString(), "");
-//                    uploadPicture(userOriginal);
-                        dialog.dismiss();
+                        Map<String, String> location = new HashMap<>();
+                        location.put("city", editTextCity.getSelectedItem().toString());
+                        location.put("district", editTextDistrict.getSelectedItem().toString());
+                        User editUser = new User(editTextUserName.getText().toString()
+                                ,editTextEmail_Add.getText().toString()
+                                ,editTextRole.getSelectedItem().toString()
+                                ,location);
+                        if(!editTextPassword.getText().toString().equals("")){
+                            editUser.setPassword(editTextPassword.getText().toString());
+                        }
+                        Request editRequest = MainActivity.httpRequestHelper.getEditRequest("/users", editUser.getEmail(), new Gson().toJson(editUser), MainActivity.user.getAccessToken());
+                        new OkHttpClient().newCall(editRequest).enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getContext(), "Failed to connect!", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+
+                            @Override
+                            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                                final String json = response.body().string();
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            if (!response.isSuccessful()) {
+                                                JSONObject jsonObject = new JSONObject(json);
+                                                Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+jsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                                            } else {
+                                                JSONObject jsonObject = new JSONObject(json);
+                                                dialog.dismiss();
+                                                Toast.makeText(UserManagementFragment.this.getContext(), "Successful: "+jsonObject.getString("message"), Toast.LENGTH_LONG).show();
+                                                fetchDataIntoRecyclerView();
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                });
+                            }
+                        });
                     }
                 }
             });
-//            imageViewChooseAvatar.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    choosePicture();
-//                }
-//            });
         }
         else{
             Toast.makeText(getContext(), "Permission is required!", Toast.LENGTH_LONG).show();
@@ -536,7 +612,62 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
     }
 
     @Override
-    public void OnDeleteClick(int position) {
+    public void OnDeleteClick(final int position) {
+        new MaterialAlertDialogBuilder(getContext())
+                .setTitle("Delete")
+                .setMessage("Delete this user permanently?")
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Toast.makeText(getContext(), "Cancelled!", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        deleteUser(userList.get(position));
+                    }
+                })
+                .show();
+    }
+
+    private void deleteUser(User user){
+        final ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setTitle("Processing request...");
+        progressDialog.show();
+        HttpRequestHelper httpRequestHelper = new HttpRequestHelper(getResources().getString(R.string.server_address));
+        Request deleteRequest = httpRequestHelper.getDeleteRequest("/users", user.getEmail(), MainActivity.user.getAccessToken());
+        new OkHttpClient().newCall(deleteRequest).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(UserManagementFragment.this.getContext(), "Failed to connect!", Toast.LENGTH_LONG);
+                    }});
+            }
+            @Override
+            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            JSONObject message = new JSONObject(response.body().string());
+                            if (!response.isSuccessful()) {
+                                progressDialog.dismiss();
+                                Toast.makeText(UserManagementFragment.this.getContext(), "Error: " + message.getString("message"), Toast.LENGTH_SHORT).show();
+                            } else {
+                                progressDialog.dismiss();
+                                Toast.makeText(UserManagementFragment.this.getContext(), "Successful: " + message.getString("message"), Toast.LENGTH_SHORT).show();
+                                fetchDataIntoRecyclerView();
+                            }
+                        } catch (IOException | JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
 
     }
 

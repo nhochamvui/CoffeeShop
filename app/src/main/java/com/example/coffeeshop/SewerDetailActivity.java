@@ -23,21 +23,23 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.github.nkzawa.emitter.Emitter;
-import com.github.nkzawa.engineio.client.transports.WebSocket;
-import com.github.nkzawa.socketio.client.IO;
-import com.github.nkzawa.socketio.client.Socket;
-
+import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import java.net.URISyntaxException;
+import java.net.URI;
 import java.util.ArrayDeque;
 import java.util.Queue;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
+import io.socket.engineio.client.transports.WebSocket;
 
 public class SewerDetailActivity extends AppCompatActivity implements MqttCallbackExtended{
     private SharedPreferences sharedPreferences;
@@ -50,7 +52,6 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
     private ImageView buttonSettingConnection;
     private com.google.android.material.slider.Slider sliderRangeControl;
     private Sewer sewer;
-    private MqttClientHelper m2qttClientHelper;
     private Queue<byte[]> frameQueue = new ArrayDeque<>();
     private final Bitmap bitmapTemp = Bitmap.createBitmap(768, 432, Bitmap.Config.ARGB_4444);;
     private final String OFFLINE_COLOR = "#828282";
@@ -64,6 +65,7 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
     private final String MQTT_PORT = "1883";
     private final String SOCKET_ADDRESS = "104.155.233.176";
     private final String SOCKET_PORT = "3000";
+    private String imageChannel = "";
     private MqttClientHelper mqttClientHelper;
     private SharedPreferences.Editor editor;
     @Override
@@ -72,8 +74,8 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
         setContentView(R.layout.activity_sewer_detail);
         sewer = (Sewer) getIntent().getSerializableExtra("Sewer");
         initialComponent();
-        setUpMqtt(sharedPreferences.getString("MQTT_ADDRESS",""), sharedPreferences.getString("MQTT_PORT",""));
-        setUpSocket(sharedPreferences.getString("SOCKET_ADDRESS",""), sharedPreferences.getString("SOCKET_PORT",""));
+        setUpMqtt(sharedPreferences.getString("MQTT_ADDRESS",""), sharedPreferences.getString("MQTT_PORT",""), false);
+        setUpSocket(sharedPreferences.getString("SOCKET_ADDRESS",""), sharedPreferences.getString("SOCKET_PORT",""), false);
         playVideo();
     }
 
@@ -81,6 +83,12 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
         sharedPreferences = this.getSharedPreferences("connection setting", Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
         setDefaultConnection();
+        if(sewer.getId().equals("sewerOnTop10")){
+            imageChannel = "imageSend";
+        }
+        else{
+            imageChannel = sewer.getId()+"/imageSend";
+        }
         editTextNumberControlDistance = findViewById(R.id.editTextNumberControlDistance);
         sliderRangeControl = findViewById(R.id.sliderRangeControl);
         videoContainer = findViewById(R.id.imageView6);
@@ -201,30 +209,50 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
         });
     }
 
-    private void setUpMqtt(String mqttAddress, String mqttPort) {
+    private void setUpMqtt(String mqttAddress, String mqttPort, boolean refresh) {
         final String clientId = MqttClient.generateClientId();
         final String mqttServerUri = "tcp://"+mqttAddress+":"+mqttPort;
-        mqttClientHelper = new MqttClientHelper(this.getApplicationContext(), mqttServerUri, "hoangtho");
-        mqttClientHelper.getMqttClient().setCallback(this);
-        mqttClientHelper.doConnect();
+        if(refresh && mqttClientHelper.getMqttClient()!=null){
+            try {
+                mqttClientHelper.getMqttClient().disconnect(0);
+            }
+            catch (MqttException e){
+
+            }
+            mqttClientHelper = new MqttClientHelper(this.getApplicationContext(), mqttServerUri, "hoangtho");
+            mqttClientHelper.getMqttClient().setCallback(this);
+            mqttClientHelper.doConnect();
+//            mqttClientHelper.getMqttClient().close();
+        }
+        else{
+            mqttClientHelper = new MqttClientHelper(this.getApplicationContext(), mqttServerUri, "hoangtho");
+            mqttClientHelper.getMqttClient().setCallback(this);
+            mqttClientHelper.doConnect();
+        }
+
     }
 
-    private void setUpSocket(String socketAddress, String socketPort){
-        try{
-            IO.Options opts = new IO.Options();
-            opts.transports = new String[] { WebSocket.NAME };
-            this.mySocket = IO.socket("http://"+socketAddress+":"+socketPort+"/", opts);
-            mySocket.on("imageSend", onNewMessage);
-            mySocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
-            mySocket.on(Socket.EVENT_CONNECT, onConnect);
-            mySocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
-            mySocket.on(Socket.EVENT_CONNECT_TIMEOUT, onConnectTimeout);
-            mySocket.on(Socket.EVENT_RECONNECTING, onReconnecting);
-            mySocket.on(Socket.EVENT_RECONNECT_FAILED, onReconnectFailed);
+    private void setUpSocket(String socketAddress, String socketPort, boolean refresh){
+        // clean the socket to established a new connection
+        if(refresh){
+            mySocket.off(imageChannel, onNewMessage);
+            mySocket.off(Socket.EVENT_DISCONNECT, onDisconnect);
+            mySocket.off(Socket.EVENT_CONNECT, onConnect);
+            mySocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
+            mySocket.disconnect();
         }
-        catch (URISyntaxException e){
-            Log.e("Socket","URI Syntax Exception: "+e.getMessage());
-        }
+        IO.Options options = IO.Options.builder()
+                .setTransports(new String[] { WebSocket.NAME })
+                .setReconnection(true)
+                .build();
+        URI uri = URI.create("http://"+socketAddress+":"+socketPort+"/");
+        mySocket = IO.socket(uri,options);
+//            this.mySocket = IO.socket("http://"+socketAddress+":"+socketPort+"/", opts);
+        mySocket.on(imageChannel, onNewMessage);
+        mySocket.on(Socket.EVENT_DISCONNECT, onDisconnect);
+        mySocket.on(Socket.EVENT_CONNECT, onConnect);
+        mySocket.on(Socket.EVENT_CONNECT_ERROR, onConnectError);
+        mySocket.connect();
     }
 
     private void playVideo() {
@@ -322,7 +350,7 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
             }
         }
     }
-    public void settingConnection(){
+    public void settingConnection() {
         this.dialog = new Dialog(this);
         dialog.setContentView(R.layout.dialog_setting_connection);
         dialog.setTitle("Setting");
@@ -347,9 +375,25 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
                         || editTextSocketAddress.getText().toString().equals("")
                         || editTextSocketPort.getText().toString().equals(""))
                 {
-                    dialog.dismiss();
-                    setUpMqtt(editTextMqttAddress.getText().toString(), editTextMqttPort.getText().toString());
-                    setUpSocket(editTextSocketAddress.getText().toString(), editTextSocketPort.getText().toString());
+                    Toast.makeText(SewerDetailActivity.this, "Please fill out the form!", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    editor.putString("MQTT_ADDRESS", editTextMqttAddress.getText().toString());
+                    editor.putString("MQTT_PORT", editTextMqttPort.getText().toString());
+                    editor.putString("SOCKET_ADDRESS", editTextSocketAddress.getText().toString());
+                    editor.putString("SOCKET_PORT", editTextSocketPort.getText().toString());
+                    if(editor.commit()){
+                        Toast.makeText(SewerDetailActivity.this, "Saved and reconnecting", Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                        setUpMqtt(editTextMqttAddress.getText().toString(), editTextMqttPort.getText().toString(), true);
+                        setUpSocket(editTextSocketAddress.getText().toString(), editTextSocketPort.getText().toString(), true);
+                        textViewSocketStatus.setText("Connecting...");
+                    }
+                    else{
+                        dialog.dismiss();
+                        Toast.makeText(SewerDetailActivity.this, "Save failed and reconnecting", Toast.LENGTH_SHORT).show();
+                    }
+
                 }
             }
         });
@@ -471,20 +515,18 @@ public class SewerDetailActivity extends AppCompatActivity implements MqttCallba
     protected void onDestroy() {
         super.onDestroy();
         mySocket.disconnect();
-        mySocket.off("imageSend", onNewMessage);
+        mySocket.off(imageChannel, onNewMessage);
         mySocket.off(Socket.EVENT_DISCONNECT, onDisconnect);
         mySocket.off(Socket.EVENT_CONNECT, onConnect);
         mySocket.off(Socket.EVENT_CONNECT_ERROR, onConnectError);
-        mySocket.off(Socket.EVENT_CONNECT_TIMEOUT, onConnectTimeout);
-        mySocket.off(Socket.EVENT_RECONNECTING, onReconnecting);
-        mySocket.off(Socket.EVENT_RECONNECT_FAILED, onReconnectFailed);
         mqttClientHelper.doDisconnect();
+        mqttClientHelper.getMqttClient().close();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void connectComplete(boolean reconnect, String serverURI) {
-        Log.e("MQTT", "connection established!");
+        Log.e("MQTT", "connection established to "+serverURI);
 //        imageViewMyMqttStatusColor.getDrawable().setTint(Color.parseColor(ONLINE_COLOR));
         textViewMyMqttStatus.setText("Connected");
         listenToMqttStatus();

@@ -40,8 +40,6 @@ public class SewerInfoActivity extends AppCompatActivity {
         sewer = (Sewer) intent.getSerializableExtra("Sewer");
         editTextSewerName = findViewById(R.id.editTextSewerName);
         editTextSewerDesc = findViewById(R.id.editTextSewerDesc);
-        editTextSewerLocation = findViewById(R.id.editTextSewerLocation);
-        editTextSewerChannel = findViewById(R.id.editTextSewerChannel);
         editTextSewerName.setText(sewer.getName());
         editTextSewerDesc.setText(sewer.getDescription());
         editTextSewerLocation.setText("Location: " +sewer.getLocation().get("district") + ", " + sewer.getLocation().get("city"));
@@ -49,7 +47,6 @@ public class SewerInfoActivity extends AppCompatActivity {
 
         imageViewSewerEditBackButton = findViewById(R.id.imageViewSewerEditBackButton);
         buttonSewerEditCancel = findViewById(R.id.buttonSewerEditCancel);
-        autoCompleteTextViewSewerCategory = findViewById(R.id.my_spinner_dropdown_sewer_category);
         buttonUpdateSewerInfo = findViewById(R.id.buttonUpdateSewerInfo);
         List<String> categories = new ArrayList<String>();
         categories.add("Rất nhỏ");categories.add("Nhỏ");categories.add("Vừa");categories.add("Tương đối lớn");categories.add("Lớn");

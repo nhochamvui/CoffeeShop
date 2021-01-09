@@ -1,30 +1,58 @@
 package com.example.coffeeshop;
 
 import java.io.Serializable;
+import java.util.Map;
 
 public class User implements Serializable {
-    String name;
-    String email;
-    String role;
-    String created_day;
-    String city;
-    String accessToken;
+    private String name;
+    private String email;
+    private String role;
+    private String created_day;
+    private String city;
+    private String accessToken;
+    private String password = "";
+    private Map<String, String> location;
     public User(){
 
     }
-    public User(String name, String email, String role, String created_day, String city, String accessToken){
+    public User(String name, String email, String role, String created_day, String city, String accessToken, Map<String, String> location){
         this.name = name;
         this.email = email;
         this.role = role;
         this.created_day = created_day;
         this.city = city;
         this.accessToken = accessToken;
+        this.location = location;
     }
-    public User(String name, String email, String role, String city){
+    public User(String name, String email, String role, Map<String, String> location){
         this.name = name;
         this.email = email;
         this.role = role;
-        this.city = city;
+        this.location = location;
+    }
+
+    public User(String name, String email, String role, String password, Map<String, String> location){
+        this.name = name;
+        this.email = email;
+        this.role = role;
+        this.location = location;
+        this.password = password;
+    }
+
+    public Map<String, String> getLocation() {
+        return location;
+    }
+
+    public void setLocation(Map<String, String> location) {
+        this.location = location;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getName() {

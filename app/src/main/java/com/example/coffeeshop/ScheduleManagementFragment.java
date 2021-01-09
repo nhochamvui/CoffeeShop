@@ -132,15 +132,6 @@ public class ScheduleManagementFragment extends Fragment implements ScheduleAdap
         recyclerView = v.findViewById(R.id.recyclerViewScheduleManagement);
         scheduleArrayList = new ArrayList<Schedule>();
         textViewNumberOfSchedule = v.findViewById(R.id.textViewNumberOfSchedule);
-        floatingActionButtonAddSchedule = v.findViewById(R.id.floatingActionButtonAddSchedule);
-        floatingActionButtonAddSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getContext(), SewerCreateActivity.class);
-                intent.putExtra("User", user);
-                ScheduleManagementFragment.this.startActivity(intent);
-            }
-        });
     }
 
     // load data from firebase and fetch to recycler view
@@ -151,38 +142,38 @@ public class ScheduleManagementFragment extends Fragment implements ScheduleAdap
         new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
             @Override
             public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                Log.e("onFailure", "err: "+e.getMessage());
+                if(ScheduleManagementFragment.this.getActivity() != null){
+                    ScheduleManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getContext(), "Failed to connect!", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             }
             @Override
             public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
-                JSONObject message = null;
-                String json = null;
-                try {
-                    json = response.body().string();
-                    message = new JSONObject(json);
-                } catch (JSONException e) {
-                    Log.e("scheduleFetch", "error while convert from json");
-                }
-                final JSONObject finalMessage = message;
-                final String finalJson = json;
-                ScheduleManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            if (!response.isSuccessful()) {
-                                Toast.makeText(ScheduleManagementFragment.this.getContext(), "Error: "+ finalMessage.getString("message"), Toast.LENGTH_SHORT).show();
-                            } else {
-                                Gson gson = new Gson();
-                                Type listType = new TypeToken<ArrayList<Schedule>>(){}.getType();
-                                scheduleArrayList = gson.fromJson(finalJson, listType);
-                                scheduleAdapter.setItems(scheduleArrayList);
-                                scheduleAdapter.notifyDataSetChanged();
+                final String json = response.body().string();
+                if(ScheduleManagementFragment.this.getActivity() != null){
+                    ScheduleManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                if (!response.isSuccessful()) {
+                                    JSONObject jsonObject = new JSONObject(json);
+                                    Toast.makeText(ScheduleManagementFragment.this.getContext(), "Error: "+ jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Type listType = new TypeToken<ArrayList<Schedule>>(){}.getType();
+                                    scheduleArrayList = new Gson().fromJson(json, listType);
+                                    scheduleAdapter.setItems(scheduleArrayList);
+                                    scheduleAdapter.notifyDataSetChanged();
+                                }
+                            } catch (JSONException e) {
+                                Toast.makeText(ScheduleManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
                             }
-                        } catch (JSONException e) {
-                            Toast.makeText(ScheduleManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
                         }
-                    }
-                });
+                    });
+                }
             }
         });
 
