@@ -1,5 +1,6 @@
 package com.example.coffeeshop;
 
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -41,6 +42,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText editTextUserName;
     private EditText editTextPassword;
     private Button buttonLogin;
+    private Button buttonReg;
     private DatabaseReference mDatabase;
     private String userName, password;
     private CheckBox checkBoxRememberme;
@@ -52,6 +54,13 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         initialComponent();
+        buttonReg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+                LoginActivity.this.startActivity(intent);
+            }
+        });
         int state = getIntent().getIntExtra("justLoggedOut", 0);
         if(state == 1)
             justLoggedOut();
@@ -131,6 +140,7 @@ public class LoginActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.editTextPassword);
         editTextUserName = findViewById(R.id.editTextUserName_Add);
         buttonLogin = findViewById(R.id.buttonLogin);
+        buttonReg = findViewById(R.id.buttonReg);
         checkBoxRememberme = findViewById(R.id.checkBoxRememberMe);
         httpRequestHelper = new HttpRequestHelper(getResources().getString(R.string.server_address));
     }

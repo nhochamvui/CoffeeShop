@@ -275,8 +275,8 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         editTextUserCity = dialog.findViewById(R.id.editTextCity);
         editTextUserDistrict = dialog.findViewById(R.id.editTextDistrict);
 
-        String[] Roles = new String[]{"Select Role", "Admin", "User"};
-        final String[] cities = new String[]{"Select City", "Can Tho", "Sai Gon", "Bac Lieu", "Ben Tre"};
+        String[] Roles = new String[]{"Select Role", "Admin", "Moderator", "Guest"};
+        final String[] cities = new String[]{"Select City", "Can Tho", "Sai Gon", "Bac Lieu", "Ben Tre", "None"};
         final List<String> districts = new ArrayList<>();
         final List<String> plantsList = new ArrayList<>(Arrays.asList(Roles));
         final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_text, plantsList);
@@ -293,7 +293,7 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
         editTextUserCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(position!=0){
+                if(position!=0 && position!=5){
                     Request getRequest = MainActivity.httpRequestHelper.getGetRequest("/locations", cities[position], MainActivity.user.getAccessToken());
                     new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
                         @Override
@@ -320,8 +320,8 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                                             }
                                         } else {
                                             Type listType = new TypeToken<ArrayList<String>>(){}.getType();
-                                            spinnerDistrictAdapter.clear();
-                                            spinnerDistrictAdapter.addAll((ArrayList<String>)new Gson().fromJson(json, listType));
+                                            districts.clear();
+                                            districts.addAll((ArrayList<String>)new Gson().fromJson(json, listType));
                                             spinnerDistrictAdapter.notifyDataSetChanged();
                                         }
                                     }
@@ -330,6 +330,11 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                         }
 
                     });
+                }
+                else{
+                    districts.clear();
+                    districts.add("None");
+                    spinnerDistrictAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -352,8 +357,14 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                 }
                 else {
                     Map<String, String> location = new HashMap<>();
-                    location.put("city", editTextUserCity.getSelectedItem().toString());
-                    location.put("district", editTextUserDistrict.getSelectedItem().toString());
+                    if (editTextUserCity.getSelectedItem().toString().equals("None")){
+                        location.put("city", "");
+                        location.put("district", "");
+                    }
+                    else {
+                        location.put("city", editTextUserCity.getSelectedItem().toString());
+                        location.put("district", editTextUserDistrict.getSelectedItem().toString());
+                    }
                     User user = new User(editTextUserName.getText().toString()
                             ,editTextEmail_Add.getText().toString()
                             ,editTextRole.getSelectedItem().toString()
@@ -420,88 +431,94 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                 }
             });
             final EditText editTextEmail_Add;
-            final Spinner editTextUserCity, editTextUserDistrict;
-            radioGroupAdd = dialog.findViewById(R.id.radio_group_add);
-            radioGroupRemove = dialog.findViewById(R.id.radio_group_remove);
-            radioGroupModify = dialog.findViewById(R.id.radio_group_modify);
             editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
             editTextPassword = dialog.findViewById(R.id.editTextUserPassword);
             editTextRole = dialog.findViewById(R.id.editTextRole_Add);
-            editTextUserCity = dialog.findViewById(R.id.editTextCity);
-            editTextUserDistrict = dialog.findViewById(R.id.editTextDistrict);
             imageViewChooseAvatar = dialog.findViewById(R.id.imageViewChooseAvatar);
             editTextEmail_Add = dialog.findViewById(R.id.editTextEmail_Add);
 
             editTextEmail_Add.setText(user.getEmail());
             editTextEmail_Add.setEnabled(false);
 
-            String[] roles = new String[]{"Admin", "User", "Guest"};
+            String[] roles = new String[]{"Admin", "Moderator", "Guest"};
             final Spinner editTextCity, editTextDistrict;
             editTextCity = dialog.findViewById(R.id.editTextCity);
             editTextDistrict = dialog.findViewById(R.id.editTextDistrict);
 
             final ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getActivity(), R.layout.spinner_text, roles);
-            String[] city = {"Can Tho", "Sai Gon", "Bac Lieu", "Ben Tre"};
+            String[] city = {"Can Tho", "Sai Gon", "Bac Lieu", "Ben Tre", "None"};
             final List<String> cities = new ArrayList<>(Arrays.asList(city));
             final List<String> districts = new ArrayList<>();
 
             spinnerArrayAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown);
             ArrayAdapter<String> spinnerCityAdapter = new ArrayAdapter<>(getActivity(), R.layout.spinner_text, cities);
             final ArrayAdapter<String> spinnerDistrictAdapter = new ArrayAdapter<>(getActivity(),R.layout.spinner_text, districts);
-
             editTextCity.setAdapter(spinnerCityAdapter);
             editTextDistrict.setAdapter(spinnerDistrictAdapter);
             editTextRole.setAdapter(spinnerArrayAdapter);
 
             //set default value
             editTextUserName.setText(user.getName());
-            editTextCity.setSelection(cities.indexOf(user.getLocation().get("city")));
 
-            Request getRequest = MainActivity.httpRequestHelper.getGetRequest("/locations", editTextCity.getSelectedItem().toString(), MainActivity.user.getAccessToken());
-            new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
-                @Override
-                public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                    UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(UserManagementFragment.this.getContext(), "Failed to connect!", Toast.LENGTH_LONG).show();
-                        }});
-                }
-                @Override
-                public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
-                    final String json = response.body().string();
-                    if(getActivity() != null){
-                        getActivity().runOnUiThread(new Runnable() {
+            if(user.getLocation().get("city").equals("")){
+                editTextCity.setSelection(cities.indexOf("None"));
+                spinnerDistrictAdapter.clear();
+                spinnerDistrictAdapter.add("None");
+                spinnerDistrictAdapter.notifyDataSetChanged();
+                editTextDistrict.setSelection(districts.indexOf("None"));
+            }
+            else{
+                editTextCity.setSelection(cities.indexOf(user.getLocation().get("city")));
+                Request getRequest = MainActivity.httpRequestHelper.getGetRequest("/locations", editTextCity.getSelectedItem().toString(), MainActivity.user.getAccessToken());
+                new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        UserManagementFragment.this.getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                if (!response.isSuccessful()) {
-                                    try {
-                                        JSONObject jsonObject = new JSONObject(json);
-                                        Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+ jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
-                                    } catch (JSONException e) {
-                                        Toast.makeText(UserManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
-                                    }
-                                } else {
-                                    Type listType = new TypeToken<ArrayList<String>>(){}.getType();
-                                    districts.clear();
-                                    districts.addAll((ArrayList<String>)new Gson().fromJson(json, listType));
-                                    spinnerDistrictAdapter.notifyDataSetChanged();
-                                    editTextDistrict.setSelection(districts.indexOf(user.getLocation().get("district")));
-                                }
-                            }
-                        });
+                                Toast.makeText(UserManagementFragment.this.getContext(), "Failed to connect!", Toast.LENGTH_LONG).show();
+                            }});
                     }
-                }
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                        final String json = response.body().string();
+                        if(getActivity() != null){
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (!response.isSuccessful()) {
+                                        try {
+                                            JSONObject jsonObject = new JSONObject(json);
+                                            Toast.makeText(UserManagementFragment.this.getContext(), "Error: "+ jsonObject.getString("message"), Toast.LENGTH_SHORT).show();
+                                        } catch (JSONException e) {
+                                            Toast.makeText(UserManagementFragment.this.getContext(), "Error", Toast.LENGTH_SHORT).show();
+                                        }
+                                    } else {
+                                        Type listType = new TypeToken<ArrayList<String>>(){}.getType();
+                                        districts.clear();
+                                        districts.addAll((ArrayList<String>)new Gson().fromJson(json, listType));
+                                        spinnerDistrictAdapter.notifyDataSetChanged();
+                                        editTextDistrict.setSelection(districts.indexOf(user.getLocation().get("district")));
+                                    }
+                                }
+                            });
+                        }
+                    }
 
-            });
-
+                });
+            }
             editTextPassword.setText("");
             editTextRole.setSelection(user.getRole().equals(roles[0]) ? 0 : (user.getRole().equals(roles[1]) ? 1 : 2));
 
             editTextCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    if(position!=0){
+                    if(position==4){
+                        districts.clear();
+                        districts.add("None");
+                        spinnerDistrictAdapter.notifyDataSetChanged();
+
+                    } else {
                         Request getRequest = MainActivity.httpRequestHelper.getGetRequest("/locations", cities.get(position), MainActivity.user.getAccessToken());
                         new OkHttpClient().newCall(getRequest).enqueue(new Callback() {
                             @Override
@@ -557,8 +574,14 @@ public class UserManagementFragment extends Fragment implements UserAdapter.OnCl
                     }
                     else {
                         Map<String, String> location = new HashMap<>();
-                        location.put("city", editTextCity.getSelectedItem().toString());
-                        location.put("district", editTextDistrict.getSelectedItem().toString());
+                        if (editTextCity.getSelectedItem().toString().equals("None")){
+                            location.put("city", "");
+                            location.put("district", "");
+                        }
+                        else {
+                            location.put("city", editTextCity.getSelectedItem().toString());
+                            location.put("district", editTextDistrict.getSelectedItem().toString());
+                        }
                         User editUser = new User(editTextUserName.getText().toString()
                                 ,editTextEmail_Add.getText().toString()
                                 ,editTextRole.getSelectedItem().toString()

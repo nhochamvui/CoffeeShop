@@ -166,12 +166,6 @@ public class AccountManagementFragment extends Fragment {
                 return false;
             }
         });
-        radioGroupAdd = dialog.findViewById(R.id.radio_group_add);
-        //radioGroupAdd.clearCheck();
-        radioGroupRemove = dialog.findViewById(R.id.radio_group_remove);
-        //radioGroupRemove.clearCheck();
-        radioGroupModify = dialog.findViewById(R.id.radio_group_modify);
-        //radioGroupModify.clearCheck();
         editTextUserName = dialog.findViewById(R.id.editTextUserName_Add);
         editTextPassword = dialog.findViewById(R.id.editTextUserPassword);
         editTextRole = dialog.findViewById(R.id.editTextRole_Add);
